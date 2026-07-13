@@ -2,142 +2,127 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Archive</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Serif+KR:wght@400;600&display=swap');
-:root{
-  --wood:#2b241c; --wood2:#3a3126; --card:#f2ead9; --card2:#e8dcc0;
-  --kraft:#c9a875; --ink:#a8332b; --line:#7a8c6f; --text:#2b241c; --sub:#8a7a5c;
-}
-*{box-sizing:border-box; margin:0; padding:0;}
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+*{box-sizing:border-box; margin:0; padding:0; touch-action:manipulation; -webkit-tap-highlight-color:transparent;}
+html,body{width:100%; overflow-x:hidden;}
 body{
-  background:var(--wood);
-  background-image:repeating-linear-gradient(90deg, rgba(0,0,0,.08) 0 1px, transparent 1px 40px);
-  font-family:'Noto Serif KR', serif; color:var(--card); min-height:100vh;
+  background:#141210; color:#eee7d8; font-family:'Noto Sans KR',sans-serif;
+  min-height:100vh; min-height:100dvh; overscroll-behavior-y:contain;
 }
-.mono{font-family:'IBM Plex Mono', monospace;}
-#app{display:flex; min-height:100vh;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+button, input, textarea{font-family:inherit;}
 
-/* ---- drawer (sidebar) ---- */
-#drawer{
-  width:240px; background:var(--wood2); border-right:3px solid #1a1510;
-  padding:20px 14px; flex-shrink:0; display:flex; flex-direction:column; gap:14px;
+#topbar{position:sticky; top:0; z-index:20; background:#1c1916; border-bottom:1px solid #322c25; padding:10px 12px 8px;}
+#topbar h1{font-family:'IBM Plex Mono',monospace; font-size:14px; letter-spacing:.1em; color:#c9a875; margin-bottom:8px;}
+#folderRow{display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;}
+#folderRow::-webkit-scrollbar{display:none;}
+.chip{
+  flex:0 0 auto; font-size:13px; padding:7px 13px; border-radius:16px; background:#2a2620;
+  color:#d8cba8; white-space:nowrap; border:1px solid #3a332a;
 }
-#drawer h1{
-  font-family:'IBM Plex Mono',monospace; font-size:15px; letter-spacing:.15em;
-  color:var(--kraft); border-bottom:2px solid var(--kraft); padding-bottom:10px;
-}
-#folderList{list-style:none; display:flex; flex-direction:column; gap:6px; overflow-y:auto;}
-.folder-tab{
-  font-family:'IBM Plex Mono',monospace; font-size:13px; color:#d8cba8;
-  background:var(--card2); color:var(--text); padding:9px 10px; border-radius:2px 8px 8px 2px;
-  cursor:pointer; position:relative; border-left:5px solid var(--kraft);
-  transition:transform .12s;
-}
-.folder-tab:hover{transform:translateX(3px);}
-.folder-tab.active{background:var(--card); border-left-color:var(--ink); font-weight:600;}
-#newFolderBtn{
-  margin-top:auto; background:none; border:1px dashed var(--kraft); color:var(--kraft);
-  padding:8px; font-family:'IBM Plex Mono',monospace; font-size:12px; cursor:pointer; letter-spacing:.05em;
-}
-#newFolderBtn:hover{background:rgba(201,168,117,.1);}
+.chip.active{background:#c9a875; color:#141210; font-weight:700; border-color:#c9a875;}
+.chip.add{background:none; border:1px dashed #55493a; color:#c9a875;}
 
-/* ---- main ---- */
-#main{flex:1; padding:26px 34px; overflow-y:auto;}
-#folderTitle{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.2em; color:var(--kraft); margin-bottom:4px;}
-#folderName{font-size:26px; font-weight:600; margin-bottom:18px; color:var(--card);}
-
-/* composer */
-#composer{background:var(--card); color:var(--text); padding:16px; border-radius:3px; box-shadow:0 6px 0 #1a1510; margin-bottom:30px;}
-.type-tabs{display:flex; gap:0; margin-bottom:10px; border-bottom:1px solid var(--sub);}
-.type-tabs button{
-  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; padding:7px 12px;
-  background:none; border:none; cursor:pointer; color:var(--sub); border-bottom:2px solid transparent;
+#composer{padding:10px 12px; background:#1c1916; border-bottom:6px solid #0e0c0a; display:none;}
+#typeRow{display:flex; gap:6px; margin-bottom:8px;}
+#typeRow button{
+  flex:1; font-size:12px; padding:8px 0; border-radius:8px; background:#2a2620; color:#a89a7d; border:none;
 }
-.type-tabs button.active{color:var(--ink); border-color:var(--ink); font-weight:700;}
-#composer textarea{
-  width:100%; border:none; resize:vertical; min-height:60px; font-family:'Noto Serif KR',serif;
-  font-size:15px; background:transparent; outline:none;
+#typeRow button.active{background:#a8332b; color:#fff; font-weight:700;}
+#textInput{
+  width:100%; min-height:52px; max-height:200px; background:#252119; color:#eee7d8; border:1px solid #3a332a;
+  border-radius:10px; padding:10px 12px; font-size:15px; resize:none; outline:none;
 }
-#preview{display:flex; gap:6px; flex-wrap:wrap; margin:8px 0;}
-#preview img{width:64px; height:64px; object-fit:cover; border:1px solid var(--sub);}
-.composer-row{display:flex; justify-content:space-between; align-items:center; margin-top:6px;}
-.iconbtn{background:none; border:1px solid var(--sub); color:var(--text); padding:6px 10px; cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:12px;}
-#postBtn{background:var(--ink); color:#fff; border:none; padding:8px 18px; font-family:'IBM Plex Mono',monospace; font-size:12px; cursor:pointer; letter-spacing:.05em;}
-#postBtn:disabled{opacity:.4; cursor:default;}
+#preview{display:flex; gap:6px; overflow-x:auto; margin-top:8px;}
+#preview .thumb{position:relative; flex:0 0 auto;}
+#preview img{width:56px; height:56px; object-fit:cover; border-radius:8px;}
+#preview .rm{position:absolute; top:-5px; right:-5px; background:#a8332b; color:#fff; border-radius:50%; width:18px; height:18px; font-size:11px; border:none; line-height:18px;}
+.composer-row{display:flex; justify-content:space-between; align-items:center; margin-top:8px;}
+#attachBtn{background:none; border:1px solid #3a332a; color:#d8cba8; padding:9px 12px; border-radius:10px; font-size:13px;}
+#postBtn{background:#c9a875; color:#141210; border:none; padding:9px 20px; border-radius:10px; font-size:13px; font-weight:700;}
+#postBtn:disabled{opacity:.4;}
 
-/* feed */
-#feed{display:flex; flex-direction:column; gap:18px; max-width:640px;}
-.card{
-  background:var(--card); color:var(--text); border-radius:2px; padding:16px 18px 14px;
-  box-shadow:0 4px 0 rgba(0,0,0,.35); position:relative;
-  border-left:4px solid var(--line);
+#fab{
+  position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom)); z-index:30;
+  width:52px; height:52px; border-radius:50%; background:#a8332b; color:#fff; border:none;
+  font-size:26px; box-shadow:0 4px 12px rgba(0,0,0,.5);
 }
-.card .stamp{
-  position:absolute; top:12px; right:14px; font-family:'IBM Plex Mono',monospace; font-size:10px;
-  letter-spacing:.1em; color:var(--ink); border:1.5px solid var(--ink); padding:2px 6px; border-radius:3px;
-  transform:rotate(4deg); opacity:.75;
-}
-.card .date{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--sub); margin-bottom:8px;}
-.card .text{white-space:pre-wrap; line-height:1.6; font-size:15px; margin-bottom:10px;}
-.imgs{display:grid; gap:4px; border-radius:2px; overflow:hidden;}
-.imgs img{width:100%; object-fit:cover; display:block; cursor:zoom-in;}
-.imgs.n1{grid-template-columns:1fr;} .imgs.n1 img{max-height:480px;}
-.imgs.n2{grid-template-columns:1fr 1fr;} .imgs.n2 img{height:220px;}
-.imgs.n3{grid-template-columns:1fr 1fr;} .imgs.n3 img:first-child{grid-row:span 2; height:100%;} .imgs.n3 img{height:141px;}
-.imgs.n4plus{grid-template-columns:1fr 1fr;} .imgs.n4plus img{height:150px;}
 
-/* type-specific skins */
-.card.memo{border-left-color:var(--kraft);}
-.card.photo .text{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--sub);}
-.card.instagram{border-left-color:#b06a8f;}
-.card.instagram .igtag{font-family:'IBM Plex Mono',monospace; font-size:11px; color:#b06a8f; margin-bottom:6px; letter-spacing:.05em;}
-.card.twitter{border-left-color:#4a7fa8;}
-.card.twitter .text{font-size:17px; line-height:1.5;}
-.card.twitter .twtag{font-family:'IBM Plex Mono',monospace; font-size:11px; color:#4a7fa8; margin-bottom:6px;}
+#main{padding:12px 10px 90px; max-width:520px; margin:0 auto;}
+#feed{display:flex; flex-direction:column; gap:12px;}
+.card{background:#1c1916; border-radius:14px; padding:12px 14px; border:1px solid #2a2620; position:relative;}
+.card .top{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
+.card .tag{font-size:10px; letter-spacing:.08em; padding:2px 7px; border-radius:6px; font-weight:700;}
+.card.memo .tag{background:#3a4a3a; color:#a8c9a8;}
+.card.photo .tag{background:#3a3a4a; color:#a8a8c9;}
+.card.instagram .tag{background:#4a2f3f; color:#e0a8c9;}
+.card.twitter .tag{background:#2f3f4a; color:#a8cbe0;}
+.card .date{font-size:11px; color:#7a7264;}
+.card .text{white-space:pre-wrap; line-height:1.55; font-size:14.5px; margin:4px 0 8px; word-break:break-word;}
+.imgs{display:grid; gap:3px; border-radius:10px; overflow:hidden; margin-bottom:4px;}
+.imgs img{width:100%; object-fit:cover; display:block;}
+.imgs.n1 img{max-height:420px;}
+.imgs.n2{grid-template-columns:1fr 1fr;} .imgs.n2 img{height:170px;}
+.imgs.n3{grid-template-columns:1fr 1fr;} .imgs.n3 img:first-child{grid-row:span 2; height:100%;} .imgs.n3 img{height:110px;}
+.imgs.n4plus{grid-template-columns:1fr 1fr;} .imgs.n4plus img{height:120px;}
+.delbtn{background:none; border:none; color:#5a5346; font-size:12px; padding:4px;}
+.card.pending{opacity:.55;}
+#empty{text-align:center; color:#6a6254; font-size:13px; margin-top:60px;}
 
-.delbtn{position:absolute; bottom:10px; right:12px; background:none; border:none; color:var(--sub); font-size:11px; cursor:pointer; font-family:'IBM Plex Mono',monospace;}
-.delbtn:hover{color:var(--ink);}
-#empty{color:var(--sub); font-family:'IBM Plex Mono',monospace; font-size:13px; margin-top:40px;}
+#overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:40; align-items:flex-end;}
+#overlay .sheet{background:#1c1916; width:100%; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); border-radius:16px 16px 0 0;}
+#overlay input{width:100%; background:#252119; border:1px solid #3a332a; color:#eee7d8; padding:11px; border-radius:10px; font-size:15px; margin:10px 0;}
+#overlay .row{display:flex; gap:8px;}
+#overlay button{flex:1; padding:11px; border-radius:10px; border:none; font-size:14px;}
+#overlay .cancel{background:#2a2620; color:#c9c0ac;}
+#overlay .ok{background:#c9a875; color:#141210; font-weight:700;}
 
-/* lightbox */
-#lightbox{display:none; position:fixed; inset:0; background:rgba(10,8,6,.92); z-index:50; align-items:center; justify-content:center;}
-#lightbox img{max-width:90vw; max-height:90vh;}
-
-::-webkit-scrollbar{width:8px;} ::-webkit-scrollbar-thumb{background:var(--kraft); border-radius:4px;}
+#lightbox{display:none; position:fixed; inset:0; background:rgba(0,0,0,.94); z-index:50; align-items:center; justify-content:center;}
+#lightbox img{max-width:94vw; max-height:94vh; object-fit:contain;}
 </style>
 </head>
 <body>
-<div id="app">
-  <div id="drawer">
-    <h1>📇 ARCHIVE</h1>
-    <ul id="folderList"></ul>
-    <button id="newFolderBtn">+ 새 폴더</button>
+<div id="topbar">
+  <h1>📇 ARCHIVE</h1>
+  <div id="folderRow"><button class="chip add" id="newFolderBtn">+ 폴더</button></div>
+</div>
+
+<div id="composer">
+  <div id="typeRow">
+    <button data-type="memo" class="active">메모</button>
+    <button data-type="photo">사진</button>
+    <button data-type="instagram">인스타</button>
+    <button data-type="twitter">트윗</button>
   </div>
-  <div id="main">
-    <div id="folderTitle" class="mono">FOLDER</div>
-    <div id="folderName">폴더를 선택하세요</div>
-
-    <div id="composer" style="display:none">
-      <div class="type-tabs mono">
-        <button data-type="memo" class="active">MEMO</button>
-        <button data-type="photo">PHOTO</button>
-        <button data-type="instagram">INSTA</button>
-        <button data-type="twitter">TWEET</button>
-      </div>
-      <textarea id="textInput" placeholder="기록할 내용..."></textarea>
-      <div id="preview"></div>
-      <div class="composer-row">
-        <label class="iconbtn">📎 사진 첨부<input type="file" id="fileInput" accept="image/*" multiple style="display:none"></label>
-        <button id="postBtn">기록하기</button>
-      </div>
-    </div>
-
-    <div id="feed"></div>
-    <div id="empty" style="display:none">아직 기록이 없습니다.</div>
+  <textarea id="textInput" placeholder="내용을 입력..."></textarea>
+  <div id="preview"></div>
+  <div class="composer-row">
+    <label id="attachBtn">📎 사진<input type="file" id="fileInput" accept="image/*" multiple style="display:none"></label>
+    <button id="postBtn">올리기</button>
   </div>
 </div>
+
+<div id="main">
+  <div id="feed"></div>
+  <div id="empty">폴더를 선택하거나 새로 만들어보세요</div>
+</div>
+
+<button id="fab" style="display:none">✎</button>
+
+<div id="overlay">
+  <div class="sheet">
+    <div class="mono" style="font-size:13px;color:#c9a875">새 폴더</div>
+    <input id="folderNameInput" placeholder="폴더 이름" autofocus>
+    <div class="row">
+      <button class="cancel" id="folderCancel">취소</button>
+      <button class="ok" id="folderOk">만들기</button>
+    </div>
+  </div>
+</div>
+
 <div id="lightbox"><img id="lightboxImg"></div>
 
 <script type="module">
@@ -166,52 +151,71 @@ const postsCol = collection(db, "posts");
 
 let currentFolder = null, currentType = "memo", pendingFiles = [];
 
-// ---- folders ----
 onSnapshot(query(foldersCol, orderBy("createdAt", "desc")), snap => {
-  const list = document.getElementById("folderList");
-  list.innerHTML = "";
-  snap.forEach(d => {
-    const f = d.data();
-    const li = document.createElement("li");
-    li.className = "folder-tab mono" + (currentFolder === d.id ? " active" : "");
-    li.textContent = f.name;
-    li.onclick = () => selectFolder(d.id, f.name);
-    list.appendChild(li);
+  const row = document.getElementById("folderRow");
+  row.innerHTML = "";
+  const addBtn = document.createElement("button");
+  addBtn.className = "chip add"; addBtn.id = "newFolderBtn"; addBtn.textContent = "+ 폴더";
+  addBtn.onclick = openFolderSheet;
+  row.appendChild(addBtn);
+  const arr = [];
+  snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+  arr.forEach(f => {
+    const chip = document.createElement("button");
+    chip.className = "chip" + (currentFolder === f.id ? " active" : "");
+    chip.textContent = f.name;
+    chip.onclick = () => selectFolder(f.id, f.name);
+    row.appendChild(chip);
   });
+  if (!currentFolder && arr.length) selectFolder(arr[0].id, arr[0].name);
 });
 
-document.getElementById("newFolderBtn").onclick = async () => {
-  const name = prompt("새 폴더 이름:");
+function openFolderSheet(){ document.getElementById("overlay").style.display = "flex"; document.getElementById("folderNameInput").focus(); }
+document.getElementById("folderCancel").onclick = () => document.getElementById("overlay").style.display = "none";
+document.getElementById("overlay").onclick = e => { if (e.target.id === "overlay") e.currentTarget.style.display = "none"; };
+document.getElementById("folderOk").onclick = async () => {
+  const name = document.getElementById("folderNameInput").value.trim();
   if (!name) return;
+  document.getElementById("folderNameInput").value = "";
+  document.getElementById("overlay").style.display = "none";
   await addDoc(foldersCol, { name, createdAt: serverTimestamp() });
 };
 
 function selectFolder(id, name) {
   currentFolder = id;
-  document.getElementById("folderName").textContent = name;
+  document.querySelectorAll(".chip").forEach(el => el.classList.toggle("active", el.textContent === name));
   document.getElementById("composer").style.display = "block";
-  document.querySelectorAll(".folder-tab").forEach(el => el.classList.toggle("active", el.textContent === name));
+  document.getElementById("fab").style.display = "block";
   loadPosts(id);
 }
 
-// ---- composer ----
-document.querySelectorAll(".type-tabs button").forEach(btn => {
+document.getElementById("fab").onclick = () => {
+  document.getElementById("composer").scrollIntoView({ behavior: "smooth" });
+  document.getElementById("textInput").focus();
+};
+
+document.querySelectorAll("#typeRow button").forEach(btn => {
   btn.onclick = () => {
     currentType = btn.dataset.type;
-    document.querySelectorAll(".type-tabs button").forEach(b => b.classList.toggle("active", b === btn));
+    document.querySelectorAll("#typeRow button").forEach(b => b.classList.toggle("active", b === btn));
   };
 });
 
 document.getElementById("fileInput").onchange = e => {
   pendingFiles = [...e.target.files];
+  renderPreview();
+};
+function renderPreview(){
   const prev = document.getElementById("preview");
   prev.innerHTML = "";
-  pendingFiles.forEach(f => {
-    const img = document.createElement("img");
-    img.src = URL.createObjectURL(f);
-    prev.appendChild(img);
+  pendingFiles.forEach((f, i) => {
+    const t = document.createElement("div"); t.className = "thumb";
+    const img = document.createElement("img"); img.src = URL.createObjectURL(f);
+    const rm = document.createElement("button"); rm.className = "rm"; rm.textContent = "×";
+    rm.onclick = () => { pendingFiles.splice(i, 1); renderPreview(); };
+    t.append(img, rm); prev.appendChild(t);
   });
-};
+}
 
 async function uploadToCloudinary(file) {
   const fd = new FormData();
@@ -225,28 +229,29 @@ async function uploadToCloudinary(file) {
 document.getElementById("postBtn").onclick = async () => {
   if (!currentFolder) return;
   const text = document.getElementById("textInput").value.trim();
-  if (!text && pendingFiles.length === 0) return;
-  const btn = document.getElementById("postBtn");
-  btn.disabled = true; btn.textContent = "업로드 중...";
+  const files = pendingFiles;
+  if (!text && files.length === 0) return;
+  const type = currentType;
+
+  const localUrls = files.map(f => URL.createObjectURL(f));
+  const tempCard = renderCard("tmp-" + Date.now(), { type, text, images: localUrls, createdAt: null }, true);
+  document.getElementById("feed").prepend(tempCard);
+  document.getElementById("empty").style.display = "none";
+
+  document.getElementById("textInput").value = "";
+  document.getElementById("preview").innerHTML = "";
+  document.getElementById("fileInput").value = "";
+  pendingFiles = [];
+
   try {
-    const urls = [];
-    for (const f of pendingFiles) urls.push(await uploadToCloudinary(f));
-    await addDoc(postsCol, {
-      folderId: currentFolder, type: currentType, text, images: urls,
-      createdAt: serverTimestamp()
-    });
-    document.getElementById("textInput").value = "";
-    document.getElementById("preview").innerHTML = "";
-    document.getElementById("fileInput").value = "";
-    pendingFiles = [];
+    const urls = files.length ? await Promise.all(files.map(uploadToCloudinary)) : [];
+    await addDoc(postsCol, { folderId: currentFolder, type, text, images: urls, createdAt: serverTimestamp() });
+    tempCard.remove();
   } catch (err) {
-    alert("업로드 실패: " + err.message);
-  } finally {
-    btn.disabled = false; btn.textContent = "기록하기";
+    tempCard.querySelector(".date").textContent = "업로드 실패 - 다시 시도해주세요";
   }
 };
 
-// ---- feed ----
 let unsub = null;
 function loadPosts(folderId) {
   if (unsub) unsub();
@@ -258,33 +263,29 @@ function loadPosts(folderId) {
   });
 }
 
-const STAMP = { memo: "MEMO", photo: "PHOTO", instagram: "INSTA", twitter: "TWEET" };
+const TAG = { memo: "메모", photo: "사진", instagram: "인스타", twitter: "트윗" };
 
-function renderCard(id, p) {
+function renderCard(id, p, pending) {
   const card = document.createElement("div");
-  card.className = "card " + p.type;
-  const date = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleString("ko-KR") : "";
+  card.className = "card " + p.type + (pending ? " pending" : "");
+  const date = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleString("ko-KR") : (pending ? "업로드 중..." : "");
   let imgsHtml = "";
   if (p.images?.length) {
     const n = p.images.length;
     const cls = n === 1 ? "n1" : n === 2 ? "n2" : n === 3 ? "n3" : "n4plus";
     imgsHtml = `<div class="imgs ${cls}">${p.images.map(u => `<img src="${u}" onclick="window.__openLb('${u}')">`).join("")}</div>`;
   }
-  let tag = "";
-  if (p.type === "instagram") tag = `<div class="igtag">📷 instagram.log</div>`;
-  if (p.type === "twitter") tag = `<div class="twtag">🐦 @archive</div>`;
-
   card.innerHTML = `
-    <div class="stamp mono">${STAMP[p.type]}</div>
-    <div class="date">${date}</div>
-    ${tag}
+    <div class="top"><span class="tag mono">${TAG[p.type]}</span><span class="date mono">${date}</span></div>
     ${p.text ? `<div class="text">${escapeHtml(p.text)}</div>` : ""}
     ${imgsHtml}
-    <button class="delbtn">삭제</button>
+    ${pending ? "" : '<button class="delbtn">삭제</button>'}
   `;
-  card.querySelector(".delbtn").onclick = async () => {
-    if (confirm("이 기록을 삭제할까요?")) await deleteDoc(doc(db, "posts", id));
-  };
+  if (!pending) {
+    card.querySelector(".delbtn").onclick = async () => {
+      if (confirm("삭제할까요?")) await deleteDoc(doc(db, "posts", id));
+    };
+  }
   return card;
 }
 
