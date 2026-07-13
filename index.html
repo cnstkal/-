@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Archive</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Serif+KR:wght@400;600&display=swap');
+:root{
+  --wood:#2b241c; --wood2:#3a3126; --card:#f2ead9; --card2:#e8dcc0;
+  --kraft:#c9a875; --ink:#a8332b; --line:#7a8c6f; --text:#2b241c; --sub:#8a7a5c;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  background:var(--wood);
+  background-image:repeating-linear-gradient(90deg, rgba(0,0,0,.08) 0 1px, transparent 1px 40px);
+  font-family:'Noto Serif KR', serif; color:var(--card); min-height:100vh;
+}
+.mono{font-family:'IBM Plex Mono', monospace;}
+#app{display:flex; min-height:100vh;}
+
+/* ---- drawer (sidebar) ---- */
+#drawer{
+  width:240px; background:var(--wood2); border-right:3px solid #1a1510;
+  padding:20px 14px; flex-shrink:0; display:flex; flex-direction:column; gap:14px;
+}
+#drawer h1{
+  font-family:'IBM Plex Mono',monospace; font-size:15px; letter-spacing:.15em;
+  color:var(--kraft); border-bottom:2px solid var(--kraft); padding-bottom:10px;
+}
+#folderList{list-style:none; display:flex; flex-direction:column; gap:6px; overflow-y:auto;}
+.folder-tab{
+  font-family:'IBM Plex Mono',monospace; font-size:13px; color:#d8cba8;
+  background:var(--card2); color:var(--text); padding:9px 10px; border-radius:2px 8px 8px 2px;
+  cursor:pointer; position:relative; border-left:5px solid var(--kraft);
+  transition:transform .12s;
+}
+.folder-tab:hover{transform:translateX(3px);}
+.folder-tab.active{background:var(--card); border-left-color:var(--ink); font-weight:600;}
+#newFolderBtn{
+  margin-top:auto; background:none; border:1px dashed var(--kraft); color:var(--kraft);
+  padding:8px; font-family:'IBM Plex Mono',monospace; font-size:12px; cursor:pointer; letter-spacing:.05em;
+}
+#newFolderBtn:hover{background:rgba(201,168,117,.1);}
+
+/* ---- main ---- */
+#main{flex:1; padding:26px 34px; overflow-y:auto;}
+#folderTitle{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.2em; color:var(--kraft); margin-bottom:4px;}
+#folderName{font-size:26px; font-weight:600; margin-bottom:18px; color:var(--card);}
+
+/* composer */
+#composer{background:var(--card); color:var(--text); padding:16px; border-radius:3px; box-shadow:0 6px 0 #1a1510; margin-bottom:30px;}
+.type-tabs{display:flex; gap:0; margin-bottom:10px; border-bottom:1px solid var(--sub);}
+.type-tabs button{
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; padding:7px 12px;
+  background:none; border:none; cursor:pointer; color:var(--sub); border-bottom:2px solid transparent;
+}
+.type-tabs button.active{color:var(--ink); border-color:var(--ink); font-weight:700;}
+#composer textarea{
+  width:100%; border:none; resize:vertical; min-height:60px; font-family:'Noto Serif KR',serif;
+  font-size:15px; background:transparent; outline:none;
+}
+#preview{display:flex; gap:6px; flex-wrap:wrap; margin:8px 0;}
+#preview img{width:64px; height:64px; object-fit:cover; border:1px solid var(--sub);}
+.composer-row{display:flex; justify-content:space-between; align-items:center; margin-top:6px;}
+.iconbtn{background:none; border:1px solid var(--sub); color:var(--text); padding:6px 10px; cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:12px;}
+#postBtn{background:var(--ink); color:#fff; border:none; padding:8px 18px; font-family:'IBM Plex Mono',monospace; font-size:12px; cursor:pointer; letter-spacing:.05em;}
+#postBtn:disabled{opacity:.4; cursor:default;}
+
+/* feed */
+#feed{display:flex; flex-direction:column; gap:18px; max-width:640px;}
+.card{
+  background:var(--card); color:var(--text); border-radius:2px; padding:16px 18px 14px;
+  box-shadow:0 4px 0 rgba(0,0,0,.35); position:relative;
+  border-left:4px solid var(--line);
+}
+.card .stamp{
+  position:absolute; top:12px; right:14px; font-family:'IBM Plex Mono',monospace; font-size:10px;
+  letter-spacing:.1em; color:var(--ink); border:1.5px solid var(--ink); padding:2px 6px; border-radius:3px;
+  transform:rotate(4deg); opacity:.75;
+}
+.card .date{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--sub); margin-bottom:8px;}
+.card .text{white-space:pre-wrap; line-height:1.6; font-size:15px; margin-bottom:10px;}
+.imgs{display:grid; gap:4px; border-radius:2px; overflow:hidden;}
+.imgs img{width:100%; object-fit:cover; display:block; cursor:zoom-in;}
+.imgs.n1{grid-template-columns:1fr;} .imgs.n1 img{max-height:480px;}
+.imgs.n2{grid-template-columns:1fr 1fr;} .imgs.n2 img{height:220px;}
+.imgs.n3{grid-template-columns:1fr 1fr;} .imgs.n3 img:first-child{grid-row:span 2; height:100%;} .imgs.n3 img{height:141px;}
+.imgs.n4plus{grid-template-columns:1fr 1fr;} .imgs.n4plus img{height:150px;}
+
+/* type-specific skins */
+.card.memo{border-left-color:var(--kraft);}
+.card.photo .text{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--sub);}
+.card.instagram{border-left-color:#b06a8f;}
+.card.instagram .igtag{font-family:'IBM Plex Mono',monospace; font-size:11px; color:#b06a8f; margin-bottom:6px; letter-spacing:.05em;}
+.card.twitter{border-left-color:#4a7fa8;}
+.card.twitter .text{font-size:17px; line-height:1.5;}
+.card.twitter .twtag{font-family:'IBM Plex Mono',monospace; font-size:11px; color:#4a7fa8; margin-bottom:6px;}
+
+.delbtn{position:absolute; bottom:10px; right:12px; background:none; border:none; color:var(--sub); font-size:11px; cursor:pointer; font-family:'IBM Plex Mono',monospace;}
+.delbtn:hover{color:var(--ink);}
+#empty{color:var(--sub); font-family:'IBM Plex Mono',monospace; font-size:13px; margin-top:40px;}
+
+/* lightbox */
+#lightbox{display:none; position:fixed; inset:0; background:rgba(10,8,6,.92); z-index:50; align-items:center; justify-content:center;}
+#lightbox img{max-width:90vw; max-height:90vh;}
+
+::-webkit-scrollbar{width:8px;} ::-webkit-scrollbar-thumb{background:var(--kraft); border-radius:4px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="drawer">
+    <h1>📇 ARCHIVE</h1>
+    <ul id="folderList"></ul>
+    <button id="newFolderBtn">+ 새 폴더</button>
+  </div>
+  <div id="main">
+    <div id="folderTitle" class="mono">FOLDER</div>
+    <div id="folderName">폴더를 선택하세요</div>
+
+    <div id="composer" style="display:none">
+      <div class="type-tabs mono">
+        <button data-type="memo" class="active">MEMO</button>
+        <button data-type="photo">PHOTO</button>
+        <button data-type="instagram">INSTA</button>
+        <button data-type="twitter">TWEET</button>
+      </div>
+      <textarea id="textInput" placeholder="기록할 내용..."></textarea>
+      <div id="preview"></div>
+      <div class="composer-row">
+        <label class="iconbtn">📎 사진 첨부<input type="file" id="fileInput" accept="image/*" multiple style="display:none"></label>
+        <button id="postBtn">기록하기</button>
+      </div>
+    </div>
+
+    <div id="feed"></div>
+    <div id="empty" style="display:none">아직 기록이 없습니다.</div>
+  </div>
+</div>
+<div id="lightbox"><img id="lightboxImg"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, deleteDoc, doc,
+  query, where, orderBy, onSnapshot, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const CLOUDINARY_CLOUD = 'dbljkloal';
+const CLOUDINARY_PRESET = 'Everything';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA8dVBWesTvdNuWZElQMYRDXI2SmsOpiQo",
+  authDomain: "netfilx-5dd61.firebaseapp.com",
+  databaseURL: "https://netfilx-5dd61-default-rtdb.firebaseio.com",
+  projectId: "netfilx-5dd61",
+  storageBucket: "netfilx-5dd61.firebasestorage.app",
+  messagingSenderId: "654634064403",
+  appId: "1:654634064403:web:e4d79cbdf5b89827b57de6"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const foldersCol = collection(db, "folders");
+const postsCol = collection(db, "posts");
+
+let currentFolder = null, currentType = "memo", pendingFiles = [];
+
+// ---- folders ----
+onSnapshot(query(foldersCol, orderBy("createdAt", "desc")), snap => {
+  const list = document.getElementById("folderList");
+  list.innerHTML = "";
+  snap.forEach(d => {
+    const f = d.data();
+    const li = document.createElement("li");
+    li.className = "folder-tab mono" + (currentFolder === d.id ? " active" : "");
+    li.textContent = f.name;
+    li.onclick = () => selectFolder(d.id, f.name);
+    list.appendChild(li);
+  });
+});
+
+document.getElementById("newFolderBtn").onclick = async () => {
+  const name = prompt("새 폴더 이름:");
+  if (!name) return;
+  await addDoc(foldersCol, { name, createdAt: serverTimestamp() });
+};
+
+function selectFolder(id, name) {
+  currentFolder = id;
+  document.getElementById("folderName").textContent = name;
+  document.getElementById("composer").style.display = "block";
+  document.querySelectorAll(".folder-tab").forEach(el => el.classList.toggle("active", el.textContent === name));
+  loadPosts(id);
+}
+
+// ---- composer ----
+document.querySelectorAll(".type-tabs button").forEach(btn => {
+  btn.onclick = () => {
+    currentType = btn.dataset.type;
+    document.querySelectorAll(".type-tabs button").forEach(b => b.classList.toggle("active", b === btn));
+  };
+});
+
+document.getElementById("fileInput").onchange = e => {
+  pendingFiles = [...e.target.files];
+  const prev = document.getElementById("preview");
+  prev.innerHTML = "";
+  pendingFiles.forEach(f => {
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(f);
+    prev.appendChild(img);
+  });
+};
+
+async function uploadToCloudinary(file) {
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("upload_preset", CLOUDINARY_PRESET);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: "POST", body: fd });
+  const data = await res.json();
+  return data.secure_url;
+}
+
+document.getElementById("postBtn").onclick = async () => {
+  if (!currentFolder) return;
+  const text = document.getElementById("textInput").value.trim();
+  if (!text && pendingFiles.length === 0) return;
+  const btn = document.getElementById("postBtn");
+  btn.disabled = true; btn.textContent = "업로드 중...";
+  try {
+    const urls = [];
+    for (const f of pendingFiles) urls.push(await uploadToCloudinary(f));
+    await addDoc(postsCol, {
+      folderId: currentFolder, type: currentType, text, images: urls,
+      createdAt: serverTimestamp()
+    });
+    document.getElementById("textInput").value = "";
+    document.getElementById("preview").innerHTML = "";
+    document.getElementById("fileInput").value = "";
+    pendingFiles = [];
+  } catch (err) {
+    alert("업로드 실패: " + err.message);
+  } finally {
+    btn.disabled = false; btn.textContent = "기록하기";
+  }
+};
+
+// ---- feed ----
+let unsub = null;
+function loadPosts(folderId) {
+  if (unsub) unsub();
+  unsub = onSnapshot(query(postsCol, where("folderId", "==", folderId), orderBy("createdAt", "desc")), snap => {
+    const feed = document.getElementById("feed");
+    feed.innerHTML = "";
+    document.getElementById("empty").style.display = snap.empty ? "block" : "none";
+    snap.forEach(d => feed.appendChild(renderCard(d.id, d.data())));
+  });
+}
+
+const STAMP = { memo: "MEMO", photo: "PHOTO", instagram: "INSTA", twitter: "TWEET" };
+
+function renderCard(id, p) {
+  const card = document.createElement("div");
+  card.className = "card " + p.type;
+  const date = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleString("ko-KR") : "";
+  let imgsHtml = "";
+  if (p.images?.length) {
+    const n = p.images.length;
+    const cls = n === 1 ? "n1" : n === 2 ? "n2" : n === 3 ? "n3" : "n4plus";
+    imgsHtml = `<div class="imgs ${cls}">${p.images.map(u => `<img src="${u}" onclick="window.__openLb('${u}')">`).join("")}</div>`;
+  }
+  let tag = "";
+  if (p.type === "instagram") tag = `<div class="igtag">📷 instagram.log</div>`;
+  if (p.type === "twitter") tag = `<div class="twtag">🐦 @archive</div>`;
+
+  card.innerHTML = `
+    <div class="stamp mono">${STAMP[p.type]}</div>
+    <div class="date">${date}</div>
+    ${tag}
+    ${p.text ? `<div class="text">${escapeHtml(p.text)}</div>` : ""}
+    ${imgsHtml}
+    <button class="delbtn">삭제</button>
+  `;
+  card.querySelector(".delbtn").onclick = async () => {
+    if (confirm("이 기록을 삭제할까요?")) await deleteDoc(doc(db, "posts", id));
+  };
+  return card;
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+window.__openLb = url => {
+  document.getElementById("lightboxImg").src = url;
+  document.getElementById("lightbox").style.display = "flex";
+};
+document.getElementById("lightbox").onclick = () => document.getElementById("lightbox").style.display = "none";
+</script>
+</body>
+</html>
