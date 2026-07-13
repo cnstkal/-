@@ -224,7 +224,7 @@ document.getElementById("folderOk").onclick = async () => {
   if (editingFolderId) {
     await updateDoc(doc(db, "folders", editingFolderId), { name });
   } else {
-    await addDoc(foldersCol, { name, createdAt: serverTimestamp() });
+    await addDoc(foldersCol, { name, createdAt: Date.now() });
   }
 };
 document.getElementById("folderDelete").onclick = async () => {
@@ -302,7 +302,7 @@ document.getElementById("postBtn").onclick = async () => {
 
   try {
     const urls = files.length ? await Promise.all(files.map(uploadToCloudinary)) : [];
-    await addDoc(postsCol, { folderId: currentFolder, type, text, images: urls, createdAt: serverTimestamp() });
+    await addDoc(postsCol, { folderId: currentFolder, type, text, images: urls, createdAt: Date.now() });
     tempCard.remove();
   } catch (err) {
     tempCard.querySelector(".date, .igmeta span, .twmeta").textContent = "업로드 실패 - 다시 시도해주세요";
@@ -325,7 +325,7 @@ const TAG = { memo: "메모", photo: "사진", instagram: "인스타", twitter: 
 function renderCard(id, p, pending) {
   const card = document.createElement("div");
   card.className = "card " + p.type + (pending ? " pending" : "");
-  const date = p.createdAt?.toDate ? p.createdAt.toDate().toLocaleString("ko-KR") : (pending ? "업로드 중..." : "");
+  const date = p.createdAt ? new Date(p.createdAt).toLocaleString("ko-KR") : (pending ? "업로드 중..." : "");
   const n = p.images?.length || 0;
   const cls = n === 1 ? "n1" : n === 2 ? "n2" : n === 3 ? "n3" : "n4plus";
   const imgsHtml = n ? `<div class="imgs ${cls}">${p.images.map(u => `<img src="${u}" onclick="window.__openLb('${u}')">`).join("")}</div>` : "";
