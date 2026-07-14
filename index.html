@@ -289,24 +289,20 @@ document.getElementById("postBtn").onclick = async () => {
   const files = pendingFiles;
   if (!text && files.length === 0) return;
   const type = currentType;
-
-  const localUrls = files.map(f => URL.createObjectURL(f));
-  const tempCard = renderCard("tmp-" + Date.now(), { type, text, images: localUrls, createdAt: null }, true);
-  document.getElementById("feed").prepend(tempCard);
-  document.getElementById("empty").style.display = "none";
-
-  document.getElementById("textInput").value = "";
-  document.getElementById("preview").innerHTML = "";
-  document.getElementById("fileInput").value = "";
-  pendingFiles = [];
+  const btn = document.getElementById("postBtn");
+  btn.disabled = true; btn.textContent = "업로드중...";
 
   try {
     const urls = files.length ? await Promise.all(files.map(uploadToCloudinary)) : [];
     await addDoc(postsCol, { folderId: currentFolder, type, text, images: urls, createdAt: Date.now() });
-    tempCard.remove();
+    document.getElementById("textInput").value = "";
+    document.getElementById("preview").innerHTML = "";
+    document.getElementById("fileInput").value = "";
+    pendingFiles = [];
   } catch (err) {
-    tempCard.querySelector(".date, .igmeta span, .twmeta").textContent = "업로드 실패 - 다시 시도해주세요";
+    alert("업로드 실패 - 다시 시도해주세요");
   }
+  btn.disabled = false; btn.textContent = "올리기";
 };
 
 let unsub = null;
