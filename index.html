@@ -56,6 +56,7 @@ button, input, textarea{font-family:inherit;}
 #empty{text-align:center; color:var(--text-faint2); font-size:13px; margin-top:60px;}
 
 .embed{position:relative; margin:16px 0; width:100%;}
+.embed.block.imessage{margin:6px 0;}
 .embed .embed-del{position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%; background:var(--danger); color:var(--danger-text); border:none; font-size:12px; line-height:22px; opacity:0; transition:opacity .15s; z-index:2;}
 .embed:hover .embed-del{opacity:1;}
 
@@ -127,7 +128,7 @@ body.folder-locked #editBtns{display:none !important;}
 .block.instagram{padding:0; overflow:hidden; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
 .block.instagram .ighead{display:flex; align-items:center; gap:8px; padding:10px 12px;}
 .block.instagram .av{width:30px; height:30px; border-radius:50%; background:linear-gradient(45deg,#feda75,#d62976,#4f5bd5); background-size:cover; background-position:center; flex:0 0 auto;}
-.block.instagram .uname{font-weight:700; font-size:13px; color:var(--text);}
+.block.instagram .uname{font-weight:700; font-size:15px; color:var(--text);}
 .block.instagram .igimgs{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; position:relative;}
 .block.instagram .igimgs::-webkit-scrollbar{display:none;}
 .block.instagram .igimgs img{width:100%; flex:0 0 100%; scroll-snap-align:start; display:block; aspect-ratio:5/6; object-fit:cover; margin:0; cursor:zoom-in;}
@@ -137,7 +138,7 @@ body.folder-locked #editBtns{display:none !important;}
 .block.instagram .igfoot{display:flex; gap:14px; padding:10px 12px 0;}
 .block.instagram .igfoot svg{width:23px; height:23px; stroke:var(--text); fill:none; stroke-width:1.8;}
 .block.instagram .igbody{padding:6px 12px 12px;}
-.block.instagram .igtext{font-size:13.5px; line-height:1.5; white-space:pre-wrap;}
+.block.instagram .igtext{font-size:16px; line-height:1.55; white-space:pre-wrap;}
 .block.instagram .igtext b{margin-right:6px;}
 
 .block.twitter{display:flex; flex-direction:column; padding:12px 14px; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
@@ -146,11 +147,11 @@ body.folder-locked #editBtns{display:none !important;}
 .block.twitter .av{width:38px; height:38px; border-radius:50%; background:#1d9bf0; background-size:cover; background-position:center; flex:0 0 auto;}
 .block.twitter .tw-reply .av{width:30px; height:30px;}
 .block.twitter .twbody{flex:1; min-width:0;}
-.block.twitter .twhead{font-size:15px;}
+.block.twitter .twhead{font-size:16px;}
 .block.twitter .twhead b{color:var(--text);}
 .block.twitter .verified{display:inline-block; width:15px; height:15px; vertical-align:middle; margin-left:2px;}
 .block.twitter .twhead span{color:var(--text-faint); margin-left:4px;}
-.block.twitter .twtext{font-size:16.5px; line-height:1.5; margin:3px 0 4px; white-space:pre-wrap;}
+.block.twitter .twtext{font-size:18px; line-height:1.5; margin:3px 0 4px; white-space:pre-wrap;}
 .block.twitter .imgs{border-radius:14px; border:1px solid var(--border2); margin-top:4px; overflow:hidden;}
 .block.twitter .imgs.n4plus{gap:1px; border:none;}
 
@@ -159,15 +160,15 @@ body.folder-locked #editBtns{display:none !important;}
 .block.community.site-instiz .cm-badge{background:#00b3a4;}
 .block.community.site-theqoo .cm-badge{background:#c0392b;}
 .block.community.site-jjookbbang .cm-badge{background:#ff5da2;}
-.block.community .cm-title{font-size:15.5px; font-weight:800; margin-bottom:6px; color:var(--text); line-height:1.4;}
-.block.community .cm-meta{font-size:11.5px; font-weight:700; margin-bottom:9px;}
+.block.community .cm-title{font-size:17.5px; font-weight:800; margin-bottom:6px; color:var(--text); line-height:1.4;}
+.block.community .cm-meta{font-size:13px; font-weight:700; margin-bottom:9px;}
 .block.community.site-instiz .cm-meta{color:#00998c;}
 .block.community.site-theqoo .cm-meta{color:#c0392b;}
 .block.community.site-jjookbbang .cm-meta{color:#ff5da2;}
-.block.community .cm-body{font-size:14px; line-height:1.65; white-space:pre-wrap; color:var(--text-dim); word-break:break-word;}
+.block.community .cm-body{font-size:16px; line-height:1.65; white-space:pre-wrap; color:var(--text-dim); word-break:break-word;}
 .block.community .cm-body .imgs{margin-top:8px;}
 .block.community .cm-comments{margin-top:12px; padding-top:10px; border-top:1px solid var(--border2); display:flex; flex-direction:column; gap:8px;}
-.block.community .cm-comment{font-size:12.5px; line-height:1.55; color:var(--text-dim2); white-space:pre-wrap; word-break:break-word;}
+.block.community .cm-comment{font-size:14.5px; line-height:1.55; color:var(--text-dim2); white-space:pre-wrap; word-break:break-word;}
 .block.community .cm-comment b{margin-right:6px; font-weight:800;}
 .block.community .cm-reply{margin:6px 0 0 16px; padding-left:10px; border-left:2px solid var(--border2);}
 #communityCommentList .ccItem, #blockThreadPreview .tpItem{cursor:pointer; border:1px solid transparent;}
@@ -178,9 +179,9 @@ body.folder-locked #editBtns{display:none !important;}
 
 .block.article{padding:14px; border:1px solid var(--border2); border-radius:10px; background:var(--bg3);}
 .block.article .art-site{font-size:11.5px; font-weight:800; color:var(--accent); margin-bottom:6px;}
-.block.article .art-title{font-size:16.5px; font-weight:800; line-height:1.4; margin-bottom:8px; color:var(--text);}
-.block.article .art-reporter{font-size:11.5px; color:var(--text-faint); margin-bottom:10px;}
-.block.article .art-body{font-size:14px; line-height:1.65; color:var(--text-dim); white-space:pre-wrap; word-break:break-word;}
+.block.article .art-title{font-size:19px; font-weight:800; line-height:1.4; margin-bottom:8px; color:var(--text);}
+.block.article .art-reporter{font-size:13px; color:var(--text-faint); margin-bottom:10px;}
+.block.article .art-body{font-size:16px; line-height:1.65; color:var(--text-dim); white-space:pre-wrap; word-break:break-word;}
 .block.article .art-body .imgs{margin-top:8px;}
 
 .bubblerow{display:flex; align-items:flex-end; gap:8px;}
@@ -188,7 +189,7 @@ body.folder-locked #editBtns{display:none !important;}
 .bubblecol{display:flex; flex-direction:column; max-width:78%;}
 .bubblerow.right .bubblecol{align-items:flex-end;}
 .b-name{font-size:11px; color:var(--text-faint); margin-bottom:3px;}
-.bubble{padding:9px 13px; border-radius:16px; font-size:14px; line-height:1.45; white-space:pre-wrap; word-break:break-word;}
+.bubble{padding:9px 13px; border-radius:16px; font-size:16.5px; line-height:1.45; white-space:pre-wrap; word-break:break-word;}
 .block.imessage .bubblerow:not(.right) .bubble{background:var(--im-gray); color:var(--im-gray-text); border-bottom-left-radius:4px;}
 .block.imessage .bubblerow.right .bubble{background:var(--im-blue); color:#fff; border-bottom-right-radius:4px;}
 .bubble .imgs{margin-top:4px; border-radius:12px;}
@@ -663,7 +664,7 @@ document.addEventListener("selectionchange", () => {
 
 function insertAtCursor(html){
   if (folderLocked) return;
-  editor.focus();
+  editor.focus({ preventScroll: true });
   const sel = window.getSelection();
   sel.removeAllRanges();
   const r = document.createRange();
@@ -682,7 +683,11 @@ function insertAtCursor(html){
     sel.removeAllRanges();
     sel.addRange(range);
   }
-  editor.scrollTop = editor.scrollHeight;
+  if (lastNode && lastNode.scrollIntoView) {
+    lastNode.scrollIntoView({ block: "end", behavior: "auto" });
+  } else {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "auto" });
+  }
   commitChange();
 }
 
@@ -717,6 +722,9 @@ document.getElementById("fabRedo").onclick = () => {
   historySuppress = false;
 };
 
+editor.addEventListener("mousedown", e => {
+  if (e.target.closest("hr.divider")) e.preventDefault();
+});
 editor.addEventListener("click", e => {
   const nav = e.target.closest(".ignav");
   if (nav) {
@@ -735,7 +743,7 @@ editor.addEventListener("click", e => {
 });
 editor.addEventListener("dblclick", e => {
   if (folderLocked) return;
-  const textEl = e.target.closest(".twtext, .igtext, .bubble, .cm-body, .cm-comment, .cm-title");
+  const textEl = e.target.closest(".twtext, .igtext, .bubble, .cm-body, .cm-comment, .cm-title, .art-body, .art-title, .art-site, .art-reporter");
   if (!textEl || e.target.tagName === "IMG") return;
   if (textEl.isContentEditable) return;
   textEl.contentEditable = "true";
@@ -830,7 +838,7 @@ async function uploadToCloudinary(file) {
 
 document.getElementById("fabDivider").onclick = () => {
   if (!currentFolder) return;
-  insertAtCursor('<hr class="divider">' + "<p><br></p>");
+  insertAtCursor('<hr class="divider" contenteditable="false">' + "<p><br></p>");
 };
 
 document.getElementById("fabImg").onclick = () => document.getElementById("imgFileInput").click();
@@ -1154,11 +1162,9 @@ function buildEmbedHTML(type, text, images, charId, position){
     </div>`;
   }
   const pos = position === "right" ? "right" : "left";
-  const name = character?.name || "";
   return `<div class="embed block ${type}" contenteditable="false">
     <div class="bubblerow ${pos}">
       <div class="bubblecol">
-        ${name && pos === "left" ? `<div class="b-name">${escapeHtml(name)}</div>` : ""}
         <div class="bubble">${textHtml}${imgsHtml}</div>
       </div>
     </div>
@@ -1215,7 +1221,7 @@ function escapeHtml(s) {
 }
 function formatText(s) {
   const esc = escapeHtml(s).replace(/\n/g, "<br>");
-  return esc.replace(/(^|\s)(#[^\s#<]+)/g, (m, p1, p2) => p1 + '<span class="hashtag">' + p2 + '</span>');
+  return esc.replace(/(^|\s|>)(#[^\s#<]+)/g, (m, p1, p2) => p1 + '<span class="hashtag">' + p2 + '</span>');
 }
 </script>
 </body>
