@@ -443,20 +443,44 @@ function renderCard(id, p, pending) {
 }
 
 function startEdit(card, id, p) {
+  let newType = p.type;
   const textEl = card.querySelector(".text, .igtext, .twtext");
   const ta = document.createElement("textarea");
   ta.className = "editta";
   ta.value = p.text || "";
   textEl.replaceWith(ta);
   ta.focus();
+
+  const typeRow = document.createElement("div");
+  typeRow.className = "typeSwitchRow";
+  typeRow.innerHTML = Object.entries(TAG).map(([k, v]) =>
+    `<button data-t="${k}" class="${k === p.type ? "active" : ""}">${v}</button>`).join("");
+  ta.insertAdjacentElement("beforebegin", typeRow);
+  typeRow.querySelectorAll("button").forEach(b => b.onclick = () => {
+    newType = b.dataset.t;
+    typeRow.querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
+  });
+
+  const timeEl = document.createElement("input");
+  timeEl.type = "datetime-local"; timeEl.className = "editta";
+  timeEl.value = toLocalInputValue(p.createdAt);
+  typeRow.insertAdjacentElement("afterend", timeEl);
+
   const btnRow = document.createElement("div");
   btnRow.innerHTML = `<button class="delbtn" data-a="save">저장</button><button class="delbtn" data-a="cancel">취소</button>`;
   ta.insertAdjacentElement("afterend", btnRow);
   card.querySelectorAll('[data-a="edit"],[data-a="del"]').forEach(b => b.style.display = "none");
   btnRow.querySelector('[data-a="save"]').onclick = async () => {
-    await updateDoc(doc(db, "posts", id), { text: ta.value.trim() });
+    const createdAt = timeEl.value ? new Date(timeEl.value).getTime() : p.createdAt;
+    await updateDoc(doc(db, "posts", id), { text: ta.value.trim(), type: newType, createdAt });
   };
   btnRow.querySelector('[data-a="cancel"]').onclick = () => renderFeed();
+}
+
+function toLocalInputValue(ts) {
+  const d = new Date(ts || Date.now());
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 16);
 }
 
 function escapeHtml(s) {
