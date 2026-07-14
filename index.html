@@ -69,6 +69,7 @@ button, input, textarea{font-family:inherit;}
 .embed .embed-del{position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%; background:var(--danger); color:var(--danger-text); border:none; font-size:12px; line-height:22px; opacity:0; transition:opacity .15s; z-index:2;}
 .embed:hover .embed-del{opacity:1;}
 
+#editor hr.divider{border:none; border-top:1px solid var(--border); margin:26px 0;}
 .imgs{display:grid; gap:3px; border-radius:10px; overflow:hidden; margin:8px 0;}
 .imgs img{width:100%; object-fit:cover; display:block; margin:0;}
 .imgs.n1 img{max-height:460px;}
@@ -99,7 +100,7 @@ button, input, textarea{font-family:inherit;}
 #blockPreview .thumb{position:relative; flex:0 0 auto;}
 #blockPreview img{width:52px; height:52px; object-fit:cover; border-radius:8px;}
 #blockPreview .rm{position:absolute; top:-5px; right:-5px; background:var(--danger); color:var(--danger-text); border-radius:50%; width:18px; height:18px; font-size:11px; border:none; line-height:18px;}
-#blockAttach{background:none; border:1px solid var(--border); color:var(--text-dim); padding:7px 12px; border-radius:8px; font-size:12.5px; display:inline-block; margin-top:2px;}
+.attachbtn{background:none; border:1px solid var(--border); color:var(--text-dim); padding:7px 12px; border-radius:8px; font-size:12.5px; display:inline-block; margin-top:2px;}
 
 #fab{position:fixed; right:18px; bottom:24px; display:none; flex-direction:column; gap:10px; z-index:15;}
 #fab button{width:48px; height:48px; border-radius:50%; background:var(--accent); color:var(--accent-text); border:none; font-size:19px; box-shadow:0 3px 10px rgba(0,0,0,.35);}
@@ -110,7 +111,7 @@ button, input, textarea{font-family:inherit;}
 
 .block.instagram{padding:0; overflow:hidden; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
 .block.instagram .ighead{display:flex; align-items:center; gap:8px; padding:10px 12px;}
-.block.instagram .av{width:30px; height:30px; border-radius:50%; background:linear-gradient(45deg,#feda75,#d62976,#4f5bd5); flex:0 0 auto;}
+.block.instagram .av{width:30px; height:30px; border-radius:50%; background:linear-gradient(45deg,#feda75,#d62976,#4f5bd5); background-size:cover; background-position:center; flex:0 0 auto;}
 .block.instagram .uname{font-weight:700; font-size:13px; color:var(--text);}
 .block.instagram .igimgs img{width:100%; display:block; max-height:480px; object-fit:cover; margin:0;}
 .block.instagram .igfoot{display:flex; gap:14px; padding:10px 12px 0;}
@@ -120,7 +121,7 @@ button, input, textarea{font-family:inherit;}
 .block.instagram .igtext b{margin-right:6px;}
 
 .block.twitter{display:flex; gap:10px; padding:12px 14px; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
-.block.twitter .av{width:38px; height:38px; border-radius:50%; background:#1d9bf0; flex:0 0 auto;}
+.block.twitter .av{width:38px; height:38px; border-radius:50%; background:#1d9bf0; background-size:cover; background-position:center; flex:0 0 auto;}
 .block.twitter .twbody{flex:1; min-width:0;}
 .block.twitter .twhead{font-size:14px;}
 .block.twitter .twhead b{color:var(--text);}
@@ -130,8 +131,7 @@ button, input, textarea{font-family:inherit;}
 
 .bubblerow{display:flex; align-items:flex-end; gap:8px;}
 .bubblerow.right{flex-direction:row-reverse;}
-.bubblerow .b-av{width:32px; height:32px; border-radius:50%; background:var(--accent); flex:0 0 auto;}
-.bubblecol{display:flex; flex-direction:column; max-width:72%;}
+.bubblecol{display:flex; flex-direction:column; max-width:78%;}
 .bubblerow.right .bubblecol{align-items:flex-end;}
 .b-name{font-size:11px; color:var(--text-faint); margin-bottom:3px;}
 .bubble{padding:9px 13px; border-radius:16px; font-size:14px; line-height:1.45; white-space:pre-wrap; word-break:break-word;}
@@ -179,6 +179,7 @@ button, input, textarea{font-family:inherit;}
 </div>
 
 <div id="fab">
+  <button id="fabDivider" title="구분선 삽입">―</button>
   <button id="fabBlock" title="대화/SNS 삽입">💬</button>
   <button id="fabImg" title="이미지 삽입">📷</button>
 </div>
@@ -203,6 +204,10 @@ button, input, textarea{font-family:inherit;}
     <input id="charNameInput" placeholder="이름">
     <input id="charTwInput" placeholder="트위터 계정 (예: @handle)">
     <input id="charIgInput" placeholder="인스타 계정 (예: @handle)">
+    <div style="display:flex; align-items:center; gap:10px; margin:10px 0;">
+      <img id="charAvatarPreview" style="width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--bg4);display:none;">
+      <label class="attachbtn" style="margin:0">📎 프로필 사진<input type="file" id="charAvatarInput" accept="image/*" style="display:none"></label>
+    </div>
     <div class="row">
       <button class="cancel" id="charCancel">취소</button>
       <button class="cancel" id="charDelete" style="display:none;background:var(--danger);color:var(--danger-text)">삭제</button>
@@ -227,10 +232,10 @@ button, input, textarea{font-family:inherit;}
       <button data-p="right">오른쪽(나)</button>
     </div>
     <textarea id="blockText" placeholder="내용 입력 (#해시태그 가능)"></textarea>
-    <label id="blockAttach">📎 이미지 추가<input type="file" id="blockFileInput" accept="image/*" multiple style="display:none"></label>
+    <label class="attachbtn">📎 이미지 추가<input type="file" id="blockFileInput" accept="image/*" multiple style="display:none"></label>
     <div id="blockPreview"></div>
     <div class="row">
-      <button class="cancel" id="blockCancel">취소</button>
+      <button class="cancel" id="blockCancel">닫기</button>
       <button class="ok" id="blockInsertBtn">삽입</button>
     </div>
   </div>
@@ -267,6 +272,7 @@ let chapterUnsub = null;
 let savedRange = null;
 let saveTimer = null;
 let blockType = "instagram", blockCharId = null, blockPosition = "left", blockPending = [];
+let charAvatarFile = null, charAvatarExisting = "";
 
 const NEEDS_CHAR = new Set(["instagram", "twitter", "kakao", "imessage"]);
 const NEEDS_POS = new Set(["kakao", "imessage"]);
@@ -411,9 +417,23 @@ function openCharSheet(c){
   document.getElementById("charIgInput").value = c ? c.instagram || "" : "";
   document.getElementById("charOk").textContent = c ? "저장" : "추가";
   document.getElementById("charDelete").style.display = c ? "block" : "none";
+  charAvatarFile = null;
+  charAvatarExisting = c ? (c.avatar || "") : "";
+  const prevEl = document.getElementById("charAvatarPreview");
+  prevEl.src = charAvatarExisting;
+  prevEl.style.display = charAvatarExisting ? "block" : "none";
+  document.getElementById("charAvatarInput").value = "";
   document.getElementById("charOverlay").style.display = "flex";
   document.getElementById("charNameInput").focus();
 }
+document.getElementById("charAvatarInput").onchange = e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  charAvatarFile = f;
+  const prevEl = document.getElementById("charAvatarPreview");
+  prevEl.src = URL.createObjectURL(f);
+  prevEl.style.display = "block";
+};
 document.getElementById("charCancel").onclick = () => document.getElementById("charOverlay").style.display = "none";
 document.getElementById("charOverlay").onclick = e => { if (e.target.id === "charOverlay") e.currentTarget.style.display = "none"; };
 document.getElementById("charOk").onclick = async () => {
@@ -421,11 +441,18 @@ document.getElementById("charOk").onclick = async () => {
   const twitter = document.getElementById("charTwInput").value.trim();
   const instagram = document.getElementById("charIgInput").value.trim();
   if (!name) return;
-  if (editingCharId) {
-    await updateDoc(doc(db, "characters", editingCharId), { name, twitter, instagram });
-  } else {
-    await addDoc(charactersCol, { name, twitter, instagram, createdAt: Date.now() });
+  const okBtn = document.getElementById("charOk");
+  okBtn.disabled = true;
+  let avatar = charAvatarExisting;
+  if (charAvatarFile) {
+    try { avatar = await uploadToCloudinary(charAvatarFile); } catch (e) { alert("프로필 사진 업로드 실패"); }
   }
+  if (editingCharId) {
+    await updateDoc(doc(db, "characters", editingCharId), { name, twitter, instagram, avatar });
+  } else {
+    await addDoc(charactersCol, { name, twitter, instagram, avatar, createdAt: Date.now() });
+  }
+  okBtn.disabled = false;
   document.getElementById("charOverlay").style.display = "none";
   editingCharId = null;
 };
@@ -487,6 +514,11 @@ async function uploadToCloudinary(file) {
   const data = await res.json();
   return data.secure_url;
 }
+
+document.getElementById("fabDivider").onclick = () => {
+  if (!currentFolder) return;
+  insertAtCursor('<hr class="divider">' + "<p><br></p>");
+};
 
 document.getElementById("fabImg").onclick = () => document.getElementById("imgFileInput").click();
 document.getElementById("imgFileInput").onchange = async e => {
@@ -563,8 +595,13 @@ document.getElementById("blockInsertBtn").onclick = async () => {
   try {
     const urls = files.length ? await Promise.all(files.map(uploadToCloudinary)) : [];
     const html = buildEmbedHTML(blockType, text, urls, blockCharId, blockPosition);
-    document.getElementById("blockSheet").style.display = "none";
     insertAtCursor(html + "<p><br></p>");
+    document.getElementById("blockText").value = "";
+    blockPending = [];
+    renderBlockPreview();
+    document.getElementById("blockText").focus();
+    if (blockPosition === "left") { blockPosition = "right"; } else { blockPosition = "left"; }
+    document.querySelectorAll("#blockPosRow button").forEach(b => b.classList.toggle("active", b.dataset.p === blockPosition));
   } catch (err) {
     alert("업로드 실패 - 다시 시도해주세요");
   }
@@ -578,11 +615,13 @@ function buildEmbedHTML(type, text, images, charId, position){
   const imgsHtml = n ? `<div class="imgs ${cls}">${images.map(u => `<img src="${u}">`).join("")}</div>` : "";
   const textHtml = text ? formatText(text) : "";
 
+  const avStyle = character?.avatar ? ` style="background-image:url('${character.avatar.replace(/'/g, "%27")}')"` : "";
+
   if (type === "instagram") {
     const uname = character?.instagram || character?.name || "user";
     const igimgs = n ? `<div class="igimgs">${images.map(u => `<img src="${u}">`).join("")}</div>` : "";
     return `<div class="embed block instagram" contenteditable="false">
-      <div class="ighead"><div class="av"></div><div class="uname">${escapeHtml(uname)}</div></div>
+      <div class="ighead"><div class="av"${avStyle}></div><div class="uname">${escapeHtml(uname)}</div></div>
       ${igimgs}
       <div class="igfoot">
         <svg viewBox="0 0 24 24"><path d="M20.8 8.6c0-3-2.2-5.1-5-5.1-1.9 0-3.3 1-4.3 2.5C10.5 4.5 9.1 3.5 7.2 3.5c-2.8 0-5 2.1-5 5.1 0 4.6 5.4 8.6 9.3 11.7l.5.4.5-.4c3.9-3.1 9.3-7.1 9.3-11.7z"/></svg>
@@ -597,7 +636,7 @@ function buildEmbedHTML(type, text, images, charId, position){
     const dispName = character?.name || "user";
     const handle = character?.twitter || "@user";
     return `<div class="embed block twitter" contenteditable="false">
-      <div class="av"></div>
+      <div class="av"${avStyle}></div>
       <div class="twbody">
         <div class="twhead"><b>${escapeHtml(dispName)}</b><span>${escapeHtml(handle)}</span></div>
         <div class="twtext">${textHtml}</div>
@@ -610,7 +649,6 @@ function buildEmbedHTML(type, text, images, charId, position){
   const name = character?.name || "";
   return `<div class="embed block ${type}" contenteditable="false">
     <div class="bubblerow ${pos}">
-      <div class="b-av"></div>
       <div class="bubblecol">
         ${name && pos === "left" ? `<div class="b-name">${escapeHtml(name)}</div>` : ""}
         <div class="bubble">${textHtml}${imgsHtml}</div>
