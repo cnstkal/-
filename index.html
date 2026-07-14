@@ -55,8 +55,8 @@ button, input, textarea{font-family:inherit;}
 #editor .imgs img, #editor .igimgs img{margin:0;}
 #empty{text-align:center; color:var(--text-faint2); font-size:13px; margin-top:60px;}
 
-.embed{position:relative; margin:16px 0; width:100%;}
-.embed.block.imessage{margin:6px 0;}
+.embed{position:relative; margin:9px 0; width:100%;}
+.embed.block.imessage{margin:2px 0;}
 .embed .embed-del{position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%; background:var(--danger); color:var(--danger-text); border:none; font-size:12px; line-height:22px; opacity:0; transition:opacity .15s; z-index:2;}
 .embed:hover .embed-del{opacity:1;}
 
@@ -184,7 +184,7 @@ body.folder-locked #editBtns{display:none !important;}
 .block.article .art-body{font-size:16px; line-height:1.65; color:var(--text-dim); white-space:pre-wrap; word-break:break-word;}
 .block.article .art-body .imgs{margin-top:8px;}
 
-.bubblerow{display:flex; align-items:flex-end; gap:8px;}
+.bubblerow{display:flex; align-items:flex-end; gap:6px;}
 .bubblerow.right{flex-direction:row-reverse;}
 .bubblecol{display:flex; flex-direction:column; max-width:78%;}
 .bubblerow.right .bubblecol{align-items:flex-end;}
@@ -322,7 +322,7 @@ body.folder-locked #editBtns{display:none !important;}
     <div class="charrow" id="blockCharRow"></div>
     <div class="pillrow" id="blockTwAccountRow" style="display:none"></div>
     <div id="blockThreadPreview"></div>
-    <button class="attachbtn" id="blockThreadAddBtn" style="display:none;width:100%;text-align:center;margin-bottom:8px">↩︎ 스레드에 추가 (대댓글)</button>
+    <button class="attachbtn" id="blockThreadAddBtn" style="display:none;width:100%;text-align:center;margin-bottom:8px">↩︎ 답글로 추가 (선택한 트윗 아래에 붙음 · ⌘/Ctrl+Enter)</button>
     <div class="pillrow" id="blockPosRow" style="display:none">
       <button data-p="left" class="active">왼쪽(상대)</button>
       <button data-p="right">오른쪽(나)</button>
@@ -452,18 +452,20 @@ document.getElementById("folderOk").onclick = async () => {
   const num = Number(document.getElementById("folderNumInput").value) || null;
   if (!name && !num) return;
   document.getElementById("overlay").style.display = "none";
-  if (editingFolderId) {
-    await updateDoc(doc(db, "chapters", editingFolderId), { name, num });
-  } else {
-    await addDoc(foldersCol, { name, num, content: "", createdAt: Date.now() });
-  }
+  try {
+    if (editingFolderId) {
+      await updateDoc(doc(db, "chapters", editingFolderId), { name, num });
+    } else {
+      await addDoc(foldersCol, { name, num, content: "", createdAt: Date.now() });
+    }
+  } catch (e) { alert("저장 실패 - 네트워크를 확인해주세요"); }
 };
 document.getElementById("folderDelete").onclick = async () => {
   if (!editingFolderId) return;
   if (!confirm("이 회차를 삭제할까요?")) return;
   document.getElementById("overlay").style.display = "none";
   const fid = editingFolderId;
-  await deleteDoc(doc(db, "chapters", fid));
+  try { await deleteDoc(doc(db, "chapters", fid)); } catch (e) { alert("삭제 실패 - 네트워크를 확인해주세요"); return; }
   if (currentFolder === fid) {
     currentFolder = null;
     if (chapterUnsub) chapterUnsub();
@@ -662,31 +664,46 @@ document.addEventListener("selectionchange", () => {
   }
 });
 
-function insertAtCursor(html){
+function insertAtCursor(html, opts){
   if (folderLocked) return;
-  editor.focus({ preventScroll: true });
-  const sel = window.getSelection();
-  sel.removeAllRanges();
-  const r = document.createRange();
-  r.selectNodeContents(editor);
-  r.collapse(false);
-  sel.addRange(r);
-  const range = sel.getRangeAt(0);
+  const silent = opts && opts.silent;
+  let range;
+  if (silent) {
+    if (savedRange && editor.contains(savedRange.startContainer)) {
+      range = savedRange.cloneRange();
+    } else {
+      range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+    }
+  } else {
+    editor.focus({ preventScroll: true });
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    const r = document.createRange();
+    r.selectNodeContents(editor);
+    r.collapse(false);
+    sel.addRange(r);
+    range = sel.getRangeAt(0);
+  }
   const tpl = document.createElement("template");
   tpl.innerHTML = html;
   const frag = tpl.content;
   const lastNode = frag.lastChild;
   range.insertNode(frag);
-  if (lastNode) {
-    range.setStartAfter(lastNode);
-    range.collapse(true);
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
-  if (lastNode && lastNode.scrollIntoView) {
-    lastNode.scrollIntoView({ block: "end", behavior: "auto" });
-  } else {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: "auto" });
+  if (!silent) {
+    if (lastNode) {
+      range.setStartAfter(lastNode);
+      range.collapse(true);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    if (lastNode && lastNode.scrollIntoView) {
+      lastNode.scrollIntoView({ block: "end", behavior: "auto" });
+    } else {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "auto" });
+    }
   }
   commitChange();
 }
@@ -698,7 +715,10 @@ editor.addEventListener("input", () => {
 });
 function saveContent(){
   if (!currentFolder) return;
-  updateDoc(doc(db, "chapters", currentFolder), { content: editor.innerHTML });
+  updateDoc(doc(db, "chapters", currentFolder), { content: editor.innerHTML }).catch(() => {
+    console.error("저장 실패, 재시도합니다");
+    setTimeout(() => { if (currentFolder) saveContent(); }, 2000);
+  });
 }
 function pushHistory(){
   if (historySuppress) return;
@@ -741,7 +761,7 @@ editor.addEventListener("click", e => {
     return;
   }
 });
-editor.addEventListener("dblclick", e => {
+editor.addEventListener("click", e => {
   if (folderLocked) return;
   const textEl = e.target.closest(".twtext, .igtext, .bubble, .cm-body, .cm-comment, .cm-title, .art-body, .art-title, .art-site, .art-reporter");
   if (!textEl || e.target.tagName === "IMG") return;
@@ -838,15 +858,17 @@ async function uploadToCloudinary(file) {
 
 document.getElementById("fabDivider").onclick = () => {
   if (!currentFolder) return;
-  insertAtCursor('<hr class="divider" contenteditable="false">' + "<p><br></p>");
+  insertAtCursor('<hr class="divider" contenteditable="false">' + "<p><br></p>", { silent: true });
 };
 
 document.getElementById("fabImg").onclick = () => document.getElementById("imgFileInput").click();
 document.getElementById("imgFileInput").onchange = async e => {
   const files = [...e.target.files]; e.target.value = "";
   if (!files.length || !currentFolder) return;
-  const urls = await Promise.all(files.map(uploadToCloudinary));
-  insertAtCursor(urls.map(u => `<img src="${u}">`).join(""));
+  try {
+    const urls = await Promise.all(files.map(uploadToCloudinary));
+    insertAtCursor(urls.map(u => `<img src="${u}">`).join(""));
+  } catch (err) { alert("이미지 업로드 실패 - 다시 시도해주세요"); }
 };
 
 // ---- 대화/SNS 블록 삽입 시트 ----
@@ -918,6 +940,12 @@ document.getElementById("communityCommentAdd").onclick = () => {
 document.getElementById("communityCommentInput").addEventListener("keydown", e => {
   if (e.key === "Enter") { e.preventDefault(); document.getElementById("communityCommentAdd").click(); }
 });
+document.getElementById("blockText").addEventListener("keydown", e => {
+  if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && blockType === "twitter") {
+    e.preventDefault();
+    document.getElementById("blockThreadAddBtn").click();
+  }
+});
 function renderCommunityComments(){
   const list = document.getElementById("communityCommentList");
   list.innerHTML = "";
@@ -936,7 +964,7 @@ function renderCommunityComments(){
       if (ids.has(communityReplyTarget)) communityReplyTarget = null;
       renderCommunityComments();
     };
-    row.onclick = () => { communityReplyTarget = node.id; renderCommunityComments(); };
+    row.onclick = () => { communityReplyTarget = communityReplyTarget === node.id ? null : node.id; renderCommunityComments(); };
     row.append(span, rm);
     list.appendChild(row);
     communityComments.filter(n => n.parent === node.id).forEach(child => renderNode(child, depth + 1));
@@ -984,7 +1012,7 @@ function renderThreadPreview(){
     row.className = "tpItem" + (blockReplyTarget === node.id ? " sel" : "");
     row.style.cssText = `font-size:11.5px;color:var(--text-faint);padding:5px 8px;margin:2px 0 2px ${depth * 14}px;border-radius:6px`;
     row.textContent = (depth ? "ㄴ " : "") + (dispName(c?.twitterName || c?.name, c) || "user") + " " + node.text.slice(0, 24);
-    row.onclick = () => { blockReplyTarget = node.id; renderThreadPreview(); };
+    row.onclick = () => { blockReplyTarget = blockReplyTarget === node.id ? null : node.id; renderThreadPreview(); };
     el.appendChild(row);
     blockThread.filter(n => n.parent === node.id).forEach(child => renderNode(child, depth + 1));
   }
@@ -1107,7 +1135,7 @@ const VERIFIED_SVG = `<svg class="verified" viewBox="0 0 22 22" fill="#1d9bf0"><
 function twEntryHTML(entry){
   const character = entry.charId ? charactersMap[entry.charId] : null;
   const isPriv = entry.twAccount === "private";
-  const dispNameStr = dispName((isPriv ? character?.twitterPrivName : character?.twitterName) || character?.name, character) || "user";
+  const dispNameStr = ((isPriv ? character?.twitterPrivName : character?.twitterName) || character?.name || "user") + (isPriv || (character && character.private) ? " 🔒" : "");
   const handle = (isPriv ? character?.twitterPriv : character?.twitter) || "@user";
   const avatarUrl = (isPriv ? character?.twitterPrivAvatar : character?.twitterAvatar) || "";
   const avStyle = avatarUrl ? ` style="background-image:url('${avatarUrl.replace(/'/g, "%27")}')"` : "";
