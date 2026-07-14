@@ -8,17 +8,6 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 
 :root{
-  --bg:#141210; --bg2:#1c1916; --bg3:#252119; --bg4:#2a2620; --bg0:#0e0c0a;
-  --border:#3a332a; --border2:#2a2620; --borderdark:#221f1a;
-  --text:#eee7d8; --text-dim:#d8cba8; --text-dim2:#c9c0ac; --text-mut:#a89a7d;
-  --text-faint:#7a7264; --text-faint2:#6a6254; --text-faint3:#5a5346; --text-faint4:#8a8064;
-  --accent:#c9a875; --accent-text:#141210;
-  --danger:#a8332b; --danger-text:#fff;
-  --hashtag:#5b9dd9;
-  --kakao-bubble:#f5e14a; --kakao-text:#3c1e1e;
-  --im-blue:#0b84ff; --im-gray:#2f2f31; --im-gray-text:#eee7d8;
-}
-body.light{
   --bg:#f7f5ef; --bg2:#ffffff; --bg3:#f1eee5; --bg4:#e9e4d6; --bg0:#e2dbc8;
   --border:#ddd5c2; --border2:#e6e0d1; --borderdark:#d3cbb6;
   --text:#2b2620; --text-dim:#4d4433; --text-dim2:#3f382a; --text-mut:#6b5f47;
@@ -26,7 +15,7 @@ body.light{
   --accent:#a8823f; --accent-text:#ffffff;
   --danger:#c1453a; --danger-text:#fff;
   --hashtag:#1d6fc9;
-  --im-gray:#e5e5ea; --im-gray-text:#1c1c1e;
+  --im-blue:#0b84ff; --im-gray:#e5e5ea; --im-gray-text:#1c1c1e;
 }
 
 *{box-sizing:border-box; margin:0; padding:0; touch-action:manipulation; -webkit-tap-highlight-color:transparent; letter-spacing:-0.02em;}
@@ -45,7 +34,7 @@ button, input, textarea{font-family:inherit;}
 #topbar .titlerow{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:8px;}
 #topbar h1{font-family:'Pretendard',sans-serif; font-weight:800; font-size:14px; color:var(--accent); cursor:pointer;}
 .topbtns{display:flex; gap:6px; flex:0 0 auto;}
-#charBtn, #themeToggle, #fabLock{background:none; border:1px solid var(--border); color:var(--text-dim); border-radius:16px; padding:5px 10px; font-size:12.5px;}
+#charBtn, #fabLock{background:none; border:1px solid var(--border); color:var(--text-dim); border-radius:16px; padding:5px 10px; font-size:12.5px;}
 #folderRow{display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;}
 #folderRow::-webkit-scrollbar{display:none;}
 .chip{
@@ -187,20 +176,25 @@ body.folder-locked #editBtns{display:none !important;}
 .block.community.site-theqoo .cm-comment b{color:#c0392b;}
 .block.community.site-jjookbbang .cm-comment b{color:#ff5da2;}
 
+.block.article{padding:14px; border:1px solid var(--border2); border-radius:10px; background:var(--bg3);}
+.block.article .art-site{font-size:11.5px; font-weight:800; color:var(--accent); margin-bottom:6px;}
+.block.article .art-title{font-size:16.5px; font-weight:800; line-height:1.4; margin-bottom:8px; color:var(--text);}
+.block.article .art-reporter{font-size:11.5px; color:var(--text-faint); margin-bottom:10px;}
+.block.article .art-body{font-size:14px; line-height:1.65; color:var(--text-dim); white-space:pre-wrap; word-break:break-word;}
+.block.article .art-body .imgs{margin-top:8px;}
+
 .bubblerow{display:flex; align-items:flex-end; gap:8px;}
 .bubblerow.right{flex-direction:row-reverse;}
 .bubblecol{display:flex; flex-direction:column; max-width:78%;}
 .bubblerow.right .bubblecol{align-items:flex-end;}
 .b-name{font-size:11px; color:var(--text-faint); margin-bottom:3px;}
 .bubble{padding:9px 13px; border-radius:16px; font-size:14px; line-height:1.45; white-space:pre-wrap; word-break:break-word;}
-.block.kakao .bubblerow:not(.right) .bubble{background:var(--bg3); color:var(--text); border:1px solid var(--border2); border-bottom-left-radius:4px;}
-.block.kakao .bubblerow.right .bubble{background:var(--kakao-bubble); color:var(--kakao-text); border-bottom-right-radius:4px;}
 .block.imessage .bubblerow:not(.right) .bubble{background:var(--im-gray); color:var(--im-gray-text); border-bottom-left-radius:4px;}
 .block.imessage .bubblerow.right .bubble{background:var(--im-blue); color:#fff; border-bottom-right-radius:4px;}
 .bubble .imgs{margin-top:4px; border-radius:12px;}
 
 @media (hover:hover) and (pointer:fine){
-  .chip, #themeToggle, #charBtn, .chipedit, #editBtns button, .embed-del{cursor:pointer; transition:background .15s,opacity .15s;}
+  .chip, #charBtn, .chipedit, #editBtns button, .embed-del{cursor:pointer; transition:background .15s,opacity .15s;}
   .chip:hover:not(.active){background:var(--border2);}
   #editor img{cursor:zoom-in;}
 }
@@ -210,7 +204,7 @@ body.folder-locked #editBtns{display:none !important;}
 }
 @media (max-width:400px){
   #topbar h1{font-size:13px;}
-  #themeToggle, #charBtn{font-size:12px; padding:4px 8px;}
+  #charBtn{font-size:12px; padding:4px 8px;}
   .chip{font-size:12px; padding:6px 11px;}
   #editor{font-size:15px;}
 }
@@ -233,7 +227,6 @@ body.folder-locked #editBtns{display:none !important;}
       </span>
       <button id="fabLock" title="회차 잠금" style="display:none">🔓</button>
       <button id="charBtn">👤 인물</button>
-      <button id="themeToggle">🌙 다크</button>
     </div>
   </div>
   <div id="folderRow"><button class="chip add" id="newFolderBtn">+ 회차</button></div>
@@ -266,13 +259,21 @@ body.folder-locked #editBtns{display:none !important;}
     <input id="charNameInput" placeholder="표시 이름 (카톡/아이메시지 등에 쓰임)">
     <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim);margin:10px 0"><input type="checkbox" id="charPrivateInput" style="width:auto;margin:0"> 비공개 계정 (🔒)</label>
 
-    <div class="charSection">트위터</div>
+    <div class="charSection">트위터 (공개 계정)</div>
     <input id="charTwInput" placeholder="트위터 계정 (예: @handle)">
     <input id="charTwNameInput" placeholder="트위터 표시 이름">
     <div class="charRow2">
       <img id="charTwAvatarPreview" style="width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--bg4);display:none;">
       <label class="attachbtn" style="margin:0">📎 트위터 프사<input type="file" id="charTwAvatarInput" accept="image/*" style="display:none"></label>
       <label><input type="checkbox" id="charTwVerifiedInput" style="width:auto;margin:0"> ✅ 인증뱃지</label>
+    </div>
+
+    <div class="charSection">트위터 (비공개 계정 🔒)</div>
+    <input id="charTwPrivInput" placeholder="비공개 트위터 계정 (예: @handle_priv)">
+    <input id="charTwPrivNameInput" placeholder="비공개 트위터 표시 이름">
+    <div class="charRow2">
+      <img id="charTwPrivAvatarPreview" style="width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--bg4);display:none;">
+      <label class="attachbtn" style="margin:0">📎 비공개 프사<input type="file" id="charTwPrivAvatarInput" accept="image/*" style="display:none"></label>
     </div>
 
     <div class="charSection">인스타그램</div>
@@ -296,9 +297,8 @@ body.folder-locked #editBtns{display:none !important;}
   <div class="sheet">
     <div class="mono" style="font-size:13px;color:var(--accent)">삽입하기</div>
     <div class="pillrow" id="blockTypeRow">
-      <button data-t="instagram" class="active">인스타</button>
-      <button data-t="twitter">트윗</button>
-      <button data-t="kakao">카카오톡</button>
+      <button data-t="twitter" class="active">트윗</button>
+      <button data-t="instagram">인스타</button>
       <button data-t="imessage">아이메시지</button>
       <button data-t="community">커뮤니티</button>
       <button data-t="article">기사</button>
@@ -319,6 +319,7 @@ body.folder-locked #editBtns{display:none !important;}
       <input id="communityTimeInput" placeholder="시간 표시 (예: 방금전, 1시간전)" style="flex:1">
     </div>
     <div class="charrow" id="blockCharRow"></div>
+    <div class="pillrow" id="blockTwAccountRow" style="display:none"></div>
     <div id="blockThreadPreview"></div>
     <button class="attachbtn" id="blockThreadAddBtn" style="display:none;width:100%;text-align:center;margin-bottom:8px">↩︎ 스레드에 추가 (대댓글)</button>
     <div class="pillrow" id="blockPosRow" style="display:none">
@@ -377,16 +378,17 @@ let charactersMap = {};
 let chapterUnsub = null;
 let savedRange = null;
 let saveTimer = null;
-let blockType = "instagram", blockCharId = null, blockPosition = "left", blockPending = [], blockThread = [], blockReplyTarget = null, blockIdSeq = 1;
+let blockType = "twitter", blockCharId = null, blockTwAccount = "public", blockPosition = "left", blockPending = [], blockThread = [], blockReplyTarget = null, blockIdSeq = 1;
 let charTwAvatarFile = null, charTwAvatarExisting = "";
+let charTwPrivAvatarFile = null, charTwPrivAvatarExisting = "";
 let charIgAvatarFile = null, charIgAvatarExisting = "";
 let communitySite = "instiz", communityComments = [], communityReplyTarget = null, communityIdSeq = 1;
 let folderLocked = false;
 let history = [], historyIndex = -1, historySuppress = false;
 let pressTimer = null, pressImg = null;
 
-const NEEDS_CHAR = new Set(["instagram", "twitter", "kakao", "imessage"]);
-const NEEDS_POS = new Set(["kakao", "imessage"]);
+const NEEDS_CHAR = new Set(["instagram", "twitter", "imessage"]);
+const NEEDS_POS = new Set(["imessage"]);
 const COMMUNITY_META = {
   instiz: { label: "인스티즈", nick: "익인" },
   theqoo: { label: "더쿠", nick: "무명의 더쿠" },
@@ -404,16 +406,6 @@ siteTitle.onclick = () => {
   const t = prompt("소설 제목을 입력하세요", siteTitle.textContent);
   if (t) { siteTitle.textContent = t; localStorage.setItem("novel-title", t); }
 };
-
-// theme
-const themeBtn = document.getElementById("themeToggle");
-function applyTheme(t){
-  document.body.classList.toggle("light", t === "light");
-  themeBtn.textContent = t === "light" ? "☀️ 화이트" : "🌙 다크";
-  localStorage.setItem("archive-theme", t);
-}
-applyTheme(localStorage.getItem("archive-theme") || "dark");
-themeBtn.onclick = () => applyTheme(document.body.classList.contains("light") ? "dark" : "light");
 
 // ---- 회차(chapters) ----
 onSnapshot(query(foldersCol, orderBy("num", "asc")), snap => {
@@ -525,11 +517,11 @@ function renderCharList(){
     const item = document.createElement("div");
     item.className = "charRowItem";
     item.innerHTML = `
-      <div class="ci-ord"><button data-a="up">▲</button><button data-a="down">▼</button></div>
+      <input type="number" class="ci-ordnum" value="${i + 1}" min="1" style="width:34px;text-align:center;padding:4px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);font-size:12px;">
       <div class="ci-av"></div>
       <div class="ci-info">
         <div class="ci-name">${escapeHtml(dispName(c.name, c))}${c.realName ? ` <span style="font-weight:400;color:var(--text-faint3)">(${escapeHtml(c.realName)})</span>` : ""}</div>
-        <div class="ci-handles">${escapeHtml(c.twitter || "")}${c.twitter && c.instagram ? " · " : ""}${escapeHtml(c.instagram || "")}</div>
+        <div class="ci-handles">${escapeHtml(c.twitter || "")}${c.twitter && c.twitterPriv ? " / " : ""}${c.twitterPriv ? "🔒" + escapeHtml(c.twitterPriv) : ""}${(c.twitter || c.twitterPriv) && c.instagram ? " · " : ""}${escapeHtml(c.instagram || "")}</div>
       </div>
       <button data-a="edit">✎</button>
       <button data-a="del">삭제</button>
@@ -538,21 +530,11 @@ function renderCharList(){
     item.querySelector('[data-a="del"]').onclick = async () => {
       if (confirm("이 인물을 삭제할까요? (이미 작성된 글의 내용은 남습니다)")) await deleteDoc(doc(db, "characters", c.id));
     };
-    item.querySelector('[data-a="up"]').onclick = async () => {
-      if (i === 0) return;
-      const other = charListArr[i - 1];
-      await Promise.all([
-        updateDoc(doc(db, "characters", c.id), { order: other.order }),
-        updateDoc(doc(db, "characters", other.id), { order: c.order })
-      ]);
-    };
-    item.querySelector('[data-a="down"]').onclick = async () => {
-      if (i === charListArr.length - 1) return;
-      const other = charListArr[i + 1];
-      await Promise.all([
-        updateDoc(doc(db, "characters", c.id), { order: other.order }),
-        updateDoc(doc(db, "characters", other.id), { order: c.order })
-      ]);
+    item.querySelector('.ci-ordnum').onchange = async e => {
+      let newPos = Math.max(1, Math.min(charListArr.length, Number(e.target.value) || 1));
+      const reordered = charListArr.filter(x => x.id !== c.id);
+      reordered.splice(newPos - 1, 0, c);
+      await Promise.all(reordered.map((x, idx) => updateDoc(doc(db, "characters", x.id), { order: (idx + 1) * 10 })));
     };
     list.appendChild(item);
   });
@@ -567,16 +549,21 @@ function clearCharForm(){
   document.getElementById("charTwInput").value = "";
   document.getElementById("charTwNameInput").value = "";
   document.getElementById("charTwVerifiedInput").checked = false;
+  document.getElementById("charTwPrivInput").value = "";
+  document.getElementById("charTwPrivNameInput").value = "";
   document.getElementById("charIgInput").value = "";
   document.getElementById("charIgNameInput").value = "";
   document.getElementById("charPrivateInput").checked = false;
   document.getElementById("charOk").textContent = "추가";
   document.getElementById("charDelete").style.display = "none";
   charTwAvatarFile = null; charTwAvatarExisting = "";
+  charTwPrivAvatarFile = null; charTwPrivAvatarExisting = "";
   charIgAvatarFile = null; charIgAvatarExisting = "";
   document.getElementById("charTwAvatarPreview").style.display = "none";
+  document.getElementById("charTwPrivAvatarPreview").style.display = "none";
   document.getElementById("charIgAvatarPreview").style.display = "none";
   document.getElementById("charTwAvatarInput").value = "";
+  document.getElementById("charTwPrivAvatarInput").value = "";
   document.getElementById("charIgAvatarInput").value = "";
 }
 function openCharSheet(c){
@@ -589,15 +576,20 @@ function openCharSheet(c){
   document.getElementById("charTwInput").value = c.twitter || "";
   document.getElementById("charTwNameInput").value = c.twitterName || "";
   document.getElementById("charTwVerifiedInput").checked = !!c.twitterVerified;
+  document.getElementById("charTwPrivInput").value = c.twitterPriv || "";
+  document.getElementById("charTwPrivNameInput").value = c.twitterPrivName || "";
   document.getElementById("charIgInput").value = c.instagram || "";
   document.getElementById("charIgNameInput").value = c.instagramName || "";
   document.getElementById("charPrivateInput").checked = !!c.private;
   document.getElementById("charOk").textContent = "저장";
   document.getElementById("charDelete").style.display = "block";
   charTwAvatarExisting = c.twitterAvatar || "";
+  charTwPrivAvatarExisting = c.twitterPrivAvatar || "";
   charIgAvatarExisting = c.instagramAvatar || "";
   const twPrev = document.getElementById("charTwAvatarPreview");
   twPrev.src = charTwAvatarExisting; twPrev.style.display = charTwAvatarExisting ? "block" : "none";
+  const twPrivPrev = document.getElementById("charTwPrivAvatarPreview");
+  twPrivPrev.src = charTwPrivAvatarExisting; twPrivPrev.style.display = charTwPrivAvatarExisting ? "block" : "none";
   const igPrev = document.getElementById("charIgAvatarPreview");
   igPrev.src = charIgAvatarExisting; igPrev.style.display = charIgAvatarExisting ? "block" : "none";
   document.getElementById("charOverlay").style.display = "flex";
@@ -607,6 +599,12 @@ document.getElementById("charTwAvatarInput").onchange = e => {
   const f = e.target.files[0]; if (!f) return;
   charTwAvatarFile = f;
   const prevEl = document.getElementById("charTwAvatarPreview");
+  prevEl.src = URL.createObjectURL(f); prevEl.style.display = "block";
+};
+document.getElementById("charTwPrivAvatarInput").onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  charTwPrivAvatarFile = f;
+  const prevEl = document.getElementById("charTwPrivAvatarPreview");
   prevEl.src = URL.createObjectURL(f); prevEl.style.display = "block";
 };
 document.getElementById("charIgAvatarInput").onchange = e => {
@@ -623,18 +621,21 @@ document.getElementById("charOk").onclick = async () => {
   const twitter = document.getElementById("charTwInput").value.trim();
   const twitterName = document.getElementById("charTwNameInput").value.trim();
   const twitterVerified = document.getElementById("charTwVerifiedInput").checked;
+  const twitterPriv = document.getElementById("charTwPrivInput").value.trim();
+  const twitterPrivName = document.getElementById("charTwPrivNameInput").value.trim();
   const instagram = document.getElementById("charIgInput").value.trim();
   const instagramName = document.getElementById("charIgNameInput").value.trim();
   const isPrivate = document.getElementById("charPrivateInput").checked;
   if (!name && !realName) return;
   const okBtn = document.getElementById("charOk");
   okBtn.disabled = true;
-  let twitterAvatar = charTwAvatarExisting, instagramAvatar = charIgAvatarExisting;
+  let twitterAvatar = charTwAvatarExisting, twitterPrivAvatar = charTwPrivAvatarExisting, instagramAvatar = charIgAvatarExisting;
   try {
     if (charTwAvatarFile) twitterAvatar = await uploadToCloudinary(charTwAvatarFile);
+    if (charTwPrivAvatarFile) twitterPrivAvatar = await uploadToCloudinary(charTwPrivAvatarFile);
     if (charIgAvatarFile) instagramAvatar = await uploadToCloudinary(charIgAvatarFile);
   } catch (e) { alert("프로필 사진 업로드 실패"); }
-  const payload = { realName, name, twitter, twitterName, twitterVerified: !!twitterVerified, instagram, instagramName, twitterAvatar, instagramAvatar, private: !!isPrivate };
+  const payload = { realName, name, twitter, twitterName, twitterVerified: !!twitterVerified, twitterPriv, twitterPrivName, twitterPrivAvatar, instagram, instagramName, twitterAvatar, instagramAvatar, private: !!isPrivate };
   if (editingCharId) {
     await updateDoc(doc(db, "characters", editingCharId), payload);
     document.getElementById("charOverlay").style.display = "none";
@@ -858,7 +859,7 @@ document.getElementById("fabBlock").onclick = () => {
   renderBlockPreview();
   renderThreadPreview();
   renderCommunityComments();
-  blockType = "instagram"; blockPosition = "left";
+  blockType = "twitter"; blockPosition = "left"; blockTwAccount = "public";
   document.querySelectorAll("#blockTypeRow button").forEach(b => b.classList.toggle("active", b.dataset.t === blockType));
   document.querySelectorAll("#blockCommunityRow button").forEach(b => b.classList.toggle("active", b.dataset.s === communitySite));
   updateBlockExtra();
@@ -870,6 +871,7 @@ document.getElementById("blockSheet").onclick = e => { if (e.target.id === "bloc
 document.querySelectorAll("#blockTypeRow button").forEach(btn => {
   btn.onclick = () => {
     blockType = btn.dataset.t;
+    blockTwAccount = "public";
     blockThread = []; blockReplyTarget = null;
     communityComments = []; communityReplyTarget = null;
     document.getElementById("blockText").value = "";
@@ -937,6 +939,7 @@ function updateBlockExtra(){
   const isCommunity = blockType === "community";
   const isArticle = blockType === "article";
   document.getElementById("blockCharRow").style.display = (blockType === "twitter" || blockType === "instagram") ? "flex" : "none";
+  buildBlockTwAccountRow();
   document.getElementById("blockPosRow").style.display = NEEDS_POS.has(blockType) ? "flex" : "none";
   document.getElementById("blockThreadAddBtn").style.display = blockType === "twitter" ? "block" : "none";
   document.getElementById("blockCommunityRow").style.display = isCommunity ? "flex" : "none";
@@ -956,7 +959,7 @@ document.getElementById("blockThreadAddBtn").onclick = async () => {
   const urls = blockPending.length ? await Promise.all(blockPending.map(uploadToCloudinary)) : [];
   btn.disabled = false;
   const id = blockIdSeq++;
-  blockThread.push({ id, charId: blockCharId, text, images: urls, parent: blockThread.length ? blockReplyTarget : null });
+  blockThread.push({ id, charId: blockCharId, twAccount: blockTwAccount, text, images: urls, parent: blockThread.length ? blockReplyTarget : null });
   blockReplyTarget = id;
   ta.value = "";
   blockPending = [];
@@ -986,9 +989,33 @@ function buildBlockCharRow(){
     const b = document.createElement("button");
     b.className = "chip" + (blockCharId === c.id ? " active" : "");
     b.textContent = dispName(c.name, c);
-    b.onclick = () => { blockCharId = c.id; buildBlockCharRow(); };
+    b.onclick = () => { blockCharId = c.id; blockTwAccount = "public"; buildBlockCharRow(); };
     row.appendChild(b);
   });
+  buildBlockTwAccountRow();
+}
+function buildBlockTwAccountRow(){
+  const row = document.getElementById("blockTwAccountRow");
+  row.innerHTML = "";
+  const c = blockCharId ? charactersMap[blockCharId] : null;
+  if (blockType !== "twitter" || !c || (!c.twitter && !c.twitterPriv)) { row.style.display = "none"; return; }
+  if (c.twitter && !c.twitterPriv) blockTwAccount = "public";
+  if (!c.twitter && c.twitterPriv) blockTwAccount = "private";
+  row.style.display = "flex";
+  if (c.twitter) {
+    const b = document.createElement("button");
+    b.className = blockTwAccount === "public" ? "active" : "";
+    b.textContent = "공개 " + c.twitter;
+    b.onclick = () => { blockTwAccount = "public"; buildBlockTwAccountRow(); };
+    row.appendChild(b);
+  }
+  if (c.twitterPriv) {
+    const b = document.createElement("button");
+    b.className = blockTwAccount === "private" ? "active" : "";
+    b.textContent = "🔒 " + c.twitterPriv;
+    b.onclick = () => { blockTwAccount = "private"; buildBlockTwAccountRow(); };
+    row.appendChild(b);
+  }
 }
 document.querySelectorAll("#blockPosRow button").forEach(btn => {
   btn.onclick = () => {
@@ -1036,7 +1063,7 @@ document.getElementById("blockInsertBtn").onclick = async () => {
     let html;
     if (blockType === "twitter") {
       const thread = [...blockThread];
-      if (text || urls.length || !thread.length) thread.push({ id: blockIdSeq++, charId: blockCharId, text, images: urls, parent: thread.length ? blockReplyTarget : null });
+      if (text || urls.length || !thread.length) thread.push({ id: blockIdSeq++, charId: blockCharId, twAccount: blockTwAccount, text, images: urls, parent: thread.length ? blockReplyTarget : null });
       html = buildTwitterThreadHTML(thread);
       blockThread = []; blockReplyTarget = null;
       renderThreadPreview();
@@ -1071,11 +1098,12 @@ document.getElementById("blockInsertBtn").onclick = async () => {
 const VERIFIED_SVG = `<svg class="verified" viewBox="0 0 22 22" fill="#1d9bf0"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.854-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.688-.13.633-.08 1.29.144 1.896-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.573 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.606-.274 1.263-.144 1.896.13.634.433 1.218.877 1.688.47.443 1.054.747 1.687.878.633.132 1.29.084 1.897-.136.274.586.705 1.084 1.246 1.439.54.354 1.17.551 1.816.569.647-.016 1.276-.213 1.817-.567s.972-.854 1.245-1.44c.604.239 1.266.296 1.903.164.636-.132 1.22-.447 1.68-.907.46-.46.776-1.044.908-1.681s.075-1.299-.165-1.903c.586-.274 1.084-.705 1.439-1.246.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.293 2.136 2.136 4.136-4.136 1.293 1.293z"/></svg>`;
 function twEntryHTML(entry){
   const character = entry.charId ? charactersMap[entry.charId] : null;
-  const dispNameStr = dispName(character?.twitterName || character?.name, character) || "user";
-  const handle = character?.twitter || "@user";
-  const avatarUrl = character?.twitterAvatar || "";
+  const isPriv = entry.twAccount === "private";
+  const dispNameStr = dispName((isPriv ? character?.twitterPrivName : character?.twitterName) || character?.name, character) || "user";
+  const handle = (isPriv ? character?.twitterPriv : character?.twitter) || "@user";
+  const avatarUrl = (isPriv ? character?.twitterPrivAvatar : character?.twitterAvatar) || "";
   const avStyle = avatarUrl ? ` style="background-image:url('${avatarUrl.replace(/'/g, "%27")}')"` : "";
-  const badge = character?.twitterVerified ? VERIFIED_SVG : "";
+  const badge = (!isPriv && character?.twitterVerified) ? VERIFIED_SVG : "";
   const n = entry.images.length;
   const cls = n === 1 ? "n1" : n === 2 ? "n2" : n === 3 ? "n3" : "n4plus";
   const imgsHtml = n ? `<div class="imgs ${cls}">${entry.images.map(u => `<img src="${u}">`).join("")}</div>` : "";
@@ -1126,7 +1154,7 @@ function buildEmbedHTML(type, text, images, charId, position){
     </div>`;
   }
   const pos = position === "right" ? "right" : "left";
-  const name = dispName(character?.name, character);
+  const name = character?.name || "";
   return `<div class="embed block ${type}" contenteditable="false">
     <div class="bubblerow ${pos}">
       <div class="bubblecol">
@@ -1138,13 +1166,16 @@ function buildEmbedHTML(type, text, images, charId, position){
   </div>`;
 }
 
-function buildCommunityHTML(site, title, body, images, comments){
+function buildCommunityHTML(site, title, views, time, body, images, comments){
   const meta = COMMUNITY_META[site] || COMMUNITY_META.instiz;
   const n = images.length;
   const cls = n === 1 ? "n1" : n === 2 ? "n2" : n === 3 ? "n3" : "n4plus";
   const imgsHtml = n ? `<div class="imgs ${cls}">${images.map(u => `<img src="${u}">`).join("")}</div>` : "";
   const bodyHtml = body ? formatText(body) : "";
   const titleHtml = title ? `<div class="cm-title">${escapeHtml(title)}</div>` : "";
+  const metaBits = [escapeHtml(meta.nick)];
+  if (views) metaBits.push(`조회 ${escapeHtml(views)}`);
+  if (time) metaBits.push(escapeHtml(time));
   function renderNode(node){
     const children = comments.filter(n => n.parent === node.id).map(c2 => `<div class="cm-reply">${renderNode(c2)}</div>`).join("");
     return `<div class="cm-comment"><b>${escapeHtml(meta.nick)}</b>${formatText(node.text)}</div>${children}`;
@@ -1155,9 +1186,25 @@ function buildCommunityHTML(site, title, body, images, comments){
   return `<div class="embed block community site-${site}" contenteditable="false">
     <div class="cm-badge">${meta.label}</div>
     ${titleHtml}
-    <div class="cm-meta">${escapeHtml(meta.nick)}</div>
+    <div class="cm-meta">${metaBits.join(" · ")}</div>
     <div class="cm-body">${bodyHtml}${imgsHtml}</div>
     ${commentsHtml}
+    <button class="embed-del">×</button>
+  </div>`;
+}
+function buildArticleHTML(title, site, reporter, body, images){
+  const n = images.length;
+  const cls = n === 1 ? "n1" : n === 2 ? "n2" : n === 3 ? "n3" : "n4plus";
+  const imgsHtml = n ? `<div class="imgs ${cls}">${images.map(u => `<img src="${u}">`).join("")}</div>` : "";
+  const bodyHtml = body ? formatText(body) : "";
+  const siteHtml = site ? `<div class="art-site">${escapeHtml(site)}</div>` : "";
+  const titleHtml = title ? `<div class="art-title">${escapeHtml(title)}</div>` : "";
+  const reporterHtml = reporter ? `<div class="art-reporter">${escapeHtml(reporter)} 기자</div>` : "";
+  return `<div class="embed block article" contenteditable="false">
+    ${siteHtml}
+    ${titleHtml}
+    ${reporterHtml}
+    <div class="art-body">${bodyHtml}${imgsHtml}</div>
     <button class="embed-del">×</button>
   </div>`;
 }
