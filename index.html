@@ -6,59 +6,88 @@
 <title>Archive</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+:root{
+  --bg:#141210; --bg2:#1c1916; --bg3:#252119; --bg4:#2a2620; --bg0:#0e0c0a;
+  --border:#3a332a; --border2:#2a2620; --borderdark:#221f1a;
+  --text:#eee7d8; --text-dim:#d8cba8; --text-dim2:#c9c0ac; --text-mut:#a89a7d;
+  --text-faint:#7a7264; --text-faint2:#6a6254; --text-faint3:#5a5346; --text-faint4:#8a8064;
+  --accent:#c9a875; --accent-text:#141210;
+  --danger:#a8332b; --danger-text:#fff;
+  --memo-bg:#3a4a3a; --memo-text:#a8c9a8;
+  --photo-bg:#3a3a4a; --photo-text:#a8a8c9;
+}
+body.light{
+  --bg:#f7f5ef; --bg2:#ffffff; --bg3:#f1eee5; --bg4:#e9e4d6; --bg0:#e2dbc8;
+  --border:#ddd5c2; --border2:#e6e0d1; --borderdark:#d3cbb6;
+  --text:#2b2620; --text-dim:#4d4433; --text-dim2:#3f382a; --text-mut:#6b5f47;
+  --text-faint:#8c8168; --text-faint2:#a49877; --text-faint3:#8c8168; --text-faint4:#7a6f56;
+  --accent:#a8823f; --accent-text:#ffffff;
+  --danger:#c1453a; --danger-text:#fff;
+  --memo-bg:#dcecdc; --memo-text:#2f5c2f;
+  --photo-bg:#dcdcec; --photo-text:#2f2f5c;
+}
+
 *{box-sizing:border-box; margin:0; padding:0; touch-action:manipulation; -webkit-tap-highlight-color:transparent;}
-html,body{width:100%; overflow-x:hidden;}
+html,body{width:100%; height:100%; overflow-x:hidden; overflow-y:auto;}
 body{
-  background:#141210; color:#eee7d8; font-family:'Noto Sans KR',sans-serif;
-  min-height:100vh; min-height:100dvh; overscroll-behavior-y:contain;
+  background:var(--bg); color:var(--text); font-family:'Noto Sans KR',sans-serif;
+  min-height:100vh; min-height:100dvh; overscroll-behavior-y:auto;
+  transition:background .2s,color .2s;
 }
 .mono{font-family:'IBM Plex Mono',monospace;}
 button, input, textarea{font-family:inherit;}
 
-#topbar{position:sticky; top:0; z-index:20; background:#1c1916; border-bottom:1px solid #322c25; padding:10px 12px 8px;}
-#topbar h1{font-family:'IBM Plex Mono',monospace; font-size:14px; letter-spacing:.1em; color:#c9a875; margin-bottom:8px;}
+#topbar{position:sticky; top:0; z-index:20; background:var(--bg2); border-bottom:1px solid var(--border); padding:10px 12px 8px;}
+#topbar .titlerow{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
+#topbar h1{font-family:'IBM Plex Mono',monospace; font-size:14px; letter-spacing:.1em; color:var(--accent);}
+#themeToggle{background:none; border:1px solid var(--border); color:var(--text-dim); border-radius:16px; padding:5px 10px; font-size:13px;}
 #folderRow{display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;}
 #folderRow::-webkit-scrollbar{display:none;}
+#typeFilterRow{display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:6px;}
+#typeFilterRow::-webkit-scrollbar{display:none;}
 .chip{
-  flex:0 0 auto; font-size:13px; padding:7px 13px; border-radius:16px; background:#2a2620;
-  color:#d8cba8; white-space:nowrap; border:1px solid #3a332a;
+  flex:0 0 auto; font-size:13px; padding:7px 13px; border-radius:16px; background:var(--bg4);
+  color:var(--text-dim); white-space:nowrap; border:1px solid var(--border);
 }
-.chip.active{background:#c9a875; color:#141210; font-weight:700; border-color:#c9a875;}
-.chip.add{background:none; border:1px dashed #55493a; color:#c9a875;}
+.chip.active{background:var(--accent); color:var(--accent-text); font-weight:700; border-color:var(--accent);}
+.chip.add{background:none; border:1px dashed var(--text-faint3); color:var(--accent);}
+.fchip{flex:0 0 auto; font-size:12px; padding:6px 12px; border-radius:14px; background:var(--bg4); color:var(--text-mut); border:1px solid var(--border);}
+.fchip.active{background:var(--danger); color:var(--danger-text); font-weight:700; border-color:var(--danger);}
 
-#composer{padding:10px 12px; background:#1c1916; border-bottom:6px solid #0e0c0a; display:none;}
+#composer{padding:10px 12px; background:var(--bg2); border-bottom:6px solid var(--bg0); display:none;}
 #typeRow{display:flex; gap:6px; margin-bottom:8px;}
 #typeRow button{
-  flex:1; font-size:12px; padding:8px 0; border-radius:8px; background:#2a2620; color:#a89a7d; border:none;
+  flex:1; font-size:12px; padding:8px 0; border-radius:8px; background:var(--bg4); color:var(--text-mut); border:none;
 }
-#typeRow button.active{background:#a8332b; color:#fff; font-weight:700;}
+#typeRow button.active{background:var(--danger); color:var(--danger-text); font-weight:700;}
 #textInput{
-  width:100%; min-height:52px; max-height:200px; background:#252119; color:#eee7d8; border:1px solid #3a332a;
+  width:100%; min-height:52px; max-height:200px; background:var(--bg3); color:var(--text); border:1px solid var(--border);
   border-radius:10px; padding:10px 12px; font-size:15px; resize:none; outline:none;
 }
 #preview{display:flex; gap:6px; overflow-x:auto; margin-top:8px;}
 #preview .thumb{position:relative; flex:0 0 auto;}
 #preview img{width:56px; height:56px; object-fit:cover; border-radius:8px;}
-#preview .rm{position:absolute; top:-5px; right:-5px; background:#a8332b; color:#fff; border-radius:50%; width:18px; height:18px; font-size:11px; border:none; line-height:18px;}
+#preview .rm{position:absolute; top:-5px; right:-5px; background:var(--danger); color:var(--danger-text); border-radius:50%; width:18px; height:18px; font-size:11px; border:none; line-height:18px;}
 .composer-row{display:flex; justify-content:space-between; align-items:center; margin-top:8px;}
-#attachBtn{background:none; border:1px solid #3a332a; color:#d8cba8; padding:9px 12px; border-radius:10px; font-size:13px;}
-#postBtn{background:#c9a875; color:#141210; border:none; padding:9px 20px; border-radius:10px; font-size:13px; font-weight:700;}
+#attachBtn{background:none; border:1px solid var(--border); color:var(--text-dim); padding:9px 12px; border-radius:10px; font-size:13px;}
+#postBtn{background:var(--accent); color:var(--accent-text); border:none; padding:9px 20px; border-radius:10px; font-size:13px; font-weight:700;}
 #postBtn:disabled{opacity:.4;}
 
 #fab{
   position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom)); z-index:30;
-  width:52px; height:52px; border-radius:50%; background:#a8332b; color:#fff; border:none;
+  width:52px; height:52px; border-radius:50%; background:var(--danger); color:var(--danger-text); border:none;
   font-size:26px; box-shadow:0 4px 12px rgba(0,0,0,.5);
 }
 
 #main{padding:12px 10px 90px; max-width:520px; margin:0 auto;}
 #feed{display:flex; flex-direction:column; gap:12px;}
-.card{background:#1c1916; border-radius:14px; padding:12px 14px; border:1px solid #2a2620; position:relative;}
+.card{background:var(--bg2); border-radius:14px; padding:12px 14px; border:1px solid var(--border2); position:relative;}
 .card .top{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
 .card .tag{font-size:10px; letter-spacing:.08em; padding:2px 7px; border-radius:6px; font-weight:700;}
-.card.memo .tag{background:#3a4a3a; color:#a8c9a8;}
-.card.photo .tag{background:#3a3a4a; color:#a8a8c9;}
-.card .date{font-size:11px; color:#7a7264;}
+.card.memo .tag{background:var(--memo-bg); color:var(--memo-text);}
+.card.photo .tag{background:var(--photo-bg); color:var(--photo-text);}
+.card .date{font-size:11px; color:var(--text-faint);}
 .card .text{white-space:pre-wrap; line-height:1.55; font-size:14.5px; margin:4px 0 8px; word-break:break-word;}
 .imgs{display:grid; gap:3px; border-radius:10px; overflow:hidden; margin-bottom:4px;}
 .imgs img{width:100%; object-fit:cover; display:block;}
@@ -66,57 +95,64 @@ button, input, textarea{font-family:inherit;}
 .imgs.n2{grid-template-columns:1fr 1fr;} .imgs.n2 img{height:170px;}
 .imgs.n3{grid-template-columns:1fr 1fr;} .imgs.n3 img:first-child{grid-row:span 2; height:100%;} .imgs.n3 img{height:110px;}
 .imgs.n4plus{grid-template-columns:1fr 1fr;} .imgs.n4plus img{height:120px;}
-.delbtn{background:none; border:none; color:#5a5346; font-size:12px; padding:4px;}
+.delbtn{background:none; border:none; color:var(--text-faint3); font-size:12px; padding:4px;}
 .card.pending{opacity:.55;}
-#empty{text-align:center; color:#6a6254; font-size:13px; margin-top:60px;}
+#empty{text-align:center; color:var(--text-faint2); font-size:13px; margin-top:60px;}
 
 #overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:40; align-items:flex-end;}
-#overlay .sheet{background:#1c1916; width:100%; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); border-radius:16px 16px 0 0;}
-#overlay input{width:100%; background:#252119; border:1px solid #3a332a; color:#eee7d8; padding:11px; border-radius:10px; font-size:15px; margin:10px 0;}
+#overlay .sheet{background:var(--bg2); width:100%; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); border-radius:16px 16px 0 0;}
+#overlay input{width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:11px; border-radius:10px; font-size:15px; margin:10px 0;}
 #overlay .row{display:flex; gap:8px;}
 #overlay button{flex:1; padding:11px; border-radius:10px; border:none; font-size:14px;}
-#overlay .cancel{background:#2a2620; color:#c9c0ac;}
-#overlay .ok{background:#c9a875; color:#141210; font-weight:700;}
+#overlay .cancel{background:var(--bg4); color:var(--text-dim2);}
+#overlay .ok{background:var(--accent); color:var(--accent-text); font-weight:700;}
 
 #lightbox{display:none; position:fixed; inset:0; background:rgba(0,0,0,.94); z-index:50; align-items:center; justify-content:center;}
 #lightbox img{max-width:94vw; max-height:94vh; object-fit:contain;}
 
-/* folder edit chip */
 .chipwrap{display:flex; flex:0 0 auto;}
 .chipwrap .chip{border-radius:16px 0 0 16px;}
-.chipedit{flex:0 0 auto; font-size:11px; padding:7px 9px; border-radius:0 16px 16px 0; background:#2a2620; color:#8a8064; border:1px solid #3a332a; border-left:1px solid #221f1a;}
-.chipwrap .chip.active + .chipedit{background:#c9a875; color:#141210; border-color:#c9a875;}
+.chipedit{flex:0 0 auto; font-size:11px; padding:7px 9px; border-radius:0 16px 16px 0; background:var(--bg4); color:var(--text-faint4); border:1px solid var(--border); border-left:1px solid var(--borderdark);}
+.chipwrap .chip.active + .chipedit{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
 
-/* Instagram card */
 .card.instagram{padding:0; overflow:hidden;}
 .card.instagram .ighead{display:flex; align-items:center; gap:8px; padding:10px 12px;}
 .card.instagram .av{width:30px; height:30px; border-radius:50%; background:linear-gradient(45deg,#feda75,#d62976,#4f5bd5); flex:0 0 auto;}
-.card.instagram .uname{font-weight:700; font-size:13px; color:#eee;}
+.card.instagram .uname{font-weight:700; font-size:13px; color:var(--text);}
 .card.instagram .igimgs img{width:100%; display:block; max-height:480px; object-fit:cover;}
-.card.instagram .igfoot{padding:10px 12px 0; font-size:20px; color:#eee; letter-spacing:10px;}
+.card.instagram .igfoot{padding:10px 12px 0; font-size:20px; color:var(--text); letter-spacing:10px;}
 .card.instagram .igbody{padding:6px 12px 10px;}
 .card.instagram .igtext{font-size:13.5px; line-height:1.5; white-space:pre-wrap;}
 .card.instagram .igtext b{margin-right:6px;}
-.card.instagram .igmeta{display:flex; justify-content:space-between; align-items:center; padding:0 12px 10px; font-size:10.5px; color:#7a7264;}
+.card.instagram .igmeta{display:flex; justify-content:space-between; align-items:center; padding:0 12px 10px; font-size:10.5px; color:var(--text-faint);}
 
-/* Twitter card */
 .card.twitter{display:flex; gap:10px; padding:12px 14px;}
 .card.twitter .av{width:38px; height:38px; border-radius:50%; background:#1d9bf0; flex:0 0 auto;}
 .card.twitter .twbody{flex:1; min-width:0;}
 .card.twitter .twhead{font-size:14px;}
-.card.twitter .twhead b{color:#eee;}
-.card.twitter .twhead span{color:#7a7264; margin-left:4px;}
+.card.twitter .twhead b{color:var(--text);}
+.card.twitter .twhead span{color:var(--text-faint); margin-left:4px;}
 .card.twitter .twtext{font-size:14.5px; line-height:1.45; margin:3px 0 8px; white-space:pre-wrap;}
-.card.twitter .imgs{border-radius:14px; border:1px solid #2a2f33;}
-.card.twitter .twmeta{font-size:11px; color:#7a7264; margin-top:6px;}
+.card.twitter .imgs{border-radius:14px; border:1px solid var(--border2);}
+.card.twitter .twmeta{font-size:11px; color:var(--text-faint); margin-top:6px;}
 
-.editta{width:100%; background:#252119; color:#eee7d8; border:1px solid #3a332a; border-radius:8px; padding:8px; font-size:14px; margin:4px 0;}
+.editta{width:100%; background:var(--bg3); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:8px; font-size:14px; margin:4px 0;}
 </style>
 </head>
 <body>
 <div id="topbar">
-  <h1>📇 ARCHIVE</h1>
+  <div class="titlerow">
+    <h1>📇 ARCHIVE</h1>
+    <button id="themeToggle">🌙 다크</button>
+  </div>
   <div id="folderRow"><button class="chip add" id="newFolderBtn">+ 폴더</button></div>
+  <div id="typeFilterRow">
+    <button class="fchip active" data-f="all">전체</button>
+    <button class="fchip" data-f="memo">메모</button>
+    <button class="fchip" data-f="photo">사진</button>
+    <button class="fchip" data-f="instagram">인스타</button>
+    <button class="fchip" data-f="twitter">트윗</button>
+  </div>
 </div>
 
 <div id="composer">
@@ -143,11 +179,11 @@ button, input, textarea{font-family:inherit;}
 
 <div id="overlay">
   <div class="sheet">
-    <div class="mono" style="font-size:13px;color:#c9a875" id="folderSheetTitle">새 폴더</div>
+    <div class="mono" style="font-size:13px;color:var(--accent)" id="folderSheetTitle">새 폴더</div>
     <input id="folderNameInput" placeholder="폴더 이름" autofocus>
     <div class="row">
       <button class="cancel" id="folderCancel">취소</button>
-      <button class="cancel" id="folderDelete" style="display:none;background:#a8332b;color:#fff">삭제</button>
+      <button class="cancel" id="folderDelete" style="display:none;background:var(--danger);color:var(--danger-text)">삭제</button>
       <button class="ok" id="folderOk">만들기</button>
     </div>
   </div>
@@ -180,6 +216,27 @@ const postsCol = collection(db, "posts");
 
 let currentFolder = null, currentType = "memo", pendingFiles = [];
 let editingFolderId = null;
+let currentViewFilter = "all";
+let latestPosts = [];
+
+// theme
+const themeBtn = document.getElementById("themeToggle");
+function applyTheme(t){
+  document.body.classList.toggle("light", t === "light");
+  themeBtn.textContent = t === "light" ? "☀️ 화이트" : "🌙 다크";
+  localStorage.setItem("archive-theme", t);
+}
+applyTheme(localStorage.getItem("archive-theme") || "dark");
+themeBtn.onclick = () => applyTheme(document.body.classList.contains("light") ? "dark" : "light");
+
+// type filter
+document.querySelectorAll(".fchip").forEach(btn => {
+  btn.onclick = () => {
+    currentViewFilter = btn.dataset.f;
+    document.querySelectorAll(".fchip").forEach(b => b.classList.toggle("active", b === btn));
+    renderFeed();
+  };
+});
 
 onSnapshot(query(foldersCol, orderBy("createdAt", "desc")), snap => {
   const row = document.getElementById("folderRow");
@@ -308,11 +365,18 @@ let unsub = null;
 function loadPosts(folderId) {
   if (unsub) unsub();
   unsub = onSnapshot(query(postsCol, where("folderId", "==", folderId), orderBy("createdAt", "desc")), snap => {
-    const feed = document.getElementById("feed");
-    feed.innerHTML = "";
-    document.getElementById("empty").style.display = snap.empty ? "block" : "none";
-    snap.forEach(d => feed.appendChild(renderCard(d.id, d.data())));
+    latestPosts = [];
+    snap.forEach(d => latestPosts.push({ id: d.id, data: d.data() }));
+    renderFeed();
   });
+}
+
+function renderFeed() {
+  const feed = document.getElementById("feed");
+  feed.innerHTML = "";
+  const filtered = currentViewFilter === "all" ? latestPosts : latestPosts.filter(p => p.data.type === currentViewFilter);
+  document.getElementById("empty").style.display = filtered.length ? "none" : "block";
+  filtered.forEach(p => feed.appendChild(renderCard(p.id, p.data)));
 }
 
 const TAG = { memo: "메모", photo: "사진", instagram: "인스타", twitter: "트윗" };
@@ -378,7 +442,7 @@ function startEdit(card, id, p) {
   btnRow.querySelector('[data-a="save"]').onclick = async () => {
     await updateDoc(doc(db, "posts", id), { text: ta.value.trim() });
   };
-  btnRow.querySelector('[data-a="cancel"]').onclick = () => loadPosts(currentFolder);
+  btnRow.querySelector('[data-a="cancel"]').onclick = () => renderFeed();
 }
 
 function escapeHtml(s) {
