@@ -105,6 +105,7 @@ button, input, textarea{font-family:inherit;}
 .charRow2{display:flex; gap:8px; align-items:center; margin:6px 0;}
 .charRow2 label{display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text-dim); white-space:nowrap;}
 .pillrow{display:flex; gap:6px; flex-wrap:wrap; margin:6px 0;}
+.charrow{display:flex; gap:6px; flex-wrap:wrap; margin:8px 0; padding:8px; background:var(--bg0); border-radius:10px;}
 .pillrow button{flex:1 1 18%; font-size:11px; padding:7px 0; border-radius:8px; background:var(--bg4); color:var(--text-mut); border:none;}
 .pillrow button.active{background:var(--danger); color:var(--danger-text); font-weight:700;}
 #blockPreview{display:flex; gap:6px; overflow-x:auto; margin:6px 0;}
@@ -300,6 +301,12 @@ body.folder-locked #editBtns{display:none !important;}
       <button data-t="kakao">카카오톡</button>
       <button data-t="imessage">아이메시지</button>
       <button data-t="community">커뮤니티</button>
+      <button data-t="article">기사</button>
+    </div>
+    <div id="articleFields" style="display:none">
+      <input id="articleTitleInput" placeholder="기사 제목">
+      <input id="articleSiteInput" placeholder="신문사/사이트명">
+      <input id="articleReporterInput" placeholder="기자 이름">
     </div>
     <div class="pillrow" id="blockCommunityRow" style="display:none">
       <button data-s="instiz" class="active">인스티즈</button>
@@ -307,7 +314,11 @@ body.folder-locked #editBtns{display:none !important;}
       <button data-s="jjookbbang">쭉빵</button>
     </div>
     <input id="communityTitleInput" placeholder="제목 (선택)" style="display:none">
-    <div class="pillrow" id="blockCharRow"></div>
+    <div id="communityMetaRow" style="display:none;gap:8px" class="row">
+      <input id="communityViewsInput" placeholder="조회수 (선택)" style="flex:1">
+      <input id="communityTimeInput" placeholder="시간 표시 (예: 방금전, 1시간전)" style="flex:1">
+    </div>
+    <div class="charrow" id="blockCharRow"></div>
     <div id="blockThreadPreview"></div>
     <button class="attachbtn" id="blockThreadAddBtn" style="display:none;width:100%;text-align:center;margin-bottom:8px">↩︎ 스레드에 추가 (대댓글)</button>
     <div class="pillrow" id="blockPosRow" style="display:none">
@@ -623,7 +634,7 @@ document.getElementById("charOk").onclick = async () => {
     if (charTwAvatarFile) twitterAvatar = await uploadToCloudinary(charTwAvatarFile);
     if (charIgAvatarFile) instagramAvatar = await uploadToCloudinary(charIgAvatarFile);
   } catch (e) { alert("프로필 사진 업로드 실패"); }
-  const payload = { realName, name, twitter, twitterName, twitterVerified, instagram, instagramName, twitterAvatar, instagramAvatar, private: isPrivate };
+  const payload = { realName, name, twitter, twitterName, twitterVerified: !!twitterVerified, instagram, instagramName, twitterAvatar, instagramAvatar, private: !!isPrivate };
   if (editingCharId) {
     await updateDoc(doc(db, "characters", editingCharId), payload);
     document.getElementById("charOverlay").style.display = "none";
@@ -838,6 +849,11 @@ document.getElementById("fabBlock").onclick = () => {
   communityComments = []; communityReplyTarget = null;
   communitySite = "instiz";
   document.getElementById("communityTitleInput").value = "";
+  document.getElementById("communityViewsInput").value = "";
+  document.getElementById("communityTimeInput").value = "";
+  document.getElementById("articleTitleInput").value = "";
+  document.getElementById("articleSiteInput").value = "";
+  document.getElementById("articleReporterInput").value = "";
   document.getElementById("communityCommentInput").value = "";
   renderBlockPreview();
   renderThreadPreview();
@@ -858,6 +874,11 @@ document.querySelectorAll("#blockTypeRow button").forEach(btn => {
     communityComments = []; communityReplyTarget = null;
     document.getElementById("blockText").value = "";
     document.getElementById("communityTitleInput").value = "";
+    document.getElementById("communityViewsInput").value = "";
+    document.getElementById("communityTimeInput").value = "";
+    document.getElementById("articleTitleInput").value = "";
+    document.getElementById("articleSiteInput").value = "";
+    document.getElementById("articleReporterInput").value = "";
     document.getElementById("communityCommentInput").value = "";
     blockPending = [];
     renderBlockPreview();
@@ -914,14 +935,17 @@ function renderCommunityComments(){
 }
 function updateBlockExtra(){
   const isCommunity = blockType === "community";
+  const isArticle = blockType === "article";
   document.getElementById("blockCharRow").style.display = (blockType === "twitter" || blockType === "instagram") ? "flex" : "none";
   document.getElementById("blockPosRow").style.display = NEEDS_POS.has(blockType) ? "flex" : "none";
   document.getElementById("blockThreadAddBtn").style.display = blockType === "twitter" ? "block" : "none";
   document.getElementById("blockCommunityRow").style.display = isCommunity ? "flex" : "none";
   document.getElementById("communityTitleInput").style.display = isCommunity ? "block" : "none";
+  document.getElementById("communityMetaRow").style.display = isCommunity ? "flex" : "none";
   document.getElementById("communityCommentRow").style.display = isCommunity ? "flex" : "none";
   document.getElementById("communityCommentList").style.display = isCommunity ? "flex" : "none";
-  document.getElementById("blockText").placeholder = isCommunity ? "본문 입력 (#해시태그 가능)" : "내용 입력 (#해시태그 가능)";
+  document.getElementById("articleFields").style.display = isArticle ? "block" : "none";
+  document.getElementById("blockText").placeholder = isCommunity ? "본문 입력 (#해시태그 가능)" : isArticle ? "기사 본문 입력" : "내용 입력 (#해시태그 가능)";
 }
 document.getElementById("blockThreadAddBtn").onclick = async () => {
   const ta = document.getElementById("blockText");
@@ -997,8 +1021,14 @@ document.getElementById("blockInsertBtn").onclick = async () => {
   const text = document.getElementById("blockText").value.trim();
   const files = blockPending;
   const communityTitleVal = document.getElementById("communityTitleInput").value.trim();
+  const communityViewsVal = document.getElementById("communityViewsInput").value.trim();
+  const communityTimeVal = document.getElementById("communityTimeInput").value.trim();
+  const articleTitleVal = document.getElementById("articleTitleInput").value.trim();
+  const articleSiteVal = document.getElementById("articleSiteInput").value.trim();
+  const articleReporterVal = document.getElementById("articleReporterInput").value.trim();
   const hasCommunityExtra = blockType === "community" && (communityComments.length > 0 || communityTitleVal);
-  if (!text && !files.length && !blockThread.length && !hasCommunityExtra) return;
+  const hasArticleExtra = blockType === "article" && (articleTitleVal || articleSiteVal || articleReporterVal);
+  if (!text && !files.length && !blockThread.length && !hasCommunityExtra && !hasArticleExtra) return;
   const btn = document.getElementById("blockInsertBtn");
   btn.disabled = true; btn.textContent = "삽입중...";
   try {
@@ -1011,10 +1041,17 @@ document.getElementById("blockInsertBtn").onclick = async () => {
       blockThread = []; blockReplyTarget = null;
       renderThreadPreview();
     } else if (blockType === "community") {
-      html = buildCommunityHTML(communitySite, communityTitleVal, text, urls, communityComments);
+      html = buildCommunityHTML(communitySite, communityTitleVal, communityViewsVal, communityTimeVal, text, urls, communityComments);
       communityComments = []; communityReplyTarget = null;
       renderCommunityComments();
       document.getElementById("communityTitleInput").value = "";
+      document.getElementById("communityViewsInput").value = "";
+      document.getElementById("communityTimeInput").value = "";
+    } else if (blockType === "article") {
+      html = buildArticleHTML(articleTitleVal, articleSiteVal, articleReporterVal, text, urls);
+      document.getElementById("articleTitleInput").value = "";
+      document.getElementById("articleSiteInput").value = "";
+      document.getElementById("articleReporterInput").value = "";
     } else {
       html = buildEmbedHTML(blockType, text, urls, blockCharId, blockPosition);
     }
@@ -1125,7 +1162,7 @@ function buildCommunityHTML(site, title, body, images, comments){
   </div>`;
 }
 
-function dispName(name, c){ return (c && c.private ? "🔒 " : "") + (name || ""); }
+function dispName(name, c){ return (name || "") + (c && c.private ? " 🔒" : ""); }
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
