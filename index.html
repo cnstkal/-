@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Archive</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 
 :root{
   --bg:#141210; --bg2:#1c1916; --bg3:#252119; --bg4:#2a2620; --bg0:#0e0c0a;
@@ -28,19 +28,20 @@ body.light{
   --photo-bg:#dcdcec; --photo-text:#2f2f5c;
 }
 
-*{box-sizing:border-box; margin:0; padding:0; touch-action:manipulation; -webkit-tap-highlight-color:transparent;}
+*{box-sizing:border-box; margin:0; padding:0; touch-action:manipulation; -webkit-tap-highlight-color:transparent; letter-spacing:-0.02em;}
 html,body{width:100%; height:100%; overflow-x:hidden; overflow-y:auto;}
 body{
-  background:var(--bg); color:var(--text); font-family:'Noto Sans KR',sans-serif;
+  background:var(--bg); color:var(--text); font-family:'Pretendard',sans-serif;
   min-height:100vh; min-height:100dvh; overscroll-behavior-y:auto;
   transition:background .2s,color .2s;
 }
-.mono{font-family:'IBM Plex Mono',monospace;}
+h1{font-weight:700;}
+.mono{font-family:'Pretendard',sans-serif; font-weight:600;}
 button, input, textarea{font-family:inherit;}
 
 #topbar{position:sticky; top:0; z-index:20; background:var(--bg2); border-bottom:1px solid var(--border); padding:10px 12px 8px;}
 #topbar .titlerow{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
-#topbar h1{font-family:'IBM Plex Mono',monospace; font-size:14px; letter-spacing:.1em; color:var(--accent);}
+#topbar h1{font-family:'Pretendard',sans-serif; font-weight:800; font-size:14px; color:var(--accent);}
 #themeToggle{background:none; border:1px solid var(--border); color:var(--text-dim); border-radius:16px; padding:5px 10px; font-size:13px;}
 #folderRow{display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;}
 #folderRow::-webkit-scrollbar{display:none;}
@@ -69,7 +70,11 @@ button, input, textarea{font-family:inherit;}
 #preview .thumb{position:relative; flex:0 0 auto;}
 #preview img{width:56px; height:56px; object-fit:cover; border-radius:8px;}
 #preview .rm{position:absolute; top:-5px; right:-5px; background:var(--danger); color:var(--danger-text); border-radius:50%; width:18px; height:18px; font-size:11px; border:none; line-height:18px;}
+#timeInput{width:100%; background:var(--bg3); color:var(--text-dim); border:1px solid var(--border); border-radius:8px; padding:7px 10px; font-size:12.5px; margin-top:6px;}
 .composer-row{display:flex; justify-content:space-between; align-items:center; margin-top:8px;}
+.typeSwitchRow{display:flex; gap:6px; margin:6px 0;}
+.typeSwitchRow button{flex:1; font-size:11px; padding:6px 0; border-radius:7px; background:var(--bg4); color:var(--text-mut); border:none;}
+.typeSwitchRow button.active{background:var(--danger); color:var(--danger-text); font-weight:700;}
 #attachBtn{background:none; border:1px solid var(--border); color:var(--text-dim); padding:9px 12px; border-radius:10px; font-size:13px;}
 #postBtn{background:var(--accent); color:var(--accent-text); border:none; padding:9px 20px; border-radius:10px; font-size:13px; font-weight:700;}
 #postBtn:disabled{opacity:.4;}
@@ -120,7 +125,8 @@ button, input, textarea{font-family:inherit;}
 .card.instagram .av{width:30px; height:30px; border-radius:50%; background:linear-gradient(45deg,#feda75,#d62976,#4f5bd5); flex:0 0 auto;}
 .card.instagram .uname{font-weight:700; font-size:13px; color:var(--text);}
 .card.instagram .igimgs img{width:100%; display:block; max-height:480px; object-fit:cover;}
-.card.instagram .igfoot{padding:10px 12px 0; font-size:20px; color:var(--text); letter-spacing:10px;}
+.card.instagram .igfoot{display:flex; gap:14px; padding:10px 12px 0;}
+.card.instagram .igfoot svg{width:23px; height:23px; stroke:var(--text); fill:none; stroke-width:1.8;}
 .card.instagram .igbody{padding:6px 12px 10px;}
 .card.instagram .igtext{font-size:13.5px; line-height:1.5; white-space:pre-wrap;}
 .card.instagram .igtext b{margin-right:6px;}
@@ -164,6 +170,7 @@ button, input, textarea{font-family:inherit;}
   </div>
   <textarea id="textInput" placeholder="내용을 입력..."></textarea>
   <div id="preview"></div>
+  <input type="datetime-local" id="timeInput" title="비워두면 현재 시간으로 업로드">
   <div class="composer-row">
     <label id="attachBtn">📎 사진<input type="file" id="fileInput" accept="image/*" multiple style="display:none"></label>
     <button id="postBtn">올리기</button>
@@ -350,10 +357,13 @@ document.getElementById("postBtn").onclick = async () => {
 
   try {
     const urls = files.length ? await Promise.all(files.map(uploadToCloudinary)) : [];
-    await addDoc(postsCol, { folderId: currentFolder, type, text, images: urls, createdAt: Date.now() });
+    const timeVal = document.getElementById("timeInput").value;
+    const createdAt = timeVal ? new Date(timeVal).getTime() : Date.now();
+    await addDoc(postsCol, { folderId: currentFolder, type, text, images: urls, createdAt });
     document.getElementById("textInput").value = "";
     document.getElementById("preview").innerHTML = "";
     document.getElementById("fileInput").value = "";
+    document.getElementById("timeInput").value = "";
     pendingFiles = [];
   } catch (err) {
     alert("업로드 실패 - 다시 시도해주세요");
@@ -396,7 +406,11 @@ function renderCard(id, p, pending) {
     card.innerHTML = `
       <div class="ighead"><div class="av"></div><div class="uname">user</div></div>
       ${igimgs}
-      <div class="igfoot">♡ 💬 ➤</div>
+      <div class="igfoot">
+        <svg viewBox="0 0 24 24"><path d="M20.8 8.6c0-3-2.2-5.1-5-5.1-1.9 0-3.3 1-4.3 2.5C10.5 4.5 9.1 3.5 7.2 3.5c-2.8 0-5 2.1-5 5.1 0 4.6 5.4 8.6 9.3 11.7l.5.4.5-.4c3.9-3.1 9.3-7.1 9.3-11.7z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M3 12c0-4.4 4-8 9-8s9 3.6 9 8-4 8-9 8c-1.1 0-2.2-.2-3.2-.5L4 21l1.4-4.4C4.1 15.3 3 13.7 3 12z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
+      </div>
       <div class="igbody"><div class="igtext">${textHtml ? `<b>user</b>${textHtml}` : ""}</div></div>
       <div class="igmeta"><span class="mono">${date}</span><span>${actions}</span></div>
     `;
