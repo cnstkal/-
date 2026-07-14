@@ -143,6 +143,44 @@ button, input, textarea{font-family:inherit;}
 .card.twitter .twmeta{font-size:11px; color:var(--text-faint); margin-top:6px;}
 
 .editta{width:100%; background:var(--bg3); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:8px; font-size:14px; margin:4px 0;}
+
+/* ---- PC 최적화 (마우스 환경) ---- */
+@media (hover:hover) and (pointer:fine){
+  .chip, .fchip, #typeRow button, #themeToggle, #attachBtn, #postBtn, .delbtn, .chipedit{cursor:pointer; transition:background .15s,opacity .15s,transform .1s;}
+  .chip:hover:not(.active), .fchip:hover:not(.active){background:var(--border2);}
+  #postBtn:hover{opacity:.88;}
+  #fab:hover{transform:scale(1.06);}
+  .imgs img, .card.instagram .igimgs img{cursor:zoom-in;}
+}
+@media (min-width:860px){
+  #topbar{padding:14px 24px 10px;}
+  #main{max-width:900px; padding:20px 24px 90px;}
+  #feed{display:block; column-count:2; column-gap:16px;}
+  #feed .card{break-inside:avoid; margin-bottom:16px; display:inline-block; width:100%;}
+  #composer{max-width:900px; margin:0 auto; padding:14px 24px; border-radius:0 0 14px 14px;}
+  #fab{right:calc(50% - 450px + 16px);}
+  .imgs.n1 img{max-height:520px;}
+}
+@media (min-width:1200px){
+  #main, #composer{max-width:1080px;}
+  #feed{column-count:3;}
+  #fab{right:calc(50% - 540px + 16px);}
+}
+
+/* ---- 모바일 최적화 (작은 화면) ---- */
+@media (max-width:400px){
+  #topbar h1{font-size:13px;}
+  #themeToggle{font-size:12px; padding:4px 8px;}
+  .chip, .fchip{font-size:12px; padding:6px 11px;}
+  #textInput{font-size:14px; min-height:46px;}
+  #postBtn, #attachBtn{padding:8px 14px; font-size:12.5px;}
+  .card{padding:10px 12px;}
+  .card .text, .twtext, .igtext{font-size:13.5px;}
+  .imgs.n1 img{max-height:340px;}
+}
+@supports (-webkit-touch-callout:none){
+  #textInput, #timeInput, #overlay input{font-size:16px;} /* iOS 자동 확대 방지 */
+}
 </style>
 </head>
 <body>
