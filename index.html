@@ -63,13 +63,14 @@ button, input, textarea{font-family:inherit;}
 #editor{min-height:78vh; outline:none; font-size:18.5px; line-height:1.95; word-break:break-word;}
 #editor:empty:before{content:attr(data-ph); color:var(--text-faint3);}
 #editor img{max-width:100%; border-radius:10px; display:block; margin:12px 0;}
+#editor .imgs img, #editor .igimgs img{margin:0;}
 #empty{text-align:center; color:var(--text-faint2); font-size:13px; margin-top:60px;}
 
 .embed{position:relative; margin:16px 0; width:100%;}
 .embed .embed-del{position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%; background:var(--danger); color:var(--danger-text); border:none; font-size:12px; line-height:22px; opacity:0; transition:opacity .15s; z-index:2;}
 .embed:hover .embed-del{opacity:1;}
 
-#editor hr.divider{border:none; border-top:1px solid var(--border); margin:26px 0;}
+#editor hr.divider{border:none; border-top:1px solid var(--border); margin:26px auto; width:35%; min-width:80px; max-width:220px;}
 .imgs{display:grid; gap:3px; border-radius:10px; overflow:hidden; margin:8px 0;}
 .imgs img{width:100%; object-fit:cover; display:block; margin:0; cursor:zoom-in;}
 .imgs.n1 img{height:auto; max-height:520px; object-fit:contain; background:var(--bg0);}
@@ -98,6 +99,11 @@ button, input, textarea{font-family:inherit;}
 .charRowItem .ci-name{font-size:13.5px; font-weight:700;}
 .charRowItem .ci-handles{font-size:11px; color:var(--text-faint);}
 .charRowItem button{background:none; border:none; color:var(--text-faint3); font-size:12px; padding:4px 6px;}
+.charRowItem .ci-ord{display:flex; flex-direction:column; gap:0;}
+.charRowItem .ci-ord button{padding:0 4px; font-size:10px; line-height:1.4;}
+.charSection{font-size:11px; font-weight:700; color:var(--text-faint2); margin:14px 0 2px; letter-spacing:.02em;}
+.charRow2{display:flex; gap:8px; align-items:center; margin:6px 0;}
+.charRow2 label{display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text-dim); white-space:nowrap;}
 .pillrow{display:flex; gap:6px; flex-wrap:wrap; margin:6px 0;}
 .pillrow button{flex:1 1 18%; font-size:11px; padding:7px 0; border-radius:8px; background:var(--bg4); color:var(--text-mut); border:none;}
 .pillrow button.active{background:var(--danger); color:var(--danger-text); font-weight:700;}
@@ -152,6 +158,7 @@ body.folder-locked #editBtns{display:none !important;}
 .block.twitter .twbody{flex:1; min-width:0;}
 .block.twitter .twhead{font-size:15px;}
 .block.twitter .twhead b{color:var(--text);}
+.block.twitter .verified{display:inline-block; width:15px; height:15px; vertical-align:middle; margin-left:2px;}
 .block.twitter .twhead span{color:var(--text-faint); margin-left:4px;}
 .block.twitter .twtext{font-size:16.5px; line-height:1.5; margin:3px 0 4px; white-space:pre-wrap;}
 .block.twitter .imgs{border-radius:14px; border:1px solid var(--border2); margin-top:4px; overflow:hidden;}
@@ -254,16 +261,29 @@ body.folder-locked #editBtns{display:none !important;}
 <div id="charOverlay">
   <div class="sheet">
     <div class="mono" style="font-size:13px;color:var(--accent)" id="charSheetTitle">등장인물 등록</div>
-    <input id="charNameInput" placeholder="이름">
-    <input id="charTwInput" placeholder="트위터 계정 (예: @handle)">
-    <input id="charIgInput" placeholder="인스타 계정 (예: @handle)">
+    <input id="charRealNameInput" placeholder="본명 (구분용, 표시 안됨)">
+    <input id="charNameInput" placeholder="표시 이름 (카톡/아이메시지 등에 쓰임)">
     <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim);margin:10px 0"><input type="checkbox" id="charPrivateInput" style="width:auto;margin:0"> 비공개 계정 (🔒)</label>
-    <div style="display:flex; align-items:center; gap:10px; margin:10px 0;">
-      <img id="charAvatarPreview" style="width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--bg4);display:none;">
-      <label class="attachbtn" style="margin:0">📎 프로필 사진<input type="file" id="charAvatarInput" accept="image/*" style="display:none"></label>
+
+    <div class="charSection">트위터</div>
+    <input id="charTwInput" placeholder="트위터 계정 (예: @handle)">
+    <input id="charTwNameInput" placeholder="트위터 표시 이름">
+    <div class="charRow2">
+      <img id="charTwAvatarPreview" style="width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--bg4);display:none;">
+      <label class="attachbtn" style="margin:0">📎 트위터 프사<input type="file" id="charTwAvatarInput" accept="image/*" style="display:none"></label>
+      <label><input type="checkbox" id="charTwVerifiedInput" style="width:auto;margin:0"> ✅ 인증뱃지</label>
     </div>
-    <div class="row">
-      <button class="cancel" id="charCancel">취소</button>
+
+    <div class="charSection">인스타그램</div>
+    <input id="charIgInput" placeholder="인스타 계정 (예: @handle, 대부분 이것만 노출됨)">
+    <input id="charIgNameInput" placeholder="인스타 표시 이름 (선택)">
+    <div class="charRow2">
+      <img id="charIgAvatarPreview" style="width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--bg4);display:none;">
+      <label class="attachbtn" style="margin:0">📎 인스타 프사<input type="file" id="charIgAvatarInput" accept="image/*" style="display:none"></label>
+    </div>
+
+    <div class="row" style="margin-top:12px">
+      <button class="cancel" id="charCancel">닫기</button>
       <button class="cancel" id="charDelete" style="display:none;background:var(--danger);color:var(--danger-text)">삭제</button>
       <button class="ok" id="charOk">추가</button>
     </div>
@@ -298,7 +318,6 @@ body.folder-locked #editBtns{display:none !important;}
     <label class="attachbtn">📎 이미지 추가<input type="file" id="blockFileInput" accept="image/*" multiple style="display:none"></label>
     <div id="blockPreview"></div>
     <div id="communityCommentRow" style="display:none; flex-direction:column;">
-      <div class="pillrow" id="communityCharRow"></div>
       <div style="display:flex;gap:6px;align-items:center;width:100%">
         <input id="communityCommentInput" placeholder="댓글 입력 후 추가" style="flex:1;margin:0">
         <button id="communityCommentAdd">댓글 추가</button>
@@ -348,8 +367,9 @@ let chapterUnsub = null;
 let savedRange = null;
 let saveTimer = null;
 let blockType = "instagram", blockCharId = null, blockPosition = "left", blockPending = [], blockThread = [], blockReplyTarget = null, blockIdSeq = 1;
-let charAvatarFile = null, charAvatarExisting = "";
-let communitySite = "instiz", communityComments = [], communityReplyTarget = null, communityIdSeq = 1, communityCharId = null;
+let charTwAvatarFile = null, charTwAvatarExisting = "";
+let charIgAvatarFile = null, charIgAvatarExisting = "";
+let communitySite = "instiz", communityComments = [], communityReplyTarget = null, communityIdSeq = 1;
 let folderLocked = false;
 let history = [], historyIndex = -1, historySuppress = false;
 let pressTimer = null, pressImg = null;
@@ -478,24 +498,26 @@ document.getElementById("fabLock").onclick = async () => {
 };
 
 // ---- 등장인물 ----
-onSnapshot(query(charactersCol, orderBy("createdAt", "desc")), snap => {
+let charListArr = [];
+onSnapshot(query(charactersCol, orderBy("order", "asc")), snap => {
   charactersMap = {};
-  snap.forEach(d => charactersMap[d.id] = { id: d.id, ...d.data() });
+  charListArr = [];
+  snap.forEach(d => { const c = { id: d.id, ...d.data() }; charactersMap[d.id] = c; charListArr.push(c); });
   renderCharList();
   buildBlockCharRow();
-  buildCommunityCharRow();
 });
 
 function renderCharList(){
   const list = document.getElementById("charList");
   list.innerHTML = "";
-  Object.values(charactersMap).forEach(c => {
+  charListArr.forEach((c, i) => {
     const item = document.createElement("div");
     item.className = "charRowItem";
     item.innerHTML = `
+      <div class="ci-ord"><button data-a="up">▲</button><button data-a="down">▼</button></div>
       <div class="ci-av"></div>
       <div class="ci-info">
-        <div class="ci-name">${escapeHtml(dispName(c))}</div>
+        <div class="ci-name">${escapeHtml(dispName(c.name, c))}${c.realName ? ` <span style="font-weight:400;color:var(--text-faint3)">(${escapeHtml(c.realName)})</span>` : ""}</div>
         <div class="ci-handles">${escapeHtml(c.twitter || "")}${c.twitter && c.instagram ? " · " : ""}${escapeHtml(c.instagram || "")}</div>
       </div>
       <button data-a="edit">✎</button>
@@ -503,65 +525,118 @@ function renderCharList(){
     `;
     item.querySelector('[data-a="edit"]').onclick = () => openCharSheet(c);
     item.querySelector('[data-a="del"]').onclick = async () => {
-      if (confirm("이 인물을 삭제할까요?")) await deleteDoc(doc(db, "characters", c.id));
+      if (confirm("이 인물을 삭제할까요? (이미 작성된 글의 내용은 남습니다)")) await deleteDoc(doc(db, "characters", c.id));
+    };
+    item.querySelector('[data-a="up"]').onclick = async () => {
+      if (i === 0) return;
+      const other = charListArr[i - 1];
+      await Promise.all([
+        updateDoc(doc(db, "characters", c.id), { order: other.order }),
+        updateDoc(doc(db, "characters", other.id), { order: c.order })
+      ]);
+    };
+    item.querySelector('[data-a="down"]').onclick = async () => {
+      if (i === charListArr.length - 1) return;
+      const other = charListArr[i + 1];
+      await Promise.all([
+        updateDoc(doc(db, "characters", c.id), { order: other.order }),
+        updateDoc(doc(db, "characters", other.id), { order: c.order })
+      ]);
     };
     list.appendChild(item);
   });
 }
 
 document.getElementById("charBtn").onclick = () => openCharSheet();
-function openCharSheet(c){
-  editingCharId = c ? c.id : null;
-  document.getElementById("charSheetTitle").textContent = c ? "인물 수정" : "등장인물 등록";
-  document.getElementById("charNameInput").value = c ? c.name || "" : "";
-  document.getElementById("charTwInput").value = c ? c.twitter || "" : "";
-  document.getElementById("charIgInput").value = c ? c.instagram || "" : "";
-  document.getElementById("charPrivateInput").checked = c ? !!c.private : false;
-  document.getElementById("charOk").textContent = c ? "저장" : "추가";
-  document.getElementById("charDelete").style.display = c ? "block" : "none";
-  charAvatarFile = null;
-  charAvatarExisting = c ? (c.avatar || "") : "";
-  const prevEl = document.getElementById("charAvatarPreview");
-  prevEl.src = charAvatarExisting;
-  prevEl.style.display = charAvatarExisting ? "block" : "none";
-  document.getElementById("charAvatarInput").value = "";
-  document.getElementById("charOverlay").style.display = "flex";
-  document.getElementById("charNameInput").focus();
+function clearCharForm(){
+  editingCharId = null;
+  document.getElementById("charSheetTitle").textContent = "등장인물 등록";
+  document.getElementById("charRealNameInput").value = "";
+  document.getElementById("charNameInput").value = "";
+  document.getElementById("charTwInput").value = "";
+  document.getElementById("charTwNameInput").value = "";
+  document.getElementById("charTwVerifiedInput").checked = false;
+  document.getElementById("charIgInput").value = "";
+  document.getElementById("charIgNameInput").value = "";
+  document.getElementById("charPrivateInput").checked = false;
+  document.getElementById("charOk").textContent = "추가";
+  document.getElementById("charDelete").style.display = "none";
+  charTwAvatarFile = null; charTwAvatarExisting = "";
+  charIgAvatarFile = null; charIgAvatarExisting = "";
+  document.getElementById("charTwAvatarPreview").style.display = "none";
+  document.getElementById("charIgAvatarPreview").style.display = "none";
+  document.getElementById("charTwAvatarInput").value = "";
+  document.getElementById("charIgAvatarInput").value = "";
 }
-document.getElementById("charAvatarInput").onchange = e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  charAvatarFile = f;
-  const prevEl = document.getElementById("charAvatarPreview");
-  prevEl.src = URL.createObjectURL(f);
-  prevEl.style.display = "block";
+function openCharSheet(c){
+  clearCharForm();
+  if (!c) { document.getElementById("charOverlay").style.display = "flex"; document.getElementById("charRealNameInput").focus(); return; }
+  editingCharId = c.id;
+  document.getElementById("charSheetTitle").textContent = "인물 수정";
+  document.getElementById("charRealNameInput").value = c.realName || "";
+  document.getElementById("charNameInput").value = c.name || "";
+  document.getElementById("charTwInput").value = c.twitter || "";
+  document.getElementById("charTwNameInput").value = c.twitterName || "";
+  document.getElementById("charTwVerifiedInput").checked = !!c.twitterVerified;
+  document.getElementById("charIgInput").value = c.instagram || "";
+  document.getElementById("charIgNameInput").value = c.instagramName || "";
+  document.getElementById("charPrivateInput").checked = !!c.private;
+  document.getElementById("charOk").textContent = "저장";
+  document.getElementById("charDelete").style.display = "block";
+  charTwAvatarExisting = c.twitterAvatar || "";
+  charIgAvatarExisting = c.instagramAvatar || "";
+  const twPrev = document.getElementById("charTwAvatarPreview");
+  twPrev.src = charTwAvatarExisting; twPrev.style.display = charTwAvatarExisting ? "block" : "none";
+  const igPrev = document.getElementById("charIgAvatarPreview");
+  igPrev.src = charIgAvatarExisting; igPrev.style.display = charIgAvatarExisting ? "block" : "none";
+  document.getElementById("charOverlay").style.display = "flex";
+  document.getElementById("charRealNameInput").focus();
+}
+document.getElementById("charTwAvatarInput").onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  charTwAvatarFile = f;
+  const prevEl = document.getElementById("charTwAvatarPreview");
+  prevEl.src = URL.createObjectURL(f); prevEl.style.display = "block";
+};
+document.getElementById("charIgAvatarInput").onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  charIgAvatarFile = f;
+  const prevEl = document.getElementById("charIgAvatarPreview");
+  prevEl.src = URL.createObjectURL(f); prevEl.style.display = "block";
 };
 document.getElementById("charCancel").onclick = () => document.getElementById("charOverlay").style.display = "none";
 document.getElementById("charOverlay").onclick = e => { if (e.target.id === "charOverlay") e.currentTarget.style.display = "none"; };
 document.getElementById("charOk").onclick = async () => {
+  const realName = document.getElementById("charRealNameInput").value.trim();
   const name = document.getElementById("charNameInput").value.trim();
   const twitter = document.getElementById("charTwInput").value.trim();
+  const twitterName = document.getElementById("charTwNameInput").value.trim();
+  const twitterVerified = document.getElementById("charTwVerifiedInput").checked;
   const instagram = document.getElementById("charIgInput").value.trim();
+  const instagramName = document.getElementById("charIgNameInput").value.trim();
   const isPrivate = document.getElementById("charPrivateInput").checked;
-  if (!name) return;
+  if (!name && !realName) return;
   const okBtn = document.getElementById("charOk");
   okBtn.disabled = true;
-  let avatar = charAvatarExisting;
-  if (charAvatarFile) {
-    try { avatar = await uploadToCloudinary(charAvatarFile); } catch (e) { alert("프로필 사진 업로드 실패"); }
-  }
+  let twitterAvatar = charTwAvatarExisting, instagramAvatar = charIgAvatarExisting;
+  try {
+    if (charTwAvatarFile) twitterAvatar = await uploadToCloudinary(charTwAvatarFile);
+    if (charIgAvatarFile) instagramAvatar = await uploadToCloudinary(charIgAvatarFile);
+  } catch (e) { alert("프로필 사진 업로드 실패"); }
+  const payload = { realName, name, twitter, twitterName, twitterVerified, instagram, instagramName, twitterAvatar, instagramAvatar, private: isPrivate };
   if (editingCharId) {
-    await updateDoc(doc(db, "characters", editingCharId), { name, twitter, instagram, avatar, private: isPrivate });
+    await updateDoc(doc(db, "characters", editingCharId), payload);
+    document.getElementById("charOverlay").style.display = "none";
   } else {
-    await addDoc(charactersCol, { name, twitter, instagram, avatar, private: isPrivate, createdAt: Date.now() });
+    await addDoc(charactersCol, { ...payload, order: Date.now(), createdAt: Date.now() });
+    clearCharForm();
+    document.getElementById("charRealNameInput").focus();
   }
   okBtn.disabled = false;
-  document.getElementById("charOverlay").style.display = "none";
-  editingCharId = null;
 };
 document.getElementById("charDelete").onclick = async () => {
   if (!editingCharId) return;
-  if (!confirm("이 인물을 삭제할까요?")) return;
+  if (!confirm("이 인물을 삭제할까요? (이미 작성된 글의 내용은 남습니다)")) return;
   await deleteDoc(doc(db, "characters", editingCharId));
   document.getElementById("charOverlay").style.display = "none";
 };
@@ -760,7 +835,7 @@ document.getElementById("fabBlock").onclick = () => {
   document.getElementById("blockText").value = "";
   blockPending = [];
   blockThread = []; blockReplyTarget = null;
-  communityComments = []; communityReplyTarget = null; communityCharId = null; buildCommunityCharRow();
+  communityComments = []; communityReplyTarget = null;
   communitySite = "instiz";
   document.getElementById("communityTitleInput").value = "";
   document.getElementById("communityCommentInput").value = "";
@@ -780,7 +855,7 @@ document.querySelectorAll("#blockTypeRow button").forEach(btn => {
   btn.onclick = () => {
     blockType = btn.dataset.t;
     blockThread = []; blockReplyTarget = null;
-    communityComments = []; communityReplyTarget = null; communityCharId = null; buildCommunityCharRow();
+    communityComments = []; communityReplyTarget = null;
     document.getElementById("blockText").value = "";
     document.getElementById("communityTitleInput").value = "";
     document.getElementById("communityCommentInput").value = "";
@@ -803,7 +878,7 @@ document.getElementById("communityCommentAdd").onclick = () => {
   const v = inp.value.trim();
   if (!v) return;
   const id = communityIdSeq++;
-  communityComments.push({ id, text: v, charId: communityCharId, parent: communityComments.length ? communityReplyTarget : null });
+  communityComments.push({ id, text: v, parent: communityComments.length ? communityReplyTarget : null });
   communityReplyTarget = id;
   inp.value = "";
   renderCommunityComments();
@@ -839,7 +914,7 @@ function renderCommunityComments(){
 }
 function updateBlockExtra(){
   const isCommunity = blockType === "community";
-  document.getElementById("blockCharRow").style.display = NEEDS_CHAR.has(blockType) ? "flex" : "none";
+  document.getElementById("blockCharRow").style.display = (blockType === "twitter" || blockType === "instagram") ? "flex" : "none";
   document.getElementById("blockPosRow").style.display = NEEDS_POS.has(blockType) ? "flex" : "none";
   document.getElementById("blockThreadAddBtn").style.display = blockType === "twitter" ? "block" : "none";
   document.getElementById("blockCommunityRow").style.display = isCommunity ? "flex" : "none";
@@ -873,7 +948,7 @@ function renderThreadPreview(){
     const row = document.createElement("div");
     row.className = "tpItem" + (blockReplyTarget === node.id ? " sel" : "");
     row.style.cssText = `font-size:11.5px;color:var(--text-faint);padding:5px 8px;margin:2px 0 2px ${depth * 14}px;border-radius:6px`;
-    row.textContent = (depth ? "ㄴ " : "") + (dispName(c) || "user") + " " + node.text.slice(0, 24);
+    row.textContent = (depth ? "ㄴ " : "") + (dispName(c?.twitterName || c?.name, c) || "user") + " " + node.text.slice(0, 24);
     row.onclick = () => { blockReplyTarget = node.id; renderThreadPreview(); };
     el.appendChild(row);
     blockThread.filter(n => n.parent === node.id).forEach(child => renderNode(child, depth + 1));
@@ -886,25 +961,8 @@ function buildBlockCharRow(){
   Object.values(charactersMap).forEach(c => {
     const b = document.createElement("button");
     b.className = "chip" + (blockCharId === c.id ? " active" : "");
-    b.textContent = dispName(c);
+    b.textContent = dispName(c.name, c);
     b.onclick = () => { blockCharId = c.id; buildBlockCharRow(); };
-    row.appendChild(b);
-  });
-}
-function buildCommunityCharRow(){
-  const row = document.getElementById("communityCharRow");
-  if (!row) return;
-  row.innerHTML = "";
-  const none = document.createElement("button");
-  none.className = "chip" + (communityCharId === null ? " active" : "");
-  none.textContent = "익명(기본)";
-  none.onclick = () => { communityCharId = null; buildCommunityCharRow(); };
-  row.appendChild(none);
-  Object.values(charactersMap).forEach(c => {
-    const b = document.createElement("button");
-    b.className = "chip" + (communityCharId === c.id ? " active" : "");
-    b.textContent = dispName(c);
-    b.onclick = () => { communityCharId = c.id; buildCommunityCharRow(); };
     row.appendChild(b);
   });
 }
@@ -954,7 +1012,7 @@ document.getElementById("blockInsertBtn").onclick = async () => {
       renderThreadPreview();
     } else if (blockType === "community") {
       html = buildCommunityHTML(communitySite, communityTitleVal, text, urls, communityComments);
-      communityComments = []; communityReplyTarget = null; communityCharId = null; buildCommunityCharRow();
+      communityComments = []; communityReplyTarget = null;
       renderCommunityComments();
       document.getElementById("communityTitleInput").value = "";
     } else {
@@ -973,11 +1031,14 @@ document.getElementById("blockInsertBtn").onclick = async () => {
   btn.disabled = false; btn.textContent = "삽입";
 };
 
+const VERIFIED_SVG = `<svg class="verified" viewBox="0 0 22 22" fill="#1d9bf0"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.854-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.688-.13.633-.08 1.29.144 1.896-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.573 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.606-.274 1.263-.144 1.896.13.634.433 1.218.877 1.688.47.443 1.054.747 1.687.878.633.132 1.29.084 1.897-.136.274.586.705 1.084 1.246 1.439.54.354 1.17.551 1.816.569.647-.016 1.276-.213 1.817-.567s.972-.854 1.245-1.44c.604.239 1.266.296 1.903.164.636-.132 1.22-.447 1.68-.907.46-.46.776-1.044.908-1.681s.075-1.299-.165-1.903c.586-.274 1.084-.705 1.439-1.246.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.293 2.136 2.136 4.136-4.136 1.293 1.293z"/></svg>`;
 function twEntryHTML(entry){
   const character = entry.charId ? charactersMap[entry.charId] : null;
-  const dispNameStr = dispName(character) || "user";
+  const dispNameStr = dispName(character?.twitterName || character?.name, character) || "user";
   const handle = character?.twitter || "@user";
-  const avStyle = character?.avatar ? ` style="background-image:url('${character.avatar.replace(/'/g, "%27")}')"` : "";
+  const avatarUrl = character?.twitterAvatar || "";
+  const avStyle = avatarUrl ? ` style="background-image:url('${avatarUrl.replace(/'/g, "%27")}')"` : "";
+  const badge = character?.twitterVerified ? VERIFIED_SVG : "";
   const n = entry.images.length;
   const cls = n === 1 ? "n1" : n === 2 ? "n2" : n === 3 ? "n3" : "n4plus";
   const imgsHtml = n ? `<div class="imgs ${cls}">${entry.images.map(u => `<img src="${u}">`).join("")}</div>` : "";
@@ -985,7 +1046,7 @@ function twEntryHTML(entry){
   return `<div class="tw-entry">
     <div class="av"${avStyle}></div>
     <div class="twbody">
-      <div class="twhead"><b>${escapeHtml(dispNameStr)}</b><span>${escapeHtml(handle)}</span></div>
+      <div class="twhead"><b>${escapeHtml(dispNameStr)}</b>${badge}<span>${escapeHtml(handle)}</span></div>
       <div class="twtext">${textHtml}</div>
       ${imgsHtml}
     </div>
@@ -1010,10 +1071,10 @@ function buildEmbedHTML(type, text, images, charId, position){
   const imgsHtml = n ? `<div class="imgs ${cls}">${images.map(u => `<img src="${u}">`).join("")}</div>` : "";
   const textHtml = text ? formatText(text) : "";
 
-  const avStyle = character?.avatar ? ` style="background-image:url('${character.avatar.replace(/'/g, "%27")}')"` : "";
-
   if (type === "instagram") {
-    const uname = character?.instagram || dispName(character) || "user";
+    const avatarUrl = character?.instagramAvatar || "";
+    const avStyle = avatarUrl ? ` style="background-image:url('${avatarUrl.replace(/'/g, "%27")}')"` : "";
+    const uname = character?.instagram || dispName(character?.instagramName || character?.name, character) || "user";
     const igimgs = n ? `<div class="igimgwrap"><div class="igimgs">${images.map(u => `<img src="${u}">`).join("")}</div>${n > 1 ? `<button class="ignav prev" data-dir="-1">‹</button><button class="ignav next" data-dir="1">›</button>` : ""}</div>` : "";
     return `<div class="embed block instagram" contenteditable="false">
       <div class="ighead"><div class="av"${avStyle}></div><div class="uname">${escapeHtml(uname)}</div></div>
@@ -1028,7 +1089,7 @@ function buildEmbedHTML(type, text, images, charId, position){
     </div>`;
   }
   const pos = position === "right" ? "right" : "left";
-  const name = dispName(character);
+  const name = dispName(character?.name, character);
   return `<div class="embed block ${type}" contenteditable="false">
     <div class="bubblerow ${pos}">
       <div class="bubblecol">
@@ -1048,10 +1109,8 @@ function buildCommunityHTML(site, title, body, images, comments){
   const bodyHtml = body ? formatText(body) : "";
   const titleHtml = title ? `<div class="cm-title">${escapeHtml(title)}</div>` : "";
   function renderNode(node){
-    const c = node.charId ? charactersMap[node.charId] : null;
-    const nick = c ? dispName(c) : meta.nick;
     const children = comments.filter(n => n.parent === node.id).map(c2 => `<div class="cm-reply">${renderNode(c2)}</div>`).join("");
-    return `<div class="cm-comment"><b>${escapeHtml(nick)}</b>${formatText(node.text)}</div>${children}`;
+    return `<div class="cm-comment"><b>${escapeHtml(meta.nick)}</b>${formatText(node.text)}</div>${children}`;
   }
   const commentsHtml = comments.length
     ? `<div class="cm-comments">${comments.filter(n => n.parent === null).map(renderNode).join("")}</div>`
@@ -1066,7 +1125,7 @@ function buildCommunityHTML(site, title, body, images, comments){
   </div>`;
 }
 
-function dispName(c){ return c ? (c.private ? "🔒 " : "") + (c.name || "") : ""; }
+function dispName(name, c){ return (c && c.private ? "🔒 " : "") + (name || ""); }
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
