@@ -71,14 +71,19 @@ button, input, textarea{font-family:inherit;}
 
 #editor hr.divider{border:none; border-top:1px solid var(--border); margin:26px 0;}
 .imgs{display:grid; gap:3px; border-radius:10px; overflow:hidden; margin:8px 0;}
-.imgs img{width:100%; object-fit:cover; display:block; margin:0;}
-.imgs.n1 img{max-height:460px;}
-.imgs.n2{grid-template-columns:1fr 1fr;} .imgs.n2 img{height:170px;}
-.imgs.n3{grid-template-columns:1fr 1fr;} .imgs.n3 img:first-child{grid-row:span 2; height:100%;} .imgs.n3 img{height:110px;}
-.imgs.n4plus{grid-template-columns:1fr 1fr;} .imgs.n4plus img{height:120px;}
+.imgs img{width:100%; object-fit:cover; display:block; margin:0; cursor:zoom-in;}
+.imgs.n1 img{height:auto; max-height:520px; object-fit:contain; background:var(--bg0);}
+.imgs.n2{grid-template-columns:1fr 1fr;} .imgs.n2 img{aspect-ratio:1/1; height:auto;}
+.imgs.n3{grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;}
+.imgs.n3 img:nth-child(1){grid-column:1; grid-row:1; aspect-ratio:1/1; height:auto;}
+.imgs.n3 img:nth-child(2){grid-column:1; grid-row:2; aspect-ratio:1/1; height:auto;}
+.imgs.n3 img:nth-child(3){grid-column:2; grid-row:1/3; height:100%;}
+.imgs.n4plus{grid-template-columns:1fr 1fr;} .imgs.n4plus img{aspect-ratio:1/1; height:auto;}
 
 #overlay, #charOverlay, #blockSheet{display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:40; align-items:flex-end;}
 #overlay .sheet, #charOverlay .sheet, #blockSheet .sheet{background:var(--bg2); width:100%; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); border-radius:16px 16px 0 0; max-height:85vh; overflow-y:auto;}
+#blockSheet{align-items:flex-start;}
+#blockSheet .sheet{border-radius:0 0 16px 16px; padding:18px 16px;}
 #overlay input, #charOverlay input, #blockSheet textarea{width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:11px; border-radius:10px; font-size:15px; margin:10px 0;}
 #blockSheet textarea{min-height:70px; resize:vertical; line-height:1.6;}
 #overlay .row, #charOverlay .row, #blockSheet .row{display:flex; gap:8px;}
@@ -112,21 +117,26 @@ button, input, textarea{font-family:inherit;}
 .block.instagram .ighead{display:flex; align-items:center; gap:8px; padding:10px 12px;}
 .block.instagram .av{width:30px; height:30px; border-radius:50%; background:linear-gradient(45deg,#feda75,#d62976,#4f5bd5); background-size:cover; background-position:center; flex:0 0 auto;}
 .block.instagram .uname{font-weight:700; font-size:13px; color:var(--text);}
-.block.instagram .igimgs img{width:100%; display:block; max-height:480px; object-fit:cover; margin:0;}
+.block.instagram .igimgs{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;}
+.block.instagram .igimgs::-webkit-scrollbar{display:none;}
+.block.instagram .igimgs img{width:100%; flex:0 0 100%; scroll-snap-align:start; display:block; max-height:480px; object-fit:cover; margin:0; cursor:zoom-in;}
 .block.instagram .igfoot{display:flex; gap:14px; padding:10px 12px 0;}
 .block.instagram .igfoot svg{width:23px; height:23px; stroke:var(--text); fill:none; stroke-width:1.8;}
 .block.instagram .igbody{padding:6px 12px 12px;}
 .block.instagram .igtext{font-size:13.5px; line-height:1.5; white-space:pre-wrap;}
 .block.instagram .igtext b{margin-right:6px;}
 
-.block.twitter{display:flex; gap:10px; padding:12px 14px; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
+.block.twitter{display:flex; flex-direction:column; padding:12px 14px; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
+.block.twitter .tw-entry{display:flex; gap:10px;}
+.block.twitter .tw-reply{margin:10px 0 0 19px; padding-left:12px; border-left:2px solid var(--border2);}
 .block.twitter .av{width:38px; height:38px; border-radius:50%; background:#1d9bf0; background-size:cover; background-position:center; flex:0 0 auto;}
+.block.twitter .tw-reply .av{width:30px; height:30px;}
 .block.twitter .twbody{flex:1; min-width:0;}
-.block.twitter .twhead{font-size:14px;}
+.block.twitter .twhead{font-size:15px;}
 .block.twitter .twhead b{color:var(--text);}
 .block.twitter .twhead span{color:var(--text-faint); margin-left:4px;}
-.block.twitter .twtext{font-size:14.5px; line-height:1.45; margin:3px 0 4px; white-space:pre-wrap;}
-.block.twitter .imgs{border-radius:14px; border:1px solid var(--border2);}
+.block.twitter .twtext{font-size:16.5px; line-height:1.5; margin:3px 0 4px; white-space:pre-wrap;}
+.block.twitter .imgs{border-radius:14px; border:1px solid var(--border2); margin-top:4px;}
 
 .bubblerow{display:flex; align-items:flex-end; gap:8px;}
 .bubblerow.right{flex-direction:row-reverse;}
@@ -227,6 +237,7 @@ button, input, textarea{font-family:inherit;}
     </div>
     <div class="pillrow" id="blockCharRow"></div>
     <div class="pillrow" id="blockMentionRow" style="display:none"></div>
+    <div id="blockThreadPreview"></div>
     <div class="pillrow" id="blockPosRow" style="display:none">
       <button data-p="left" class="active">왼쪽(상대)</button>
       <button data-p="right">오른쪽(나)</button>
@@ -271,7 +282,7 @@ let charactersMap = {};
 let chapterUnsub = null;
 let savedRange = null;
 let saveTimer = null;
-let blockType = "instagram", blockCharId = null, blockPosition = "left", blockPending = [];
+let blockType = "instagram", blockCharId = null, blockPosition = "left", blockPending = [], blockThread = [];
 let charAvatarFile = null, charAvatarExisting = "";
 
 const NEEDS_CHAR = new Set(["instagram", "twitter", "kakao", "imessage"]);
@@ -542,7 +553,9 @@ document.getElementById("fabBlock").onclick = () => {
   if (!currentFolder) return;
   document.getElementById("blockText").value = "";
   blockPending = [];
+  blockThread = [];
   renderBlockPreview();
+  renderThreadPreview();
   blockType = "instagram"; blockPosition = "left";
   document.querySelectorAll("#blockTypeRow button").forEach(b => b.classList.toggle("active", b.dataset.t === blockType));
   updateBlockExtra();
@@ -554,6 +567,11 @@ document.getElementById("blockSheet").onclick = e => { if (e.target.id === "bloc
 document.querySelectorAll("#blockTypeRow button").forEach(btn => {
   btn.onclick = () => {
     blockType = btn.dataset.t;
+    blockThread = [];
+    document.getElementById("blockText").value = "";
+    blockPending = [];
+    renderBlockPreview();
+    renderThreadPreview();
     document.querySelectorAll("#blockTypeRow button").forEach(b => b.classList.toggle("active", b === btn));
     updateBlockExtra();
   };
@@ -570,18 +588,30 @@ function buildBlockMentionRow(){
     const handle = "@" + (c.twitter || c.name).replace(/^@/, "");
     const b = document.createElement("button");
     b.textContent = handle;
-    b.onclick = () => insertMentionText(handle + " ");
+    b.onclick = async () => {
+      const ta = document.getElementById("blockText");
+      const text = ta.value.trim();
+      b.disabled = true;
+      const urls = blockPending.length ? await Promise.all(blockPending.map(uploadToCloudinary)) : [];
+      b.disabled = false;
+      blockThread.push({ charId: blockCharId, text, images: urls });
+      blockCharId = c.id;
+      ta.value = "";
+      blockPending = [];
+      renderBlockPreview();
+      buildBlockCharRow();
+      renderThreadPreview();
+      ta.focus();
+    };
     row.appendChild(b);
   });
 }
-function insertMentionText(text){
-  const ta = document.getElementById("blockText");
-  const start = ta.selectionStart ?? ta.value.length;
-  const end = ta.selectionEnd ?? ta.value.length;
-  ta.value = ta.value.slice(0, start) + text + ta.value.slice(end);
-  const pos = start + text.length;
-  ta.focus();
-  ta.setSelectionRange(pos, pos);
+function renderThreadPreview(){
+  const el = document.getElementById("blockThreadPreview");
+  el.innerHTML = blockThread.map((t, i) => {
+    const c = t.charId ? charactersMap[t.charId] : null;
+    return `<div style="font-size:11.5px;color:var(--text-faint);padding:3px 0 3px ${i * 14}px">${i ? "ㄴ " : ""}${escapeHtml(c?.name || "user")} ${escapeHtml(t.text.slice(0, 24))}</div>`;
+  }).join("");
 }
 function buildBlockCharRow(){
   const row = document.getElementById("blockCharRow");
@@ -601,7 +631,12 @@ document.querySelectorAll("#blockPosRow button").forEach(btn => {
   };
 });
 document.getElementById("blockFileInput").onchange = e => {
-  blockPending = [...e.target.files];
+  let files = [...e.target.files];
+  if (blockType === "twitter" && files.length > 4) {
+    alert("트위터는 최대 4장까지 첨부 가능합니다");
+    files = files.slice(0, 4);
+  }
+  blockPending = files;
   renderBlockPreview();
 };
 function renderBlockPreview(){
@@ -619,12 +654,21 @@ function renderBlockPreview(){
 document.getElementById("blockInsertBtn").onclick = async () => {
   const text = document.getElementById("blockText").value.trim();
   const files = blockPending;
-  if (!text && !files.length) return;
+  if (!text && !files.length && !blockThread.length) return;
   const btn = document.getElementById("blockInsertBtn");
   btn.disabled = true; btn.textContent = "삽입중...";
   try {
     const urls = files.length ? await Promise.all(files.map(uploadToCloudinary)) : [];
-    const html = buildEmbedHTML(blockType, text, urls, blockCharId, blockPosition);
+    let html;
+    if (blockType === "twitter") {
+      const thread = [...blockThread];
+      if (text || urls.length || !thread.length) thread.push({ charId: blockCharId, text, images: urls });
+      html = buildTwitterThreadHTML(thread);
+      blockThread = [];
+      renderThreadPreview();
+    } else {
+      html = buildEmbedHTML(blockType, text, urls, blockCharId, blockPosition);
+    }
     insertAtCursor(html + "<p><br></p>");
     document.getElementById("blockText").value = "";
     blockPending = [];
@@ -637,6 +681,34 @@ document.getElementById("blockInsertBtn").onclick = async () => {
   }
   btn.disabled = false; btn.textContent = "삽입";
 };
+
+function twEntryHTML(entry){
+  const character = entry.charId ? charactersMap[entry.charId] : null;
+  const dispName = character?.name || "user";
+  const handle = character?.twitter || "@user";
+  const avStyle = character?.avatar ? ` style="background-image:url('${character.avatar.replace(/'/g, "%27")}')"` : "";
+  const n = entry.images.length;
+  const cls = n === 1 ? "n1" : n === 2 ? "n2" : n === 3 ? "n3" : "n4plus";
+  const imgsHtml = n ? `<div class="imgs ${cls}">${entry.images.map(u => `<img src="${u}">`).join("")}</div>` : "";
+  const textHtml = entry.text ? formatText(entry.text) : "";
+  return `<div class="tw-entry">
+    <div class="av"${avStyle}></div>
+    <div class="twbody">
+      <div class="twhead"><b>${escapeHtml(dispName)}</b><span>${escapeHtml(handle)}</span></div>
+      <div class="twtext">${textHtml}</div>
+      ${imgsHtml}
+    </div>
+  </div>`;
+}
+function buildTwitterThreadHTML(thread){
+  const rootHtml = twEntryHTML(thread[0]);
+  const repliesHtml = thread.slice(1).map(e => `<div class="tw-reply">${twEntryHTML(e)}</div>`).join("");
+  return `<div class="embed block twitter" contenteditable="false">
+    ${rootHtml}
+    ${repliesHtml}
+    <button class="embed-del">×</button>
+  </div>`;
+}
 
 function buildEmbedHTML(type, text, images, charId, position){
   const character = charId ? charactersMap[charId] : null;
@@ -659,19 +731,6 @@ function buildEmbedHTML(type, text, images, charId, position){
         <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
       </div>
       <div class="igbody"><div class="igtext">${textHtml ? `<b>${escapeHtml(uname)}</b>${textHtml}` : ""}</div></div>
-      <button class="embed-del">×</button>
-    </div>`;
-  }
-  if (type === "twitter") {
-    const dispName = character?.name || "user";
-    const handle = character?.twitter || "@user";
-    return `<div class="embed block twitter" contenteditable="false">
-      <div class="av"${avStyle}></div>
-      <div class="twbody">
-        <div class="twhead"><b>${escapeHtml(dispName)}</b><span>${escapeHtml(handle)}</span></div>
-        <div class="twtext">${textHtml}</div>
-        ${imgsHtml}
-      </div>
       <button class="embed-del">×</button>
     </div>`;
   }
