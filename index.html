@@ -160,6 +160,9 @@ button, input, textarea{font-family:inherit;}
 .block.community .cm-comments{margin-top:12px; padding-top:10px; border-top:1px solid var(--border2); display:flex; flex-direction:column; gap:8px;}
 .block.community .cm-comment{font-size:12.5px; line-height:1.55; color:var(--text-dim2); white-space:pre-wrap; word-break:break-word;}
 .block.community .cm-comment b{margin-right:6px; font-weight:800;}
+.block.community .cm-reply{margin:6px 0 0 16px; padding-left:10px; border-left:2px solid var(--border2);}
+#communityCommentList .ccItem, #blockThreadPreview .tpItem{cursor:pointer; border:1px solid transparent;}
+#communityCommentList .ccItem.sel, #blockThreadPreview .tpItem.sel{border-color:var(--accent); background:var(--bg3);}
 .block.community.site-instiz .cm-comment b{color:#00998c;}
 .block.community.site-theqoo .cm-comment b{color:#c0392b;}
 .block.community.site-jjookbbang .cm-comment b{color:#ff5da2;}
@@ -240,6 +243,7 @@ button, input, textarea{font-family:inherit;}
     <input id="charNameInput" placeholder="이름">
     <input id="charTwInput" placeholder="트위터 계정 (예: @handle)">
     <input id="charIgInput" placeholder="인스타 계정 (예: @handle)">
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim);margin:10px 0"><input type="checkbox" id="charPrivateInput" style="width:auto;margin:0"> 비공개 계정 (🔒)</label>
     <div style="display:flex; align-items:center; gap:10px; margin:10px 0;">
       <img id="charAvatarPreview" style="width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--bg4);display:none;">
       <label class="attachbtn" style="margin:0">📎 프로필 사진<input type="file" id="charAvatarInput" accept="image/*" style="display:none"></label>
@@ -270,8 +274,8 @@ button, input, textarea{font-family:inherit;}
     </div>
     <input id="communityTitleInput" placeholder="제목 (선택)" style="display:none">
     <div class="pillrow" id="blockCharRow"></div>
-    <div class="pillrow" id="blockMentionRow" style="display:none"></div>
     <div id="blockThreadPreview"></div>
+    <button class="attachbtn" id="blockThreadAddBtn" style="display:none;width:100%;text-align:center;margin-bottom:8px">↩︎ 스레드에 추가 (대댓글)</button>
     <div class="pillrow" id="blockPosRow" style="display:none">
       <button data-p="left" class="active">왼쪽(상대)</button>
       <button data-p="right">오른쪽(나)</button>
@@ -321,9 +325,9 @@ let charactersMap = {};
 let chapterUnsub = null;
 let savedRange = null;
 let saveTimer = null;
-let blockType = "instagram", blockCharId = null, blockPosition = "left", blockPending = [], blockThread = [];
+let blockType = "instagram", blockCharId = null, blockPosition = "left", blockPending = [], blockThread = [], blockReplyTarget = null, blockIdSeq = 1;
 let charAvatarFile = null, charAvatarExisting = "";
-let communitySite = "instiz", communityComments = [];
+let communitySite = "instiz", communityComments = [], communityReplyTarget = null, communityIdSeq = 1;
 let undoStack = [];
 
 const NEEDS_CHAR = new Set(["instagram", "twitter", "kakao", "imessage"]);
@@ -441,7 +445,6 @@ onSnapshot(query(charactersCol, orderBy("createdAt", "desc")), snap => {
   snap.forEach(d => charactersMap[d.id] = { id: d.id, ...d.data() });
   renderCharList();
   buildBlockCharRow();
-  buildBlockMentionRow();
 });
 
 function renderCharList(){
@@ -453,7 +456,7 @@ function renderCharList(){
     item.innerHTML = `
       <div class="ci-av"></div>
       <div class="ci-info">
-        <div class="ci-name">${escapeHtml(c.name || "")}</div>
+        <div class="ci-name">${escapeHtml(dispName(c))}</div>
         <div class="ci-handles">${escapeHtml(c.twitter || "")}${c.twitter && c.instagram ? " · " : ""}${escapeHtml(c.instagram || "")}</div>
       </div>
       <button data-a="edit">✎</button>
@@ -474,6 +477,7 @@ function openCharSheet(c){
   document.getElementById("charNameInput").value = c ? c.name || "" : "";
   document.getElementById("charTwInput").value = c ? c.twitter || "" : "";
   document.getElementById("charIgInput").value = c ? c.instagram || "" : "";
+  document.getElementById("charPrivateInput").checked = c ? !!c.private : false;
   document.getElementById("charOk").textContent = c ? "저장" : "추가";
   document.getElementById("charDelete").style.display = c ? "block" : "none";
   charAvatarFile = null;
@@ -499,6 +503,7 @@ document.getElementById("charOk").onclick = async () => {
   const name = document.getElementById("charNameInput").value.trim();
   const twitter = document.getElementById("charTwInput").value.trim();
   const instagram = document.getElementById("charIgInput").value.trim();
+  const isPrivate = document.getElementById("charPrivateInput").checked;
   if (!name) return;
   const okBtn = document.getElementById("charOk");
   okBtn.disabled = true;
@@ -507,9 +512,9 @@ document.getElementById("charOk").onclick = async () => {
     try { avatar = await uploadToCloudinary(charAvatarFile); } catch (e) { alert("프로필 사진 업로드 실패"); }
   }
   if (editingCharId) {
-    await updateDoc(doc(db, "characters", editingCharId), { name, twitter, instagram, avatar });
+    await updateDoc(doc(db, "characters", editingCharId), { name, twitter, instagram, avatar, private: isPrivate });
   } else {
-    await addDoc(charactersCol, { name, twitter, instagram, avatar, createdAt: Date.now() });
+    await addDoc(charactersCol, { name, twitter, instagram, avatar, private: isPrivate, createdAt: Date.now() });
   }
   okBtn.disabled = false;
   document.getElementById("charOverlay").style.display = "none";
@@ -612,8 +617,8 @@ document.getElementById("fabBlock").onclick = () => {
   if (!currentFolder) return;
   document.getElementById("blockText").value = "";
   blockPending = [];
-  blockThread = [];
-  communityComments = [];
+  blockThread = []; blockReplyTarget = null;
+  communityComments = []; communityReplyTarget = null;
   communitySite = "instiz";
   document.getElementById("communityTitleInput").value = "";
   document.getElementById("communityCommentInput").value = "";
@@ -632,8 +637,8 @@ document.getElementById("blockSheet").onclick = e => { if (e.target.id === "bloc
 document.querySelectorAll("#blockTypeRow button").forEach(btn => {
   btn.onclick = () => {
     blockType = btn.dataset.t;
-    blockThread = [];
-    communityComments = [];
+    blockThread = []; blockReplyTarget = null;
+    communityComments = []; communityReplyTarget = null;
     document.getElementById("blockText").value = "";
     document.getElementById("communityTitleInput").value = "";
     document.getElementById("communityCommentInput").value = "";
@@ -655,7 +660,9 @@ document.getElementById("communityCommentAdd").onclick = () => {
   const inp = document.getElementById("communityCommentInput");
   const v = inp.value.trim();
   if (!v) return;
-  communityComments.push(v);
+  const id = communityIdSeq++;
+  communityComments.push({ id, text: v, parent: communityComments.length ? communityReplyTarget : null });
+  communityReplyTarget = id;
   inp.value = "";
   renderCommunityComments();
   inp.focus();
@@ -666,58 +673,70 @@ document.getElementById("communityCommentInput").addEventListener("keydown", e =
 function renderCommunityComments(){
   const list = document.getElementById("communityCommentList");
   list.innerHTML = "";
-  communityComments.forEach((c, i) => {
+  function renderNode(node, depth){
     const row = document.createElement("div");
-    row.className = "ccItem";
-    const span = document.createElement("span"); span.textContent = c;
+    row.className = "ccItem" + (communityReplyTarget === node.id ? " sel" : "");
+    row.style.marginLeft = (depth * 14) + "px";
+    const span = document.createElement("span"); span.textContent = (depth ? "ㄴ " : "") + node.text;
     const rm = document.createElement("button"); rm.textContent = "×";
-    rm.onclick = () => { communityComments.splice(i, 1); renderCommunityComments(); };
+    rm.onclick = e => {
+      e.stopPropagation();
+      const ids = new Set([node.id]);
+      let changed = true;
+      while (changed) { changed = false; communityComments.forEach(n => { if (n.parent !== null && ids.has(n.parent) && !ids.has(n.id)) { ids.add(n.id); changed = true; } }); }
+      communityComments = communityComments.filter(n => !ids.has(n.id));
+      if (ids.has(communityReplyTarget)) communityReplyTarget = null;
+      renderCommunityComments();
+    };
+    row.onclick = () => { communityReplyTarget = node.id; renderCommunityComments(); };
     row.append(span, rm);
     list.appendChild(row);
-  });
+    communityComments.filter(n => n.parent === node.id).forEach(child => renderNode(child, depth + 1));
+  }
+  communityComments.filter(n => n.parent === null).forEach(root => renderNode(root, 0));
 }
 function updateBlockExtra(){
   const isCommunity = blockType === "community";
   document.getElementById("blockCharRow").style.display = NEEDS_CHAR.has(blockType) ? "flex" : "none";
   document.getElementById("blockPosRow").style.display = NEEDS_POS.has(blockType) ? "flex" : "none";
-  document.getElementById("blockMentionRow").style.display = blockType === "twitter" ? "flex" : "none";
+  document.getElementById("blockThreadAddBtn").style.display = blockType === "twitter" ? "block" : "none";
   document.getElementById("blockCommunityRow").style.display = isCommunity ? "flex" : "none";
   document.getElementById("communityTitleInput").style.display = isCommunity ? "block" : "none";
   document.getElementById("communityCommentRow").style.display = isCommunity ? "flex" : "none";
   document.getElementById("communityCommentList").style.display = isCommunity ? "flex" : "none";
   document.getElementById("blockText").placeholder = isCommunity ? "본문 입력 (#해시태그 가능)" : "내용 입력 (#해시태그 가능)";
 }
-function buildBlockMentionRow(){
-  const row = document.getElementById("blockMentionRow");
-  row.innerHTML = "";
-  Object.values(charactersMap).forEach(c => {
-    const handle = "@" + (c.twitter || c.name).replace(/^@/, "");
-    const b = document.createElement("button");
-    b.textContent = handle;
-    b.onclick = async () => {
-      const ta = document.getElementById("blockText");
-      const text = ta.value.trim();
-      b.disabled = true;
-      const urls = blockPending.length ? await Promise.all(blockPending.map(uploadToCloudinary)) : [];
-      b.disabled = false;
-      blockThread.push({ charId: blockCharId, text, images: urls });
-      blockCharId = c.id;
-      ta.value = "";
-      blockPending = [];
-      renderBlockPreview();
-      buildBlockCharRow();
-      renderThreadPreview();
-      ta.focus();
-    };
-    row.appendChild(b);
-  });
-}
+document.getElementById("blockThreadAddBtn").onclick = async () => {
+  const ta = document.getElementById("blockText");
+  const text = ta.value.trim();
+  if (!text && !blockPending.length) return;
+  const btn = document.getElementById("blockThreadAddBtn");
+  btn.disabled = true;
+  const urls = blockPending.length ? await Promise.all(blockPending.map(uploadToCloudinary)) : [];
+  btn.disabled = false;
+  const id = blockIdSeq++;
+  blockThread.push({ id, charId: blockCharId, text, images: urls, parent: blockThread.length ? blockReplyTarget : null });
+  blockReplyTarget = id;
+  ta.value = "";
+  blockPending = [];
+  renderBlockPreview();
+  renderThreadPreview();
+  ta.focus();
+};
 function renderThreadPreview(){
   const el = document.getElementById("blockThreadPreview");
-  el.innerHTML = blockThread.map((t, i) => {
-    const c = t.charId ? charactersMap[t.charId] : null;
-    return `<div style="font-size:11.5px;color:var(--text-faint);padding:3px 0 3px ${i * 14}px">${i ? "ㄴ " : ""}${escapeHtml(c?.name || "user")} ${escapeHtml(t.text.slice(0, 24))}</div>`;
-  }).join("");
+  el.innerHTML = "";
+  function renderNode(node, depth){
+    const c = node.charId ? charactersMap[node.charId] : null;
+    const row = document.createElement("div");
+    row.className = "tpItem" + (blockReplyTarget === node.id ? " sel" : "");
+    row.style.cssText = `font-size:11.5px;color:var(--text-faint);padding:5px 8px;margin:2px 0 2px ${depth * 14}px;border-radius:6px`;
+    row.textContent = (depth ? "ㄴ " : "") + (dispName(c) || "user") + " " + node.text.slice(0, 24);
+    row.onclick = () => { blockReplyTarget = node.id; renderThreadPreview(); };
+    el.appendChild(row);
+    blockThread.filter(n => n.parent === node.id).forEach(child => renderNode(child, depth + 1));
+  }
+  blockThread.filter(n => n.parent === null).forEach(root => renderNode(root, 0));
 }
 function buildBlockCharRow(){
   const row = document.getElementById("blockCharRow");
@@ -725,7 +744,7 @@ function buildBlockCharRow(){
   Object.values(charactersMap).forEach(c => {
     const b = document.createElement("button");
     b.className = "chip" + (blockCharId === c.id ? " active" : "");
-    b.textContent = c.name;
+    b.textContent = dispName(c);
     b.onclick = () => { blockCharId = c.id; buildBlockCharRow(); };
     row.appendChild(b);
   });
@@ -770,13 +789,13 @@ document.getElementById("blockInsertBtn").onclick = async () => {
     let html;
     if (blockType === "twitter") {
       const thread = [...blockThread];
-      if (text || urls.length || !thread.length) thread.push({ charId: blockCharId, text, images: urls });
+      if (text || urls.length || !thread.length) thread.push({ id: blockIdSeq++, charId: blockCharId, text, images: urls, parent: thread.length ? blockReplyTarget : null });
       html = buildTwitterThreadHTML(thread);
-      blockThread = [];
+      blockThread = []; blockReplyTarget = null;
       renderThreadPreview();
     } else if (blockType === "community") {
       html = buildCommunityHTML(communitySite, communityTitleVal, text, urls, communityComments);
-      communityComments = [];
+      communityComments = []; communityReplyTarget = null;
       renderCommunityComments();
       document.getElementById("communityTitleInput").value = "";
     } else {
@@ -797,7 +816,7 @@ document.getElementById("blockInsertBtn").onclick = async () => {
 
 function twEntryHTML(entry){
   const character = entry.charId ? charactersMap[entry.charId] : null;
-  const dispName = character?.name || "user";
+  const dispNameStr = dispName(character) || "user";
   const handle = character?.twitter || "@user";
   const avStyle = character?.avatar ? ` style="background-image:url('${character.avatar.replace(/'/g, "%27")}')"` : "";
   const n = entry.images.length;
@@ -807,18 +826,20 @@ function twEntryHTML(entry){
   return `<div class="tw-entry">
     <div class="av"${avStyle}></div>
     <div class="twbody">
-      <div class="twhead"><b>${escapeHtml(dispName)}</b><span>${escapeHtml(handle)}</span></div>
+      <div class="twhead"><b>${escapeHtml(dispNameStr)}</b><span>${escapeHtml(handle)}</span></div>
       <div class="twtext">${textHtml}</div>
       ${imgsHtml}
     </div>
   </div>`;
 }
 function buildTwitterThreadHTML(thread){
-  const rootHtml = twEntryHTML(thread[0]);
-  const repliesHtml = thread.slice(1).map(e => `<div class="tw-reply">${twEntryHTML(e)}</div>`).join("");
+  function renderNode(node){
+    const children = thread.filter(n => n.parent === node.id).map(c => `<div class="tw-reply">${renderNode(c)}</div>`).join("");
+    return twEntryHTML(node) + children;
+  }
+  const root = thread.find(n => n.parent === null || n.parent === undefined) || thread[0];
   return `<div class="embed block twitter" contenteditable="false">
-    ${rootHtml}
-    ${repliesHtml}
+    ${renderNode(root)}
     <button class="embed-del">×</button>
   </div>`;
 }
@@ -833,7 +854,7 @@ function buildEmbedHTML(type, text, images, charId, position){
   const avStyle = character?.avatar ? ` style="background-image:url('${character.avatar.replace(/'/g, "%27")}')"` : "";
 
   if (type === "instagram") {
-    const uname = character?.instagram || character?.name || "user";
+    const uname = character?.instagram || dispName(character) || "user";
     const igimgs = n ? `<div class="igimgs">${images.map(u => `<img src="${u}">`).join("")}</div>` : "";
     return `<div class="embed block instagram" contenteditable="false">
       <div class="ighead"><div class="av"${avStyle}></div><div class="uname">${escapeHtml(uname)}</div></div>
@@ -848,7 +869,7 @@ function buildEmbedHTML(type, text, images, charId, position){
     </div>`;
   }
   const pos = position === "right" ? "right" : "left";
-  const name = character?.name || "";
+  const name = dispName(character);
   return `<div class="embed block ${type}" contenteditable="false">
     <div class="bubblerow ${pos}">
       <div class="bubblecol">
@@ -867,8 +888,12 @@ function buildCommunityHTML(site, title, body, images, comments){
   const imgsHtml = n ? `<div class="imgs ${cls}">${images.map(u => `<img src="${u}">`).join("")}</div>` : "";
   const bodyHtml = body ? formatText(body) : "";
   const titleHtml = title ? `<div class="cm-title">${escapeHtml(title)}</div>` : "";
+  function renderNode(node){
+    const children = comments.filter(n => n.parent === node.id).map(c => `<div class="cm-reply">${renderNode(c)}</div>`).join("");
+    return `<div class="cm-comment"><b>${escapeHtml(meta.nick)}</b>${formatText(node.text)}</div>${children}`;
+  }
   const commentsHtml = comments.length
-    ? `<div class="cm-comments">${comments.map(c => `<div class="cm-comment"><b>${escapeHtml(meta.nick)}</b>${formatText(c)}</div>`).join("")}</div>`
+    ? `<div class="cm-comments">${comments.filter(n => n.parent === null).map(renderNode).join("")}</div>`
     : "";
   return `<div class="embed block community site-${site}" contenteditable="false">
     <div class="cm-badge">${meta.label}</div>
@@ -880,6 +905,7 @@ function buildCommunityHTML(site, title, body, images, comments){
   </div>`;
 }
 
+function dispName(c){ return c ? (c.private ? "🔒 " : "") + (c.name || "") : ""; }
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
