@@ -59,8 +59,8 @@ button, input, textarea{font-family:inherit;}
 .chipedit{flex:0 0 auto; font-size:11px; padding:7px 9px; border-radius:0 16px 16px 0; background:var(--bg4); color:var(--text-faint4); border:1px solid var(--border); border-left:1px solid var(--borderdark);}
 .chipwrap .chip.active + .chipedit{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
 
-#main{padding:16px 14px 120px; max-width:640px; margin:0 auto;}
-#editor{min-height:78vh; outline:none; font-size:16px; line-height:1.9; word-break:break-word;}
+#main{padding:18px 22px 80px; max-width:640px; margin:0 auto;}
+#editor{min-height:78vh; outline:none; font-size:18.5px; line-height:1.95; word-break:break-word;}
 #editor:empty:before{content:attr(data-ph); color:var(--text-faint3);}
 #editor img{max-width:100%; border-radius:10px; display:block; margin:12px 0;}
 #empty{text-align:center; color:var(--text-faint2); font-size:13px; margin-top:60px;}
@@ -102,9 +102,8 @@ button, input, textarea{font-family:inherit;}
 #blockPreview .rm{position:absolute; top:-5px; right:-5px; background:var(--danger); color:var(--danger-text); border-radius:50%; width:18px; height:18px; font-size:11px; border:none; line-height:18px;}
 .attachbtn{background:none; border:1px solid var(--border); color:var(--text-dim); padding:7px 12px; border-radius:8px; font-size:12.5px; display:inline-block; margin-top:2px;}
 
-#fab{position:fixed; right:18px; bottom:24px; display:none; flex-direction:column; gap:10px; z-index:15;}
-#fab button{width:48px; height:48px; border-radius:50%; background:var(--accent); color:var(--accent-text); border:none; font-size:19px; box-shadow:0 3px 10px rgba(0,0,0,.35);}
-#fab #fabBlock{background:var(--bg3); color:var(--text-dim); border:1px solid var(--border);}
+#editBtns{display:none; gap:6px;}
+#editBtns button{background:none; border:1px solid var(--border); color:var(--text-dim); border-radius:16px; padding:5px 10px; font-size:13px;}
 
 #lightbox{display:none; position:fixed; inset:0; background:rgba(0,0,0,.94); z-index:50; align-items:center; justify-content:center;}
 #lightbox img{max-width:94vw; max-height:94vh; object-fit:contain;}
@@ -142,7 +141,7 @@ button, input, textarea{font-family:inherit;}
 .bubble .imgs{margin-top:4px; border-radius:12px;}
 
 @media (hover:hover) and (pointer:fine){
-  .chip, #themeToggle, #charBtn, .chipedit, #fab button, .embed-del{cursor:pointer; transition:background .15s,opacity .15s;}
+  .chip, #themeToggle, #charBtn, .chipedit, #editBtns button, .embed-del{cursor:pointer; transition:background .15s,opacity .15s;}
   .chip:hover:not(.active){background:var(--border2);}
   #editor img{cursor:zoom-in;}
 }
@@ -166,6 +165,11 @@ button, input, textarea{font-family:inherit;}
   <div class="titlerow">
     <h1 id="siteTitle">📖 연재소설</h1>
     <div class="topbtns">
+      <span id="editBtns">
+        <button id="fabDivider" title="구분선 삽입">―</button>
+        <button id="fabBlock" title="대화/SNS 삽입">💬</button>
+        <button id="fabImg" title="이미지 삽입">📷</button>
+      </span>
       <button id="charBtn">👤 인물</button>
       <button id="themeToggle">🌙 다크</button>
     </div>
@@ -178,11 +182,6 @@ button, input, textarea{font-family:inherit;}
   <div id="empty">회차를 선택하거나 새로 만들어보세요</div>
 </div>
 
-<div id="fab">
-  <button id="fabDivider" title="구분선 삽입">―</button>
-  <button id="fabBlock" title="대화/SNS 삽입">💬</button>
-  <button id="fabImg" title="이미지 삽입">📷</button>
-</div>
 <input type="file" id="imgFileInput" accept="image/*" multiple style="display:none">
 
 <div id="overlay">
@@ -227,6 +226,7 @@ button, input, textarea{font-family:inherit;}
       <button data-t="imessage">아이메시지</button>
     </div>
     <div class="pillrow" id="blockCharRow"></div>
+    <div class="pillrow" id="blockMentionRow" style="display:none"></div>
     <div class="pillrow" id="blockPosRow" style="display:none">
       <button data-p="left" class="active">왼쪽(상대)</button>
       <button data-p="right">오른쪽(나)</button>
@@ -279,7 +279,7 @@ const NEEDS_POS = new Set(["kakao", "imessage"]);
 
 const editor = document.getElementById("editor");
 const emptyEl = document.getElementById("empty");
-const fab = document.getElementById("fab");
+const fab = document.getElementById("editBtns");
 
 // site title
 const siteTitle = document.getElementById("siteTitle");
@@ -368,7 +368,7 @@ function selectFolder(id) {
   document.querySelectorAll("#folderRow .chip:not(.add)").forEach(el => el.classList.toggle("active", el.dataset.fid === id));
   emptyEl.style.display = "none";
   editor.style.display = "block";
-  fab.style.display = "flex";
+  fab.style.display = "inline-flex";
   if (chapterUnsub) chapterUnsub();
   chapterUnsub = onSnapshot(doc(db, "chapters", id), snap => {
     if (document.activeElement === editor) return;
@@ -383,6 +383,7 @@ onSnapshot(query(charactersCol, orderBy("createdAt", "desc")), snap => {
   snap.forEach(d => charactersMap[d.id] = { id: d.id, ...d.data() });
   renderCharList();
   buildBlockCharRow();
+  buildBlockMentionRow();
 });
 
 function renderCharList(){
@@ -475,16 +476,11 @@ function insertAtCursor(html){
   editor.focus();
   const sel = window.getSelection();
   sel.removeAllRanges();
-  if (savedRange && editor.contains(savedRange.startContainer)) {
-    sel.addRange(savedRange);
-  } else {
-    const r = document.createRange();
-    r.selectNodeContents(editor);
-    r.collapse(false);
-    sel.addRange(r);
-  }
+  const r = document.createRange();
+  r.selectNodeContents(editor);
+  r.collapse(false);
+  sel.addRange(r);
   const range = sel.getRangeAt(0);
-  range.deleteContents();
   const tpl = document.createElement("template");
   tpl.innerHTML = html;
   const frag = tpl.content;
@@ -496,6 +492,7 @@ function insertAtCursor(html){
     sel.removeAllRanges();
     sel.addRange(range);
   }
+  editor.scrollTop = editor.scrollHeight;
   saveContent();
 }
 
@@ -564,6 +561,27 @@ document.querySelectorAll("#blockTypeRow button").forEach(btn => {
 function updateBlockExtra(){
   document.getElementById("blockCharRow").style.display = NEEDS_CHAR.has(blockType) ? "flex" : "none";
   document.getElementById("blockPosRow").style.display = NEEDS_POS.has(blockType) ? "flex" : "none";
+  document.getElementById("blockMentionRow").style.display = blockType === "twitter" ? "flex" : "none";
+}
+function buildBlockMentionRow(){
+  const row = document.getElementById("blockMentionRow");
+  row.innerHTML = "";
+  Object.values(charactersMap).forEach(c => {
+    const handle = "@" + (c.twitter || c.name).replace(/^@/, "");
+    const b = document.createElement("button");
+    b.textContent = handle;
+    b.onclick = () => insertMentionText(handle + " ");
+    row.appendChild(b);
+  });
+}
+function insertMentionText(text){
+  const ta = document.getElementById("blockText");
+  const start = ta.selectionStart ?? ta.value.length;
+  const end = ta.selectionEnd ?? ta.value.length;
+  ta.value = ta.value.slice(0, start) + text + ta.value.slice(end);
+  const pos = start + text.length;
+  ta.focus();
+  ta.setSelectionRange(pos, pos);
 }
 function buildBlockCharRow(){
   const row = document.getElementById("blockCharRow");
