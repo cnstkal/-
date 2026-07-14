@@ -65,7 +65,7 @@ button, input, textarea{font-family:inherit;}
 #editor img{max-width:100%; border-radius:10px; display:block; margin:12px 0;}
 #empty{text-align:center; color:var(--text-faint2); font-size:13px; margin-top:60px;}
 
-.embed{position:relative; margin:16px 0;}
+.embed{position:relative; margin:16px 0; width:100%;}
 .embed .embed-del{position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%; background:var(--danger); color:var(--danger-text); border:none; font-size:12px; line-height:22px; opacity:0; transition:opacity .15s; z-index:2;}
 .embed:hover .embed-del{opacity:1;}
 
@@ -483,7 +483,19 @@ function insertAtCursor(html){
     r.collapse(false);
     sel.addRange(r);
   }
-  document.execCommand("insertHTML", false, html);
+  const range = sel.getRangeAt(0);
+  range.deleteContents();
+  const tpl = document.createElement("template");
+  tpl.innerHTML = html;
+  const frag = tpl.content;
+  const lastNode = frag.lastChild;
+  range.insertNode(frag);
+  if (lastNode) {
+    range.setStartAfter(lastNode);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
   saveContent();
 }
 
