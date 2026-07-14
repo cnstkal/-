@@ -59,39 +59,35 @@ button, input, textarea{font-family:inherit;}
 .fchip{flex:0 0 auto; font-size:12px; padding:6px 12px; border-radius:14px; background:var(--bg4); color:var(--text-mut); border:1px solid var(--border);}
 .fchip.active{background:var(--danger); color:var(--danger-text); font-weight:700; border-color:var(--danger);}
 
-#composer{padding:10px 12px; background:var(--bg2); border-bottom:6px solid var(--bg0); display:none;}
+#extraRow{margin-bottom:8px;}
 #typeRow{display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap;}
 #typeRow button{
-  flex:1 1 18%; font-size:11.5px; padding:8px 0; border-radius:8px; background:var(--bg4); color:var(--text-mut); border:none;
+  flex:1 1 18%; font-size:11px; padding:7px 0; border-radius:8px; background:var(--bg4); color:var(--text-mut); border:none;
 }
 #typeRow button.active{background:var(--danger); color:var(--danger-text); font-weight:700;}
 #charRow, #posRow{display:none; gap:6px; overflow-x:auto; margin-bottom:8px; -webkit-overflow-scrolling:touch;}
 #charRow.show, #posRow.show{display:flex;}
 #textInput{
-  width:100%; min-height:52px; max-height:200px; background:var(--bg3); color:var(--text); border:1px solid var(--border);
-  border-radius:10px; padding:10px 12px; font-size:15px; resize:none; outline:none;
+  width:100%; min-height:44px; max-height:220px; background:none; color:var(--text); border:none;
+  padding:0; font-size:15.5px; line-height:1.8; resize:none; outline:none;
 }
 #preview{display:flex; gap:6px; overflow-x:auto; margin-top:8px;}
 #preview .thumb{position:relative; flex:0 0 auto;}
 #preview img{width:56px; height:56px; object-fit:cover; border-radius:8px;}
 #preview .rm{position:absolute; top:-5px; right:-5px; background:var(--danger); color:var(--danger-text); border-radius:50%; width:18px; height:18px; font-size:11px; border:none; line-height:18px;}
-#timeInput{width:100%; background:var(--bg3); color:var(--text-dim); border:1px solid var(--border); border-radius:8px; padding:7px 10px; font-size:12.5px; margin-top:6px;}
-.composer-row{display:flex; justify-content:space-between; align-items:center; margin-top:8px;}
+.composer-row{display:flex; justify-content:space-between; align-items:center; margin-top:10px;}
+.composer-left{display:flex; gap:8px; align-items:center;}
+#plusBtn{width:30px; height:30px; border-radius:50%; border:1px solid var(--border); background:none; color:var(--accent); font-size:17px; line-height:1;}
 .typeSwitchRow{display:flex; gap:6px; margin:6px 0; flex-wrap:wrap;}
 .typeSwitchRow button{flex:1 1 18%; font-size:11px; padding:6px 0; border-radius:7px; background:var(--bg4); color:var(--text-mut); border:none;}
 .typeSwitchRow button.active{background:var(--danger); color:var(--danger-text); font-weight:700;}
-#attachBtn{background:none; border:1px solid var(--border); color:var(--text-dim); padding:9px 12px; border-radius:10px; font-size:13px;}
-#postBtn{background:var(--accent); color:var(--accent-text); border:none; padding:9px 20px; border-radius:10px; font-size:13px; font-weight:700;}
+#attachBtn{background:none; border:1px solid var(--border); color:var(--text-dim); padding:6px 11px; border-radius:8px; font-size:12.5px;}
+#postBtn{background:var(--accent); color:var(--accent-text); border:none; padding:8px 18px; border-radius:10px; font-size:13px; font-weight:700;}
 #postBtn:disabled{opacity:.4;}
 
-#fab{
-  position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom)); z-index:30;
-  width:52px; height:52px; border-radius:50%; background:var(--danger); color:var(--danger-text); border:none;
-  font-size:26px; box-shadow:0 4px 12px rgba(0,0,0,.5);
-}
-
 #main{padding:12px 10px 90px; max-width:600px; margin:0 auto;}
-#feed{background:var(--bg2); border-radius:14px; padding:22px 20px; border:1px solid var(--border2);}
+#articleBox{background:var(--bg2); border-radius:14px; padding:22px 20px; border:1px solid var(--border2);}
+#inlineComposer{margin-top:18px; padding-top:16px; border-top:1px dashed var(--border2);}
 .block{position:relative; margin-bottom:18px;}
 .block:last-child{margin-bottom:0;}
 .block.text .text{white-space:pre-wrap; line-height:1.8; font-size:15.5px; word-break:break-word;}
@@ -172,25 +168,19 @@ button, input, textarea{font-family:inherit;}
 
 /* ---- PC 최적화 (마우스 환경) ---- */
 @media (hover:hover) and (pointer:fine){
-  .chip, .fchip, #typeRow button, #themeToggle, #charBtn, #attachBtn, #postBtn, .delbtn, .chipedit{cursor:pointer; transition:background .15s,opacity .15s,transform .1s;}
+  .chip, .fchip, #typeRow button, #themeToggle, #charBtn, #attachBtn, #postBtn, #plusBtn, .delbtn, .chipedit{cursor:pointer; transition:background .15s,opacity .15s,transform .1s;}
   .chip:hover:not(.active), .fchip:hover:not(.active){background:var(--border2);}
   #postBtn:hover{opacity:.88;}
-  #fab:hover{transform:scale(1.06);}
   .imgs img, .block.instagram .igimgs img{cursor:zoom-in;}
 }
 @media (min-width:860px){
   #topbar{padding:14px 24px 10px;}
-  #main{max-width:900px; padding:20px 24px 90px;}
-  #feed{display:block; column-count:2; column-gap:16px;}
-  #feed .card{break-inside:avoid; margin-bottom:16px; display:inline-block; width:100%;}
-  #composer{max-width:900px; margin:0 auto; padding:14px 24px; border-radius:0 0 14px 14px;}
-  #fab{right:calc(50% - 450px + 16px);}
+  #main{max-width:720px; padding:20px 24px 90px;}
+  #articleBox{padding:32px 40px;}
   .imgs.n1 img{max-height:520px;}
 }
 @media (min-width:1200px){
-  #main, #composer{max-width:1080px;}
-  #feed{column-count:3;}
-  #fab{right:calc(50% - 540px + 16px);}
+  #main{max-width:760px;}
 }
 
 /* ---- 모바일 최적화 (작은 화면) ---- */
@@ -205,7 +195,7 @@ button, input, textarea{font-family:inherit;}
   .imgs.n1 img{max-height:340px;}
 }
 @supports (-webkit-touch-callout:none){
-  #textInput, #timeInput, #overlay input, #charOverlay input{font-size:16px;} /* iOS 자동 확대 방지 */
+  #textInput, #overlay input, #charOverlay input{font-size:16px;} /* iOS 자동 확대 방지 */
 }
 </style>
 </head>
@@ -221,34 +211,37 @@ button, input, textarea{font-family:inherit;}
   <div id="folderRow"><button class="chip add" id="newFolderBtn">+ 회차</button></div>
 </div>
 
-<div id="composer">
-  <div id="typeRow">
-    <button data-type="text" class="active">텍스트</button>
-    <button data-type="instagram">인스타</button>
-    <button data-type="twitter">트윗</button>
-    <button data-type="kakao">카카오톡</button>
-    <button data-type="imessage">아이메시지</button>
-  </div>
-  <div id="charRow"></div>
-  <div id="posRow">
-    <button class="chip active" data-p="left">왼쪽(상대)</button>
-    <button class="chip" data-p="right">오른쪽(나)</button>
-  </div>
-  <textarea id="textInput" placeholder="내용을 입력... (#해시태그 사용 가능)"></textarea>
-  <div id="preview"></div>
-  <input type="datetime-local" id="timeInput" title="비워두면 현재 시간으로 업로드">
-  <div class="composer-row">
-    <label id="attachBtn">📎 사진<input type="file" id="fileInput" accept="image/*" multiple style="display:none"></label>
-    <button id="postBtn">올리기</button>
-  </div>
-</div>
-
 <div id="main">
-  <div id="feed"></div>
+  <div id="articleBox">
+    <div id="feed"></div>
+    <div id="inlineComposer" style="display:none">
+      <div id="extraRow" style="display:none">
+        <div id="typeRow">
+          <button data-type="text" class="active">텍스트</button>
+          <button data-type="instagram">인스타</button>
+          <button data-type="twitter">트윗</button>
+          <button data-type="kakao">카카오톡</button>
+          <button data-type="imessage">아이메시지</button>
+        </div>
+        <div id="charRow"></div>
+        <div id="posRow">
+          <button class="chip active" data-p="left">왼쪽(상대)</button>
+          <button class="chip" data-p="right">오른쪽(나)</button>
+        </div>
+      </div>
+      <textarea id="textInput" placeholder="이어서 써내려가세요... (#해시태그 가능)"></textarea>
+      <div id="preview"></div>
+      <div class="composer-row">
+        <div class="composer-left">
+          <button id="plusBtn" title="블록 종류 선택">+</button>
+          <label id="attachBtn">📎<input type="file" id="fileInput" accept="image/*" multiple style="display:none"></label>
+        </div>
+        <button id="postBtn">추가</button>
+      </div>
+    </div>
+  </div>
   <div id="empty">회차를 선택하거나 새로 만들어보세요</div>
 </div>
-
-<button id="fab" style="display:none">✎</button>
 
 <div id="overlay">
   <div class="sheet">
@@ -390,14 +383,13 @@ document.getElementById("folderDelete").onclick = async () => {
   const snap = await getDocs(query(postsCol, where("folderId", "==", fid)));
   await Promise.all(snap.docs.map(d => deleteDoc(doc(db, "posts", d.id))));
   await deleteDoc(doc(db, "chapters", fid));
-  if (currentFolder === fid) { currentFolder = null; document.getElementById("composer").style.display = "none"; document.getElementById("fab").style.display = "none"; document.getElementById("feed").innerHTML = ""; document.getElementById("empty").style.display = "block"; }
+  if (currentFolder === fid) { currentFolder = null; document.getElementById("inlineComposer").style.display = "none"; document.getElementById("feed").innerHTML = ""; document.getElementById("empty").style.display = "block"; }
 };
 
 function selectFolder(id, label) {
   currentFolder = id;
   document.querySelectorAll("#folderRow .chip:not(.add)").forEach(el => el.classList.toggle("active", el.dataset.fid === id));
-  document.getElementById("composer").style.display = "block";
-  document.getElementById("fab").style.display = "block";
+  document.getElementById("inlineComposer").style.display = "block";
   loadPosts(id);
 }
 
@@ -489,9 +481,12 @@ document.getElementById("charDelete").onclick = async () => {
   document.getElementById("charOverlay").style.display = "none";
 };
 
-document.getElementById("fab").onclick = () => {
-  document.getElementById("composer").scrollIntoView({ behavior: "smooth" });
-  document.getElementById("textInput").focus();
+document.getElementById("plusBtn").onclick = () => {
+  const extraRow = document.getElementById("extraRow");
+  const show = extraRow.style.display !== "block";
+  extraRow.style.display = show ? "block" : "none";
+  document.getElementById("charRow").classList.toggle("show", show && NEEDS_CHAR.has(currentType));
+  document.getElementById("posRow").classList.toggle("show", show && NEEDS_POS.has(currentType));
 };
 
 // ---- composer type/position ----
@@ -542,24 +537,23 @@ document.getElementById("postBtn").onclick = async () => {
   if (!text && files.length === 0) return;
   const type = currentType;
   const btn = document.getElementById("postBtn");
-  btn.disabled = true; btn.textContent = "업로드중...";
+  btn.disabled = true; btn.textContent = "추가중...";
 
   try {
     const urls = files.length ? await Promise.all(files.map(uploadToCloudinary)) : [];
-    const timeVal = document.getElementById("timeInput").value;
-    const createdAt = timeVal ? new Date(timeVal).getTime() : Date.now();
+    const createdAt = Date.now();
     const characterId = NEEDS_CHAR.has(type) ? currentCharacterId : null;
     const position = NEEDS_POS.has(type) ? currentPosition : null;
     await addDoc(postsCol, { folderId: currentFolder, type, text, images: urls, createdAt, characterId, position });
     document.getElementById("textInput").value = "";
     document.getElementById("preview").innerHTML = "";
     document.getElementById("fileInput").value = "";
-    document.getElementById("timeInput").value = "";
     pendingFiles = [];
+    document.getElementById("textInput").focus();
   } catch (err) {
     alert("업로드 실패 - 다시 시도해주세요");
   }
-  btn.disabled = false; btn.textContent = "올리기";
+  btn.disabled = false; btn.textContent = "추가";
 };
 
 let unsub = null;
@@ -670,26 +664,14 @@ function startEdit(card, id, p) {
     typeRow.querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
   });
 
-  const timeEl = document.createElement("input");
-  timeEl.type = "datetime-local"; timeEl.className = "editta";
-  timeEl.value = toLocalInputValue(p.createdAt);
-  typeRow.insertAdjacentElement("afterend", timeEl);
-
   const btnRow = document.createElement("div");
   btnRow.innerHTML = `<button class="delbtn" data-a="save">저장</button><button class="delbtn" data-a="cancel">취소</button>`;
   ta.insertAdjacentElement("afterend", btnRow);
   card.querySelectorAll('[data-a="edit"],[data-a="del"]').forEach(b => b.style.display = "none");
   btnRow.querySelector('[data-a="save"]').onclick = async () => {
-    const createdAt = timeEl.value ? new Date(timeEl.value).getTime() : p.createdAt;
-    await updateDoc(doc(db, "posts", id), { text: ta.value.trim(), type: newType, createdAt });
+    await updateDoc(doc(db, "posts", id), { text: ta.value.trim(), type: newType });
   };
   btnRow.querySelector('[data-a="cancel"]').onclick = () => renderFeed();
-}
-
-function toLocalInputValue(ts) {
-  const d = new Date(ts || Date.now());
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0, 16);
 }
 
 function escapeHtml(s) {
