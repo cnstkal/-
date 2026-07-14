@@ -90,21 +90,20 @@ button, input, textarea{font-family:inherit;}
   font-size:26px; box-shadow:0 4px 12px rgba(0,0,0,.5);
 }
 
-#main{padding:12px 10px 90px; max-width:520px; margin:0 auto;}
-#feed{display:flex; flex-direction:column; gap:12px;}
-.card{background:var(--bg2); border-radius:14px; padding:12px 14px; border:1px solid var(--border2); position:relative;}
-.card .top{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
-.card .tag{font-size:10px; letter-spacing:.08em; padding:2px 7px; border-radius:6px; font-weight:700; background:var(--bg4); color:var(--text-mut);}
-.card .date{font-size:11px; color:var(--text-faint);}
-.card .text{white-space:pre-wrap; line-height:1.55; font-size:14.5px; margin:4px 0 8px; word-break:break-word;}
-.imgs{display:grid; gap:3px; border-radius:10px; overflow:hidden; margin-bottom:4px;}
+#main{padding:12px 10px 90px; max-width:600px; margin:0 auto;}
+#feed{background:var(--bg2); border-radius:14px; padding:22px 20px; border:1px solid var(--border2);}
+.block{position:relative; margin-bottom:18px;}
+.block:last-child{margin-bottom:0;}
+.block.text .text{white-space:pre-wrap; line-height:1.8; font-size:15.5px; word-break:break-word;}
+.imgs{display:grid; gap:3px; border-radius:10px; overflow:hidden; margin:8px 0;}
 .imgs img{width:100%; object-fit:cover; display:block;}
-.imgs.n1 img{max-height:420px;}
+.imgs.n1 img{max-height:460px;}
 .imgs.n2{grid-template-columns:1fr 1fr;} .imgs.n2 img{height:170px;}
 .imgs.n3{grid-template-columns:1fr 1fr;} .imgs.n3 img:first-child{grid-row:span 2; height:100%;} .imgs.n3 img{height:110px;}
 .imgs.n4plus{grid-template-columns:1fr 1fr;} .imgs.n4plus img{height:120px;}
-.delbtn{background:none; border:none; color:var(--text-faint3); font-size:12px; padding:4px;}
-.card.pending{opacity:.55;}
+.blockctrl{display:flex; gap:8px; margin-top:4px; opacity:.5;}
+.delbtn{background:none; border:none; color:var(--text-faint3); font-size:11px; padding:2px;}
+.block.pending{opacity:.5;}
 #empty{text-align:center; color:var(--text-faint2); font-size:13px; margin-top:60px;}
 
 #overlay, #charOverlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:40; align-items:flex-end;}
@@ -131,29 +130,29 @@ button, input, textarea{font-family:inherit;}
 .chipedit{flex:0 0 auto; font-size:11px; padding:7px 9px; border-radius:0 16px 16px 0; background:var(--bg4); color:var(--text-faint4); border:1px solid var(--border); border-left:1px solid var(--borderdark);}
 .chipwrap .chip.active + .chipedit{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
 
-.card.instagram{padding:0; overflow:hidden;}
-.card.instagram .ighead{display:flex; align-items:center; gap:8px; padding:10px 12px;}
-.card.instagram .av{width:30px; height:30px; border-radius:50%; background:linear-gradient(45deg,#feda75,#d62976,#4f5bd5); flex:0 0 auto;}
-.card.instagram .uname{font-weight:700; font-size:13px; color:var(--text);}
-.card.instagram .igimgs img{width:100%; display:block; max-height:480px; object-fit:cover;}
-.card.instagram .igfoot{display:flex; gap:14px; padding:10px 12px 0;}
-.card.instagram .igfoot svg{width:23px; height:23px; stroke:var(--text); fill:none; stroke-width:1.8;}
-.card.instagram .igbody{padding:6px 12px 10px;}
-.card.instagram .igtext{font-size:13.5px; line-height:1.5; white-space:pre-wrap;}
-.card.instagram .igtext b{margin-right:6px;}
-.card.instagram .igmeta{display:flex; justify-content:space-between; align-items:center; padding:0 12px 10px; font-size:10.5px; color:var(--text-faint);}
+.block.instagram{padding:0; overflow:hidden; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
+.block.instagram .ighead{display:flex; align-items:center; gap:8px; padding:10px 12px;}
+.block.instagram .av{width:30px; height:30px; border-radius:50%; background:linear-gradient(45deg,#feda75,#d62976,#4f5bd5); flex:0 0 auto;}
+.block.instagram .uname{font-weight:700; font-size:13px; color:var(--text);}
+.block.instagram .igimgs img{width:100%; display:block; max-height:480px; object-fit:cover;}
+.block.instagram .igfoot{display:flex; gap:14px; padding:10px 12px 0;}
+.block.instagram .igfoot svg{width:23px; height:23px; stroke:var(--text); fill:none; stroke-width:1.8;}
+.block.instagram .igbody{padding:6px 12px 10px;}
+.block.instagram .igtext{font-size:13.5px; line-height:1.5; white-space:pre-wrap;}
+.block.instagram .igtext b{margin-right:6px;}
+.block.instagram .igmeta{display:flex; justify-content:space-between; align-items:center; padding:0 12px 10px; font-size:10.5px; color:var(--text-faint);}
 
-.card.twitter{display:flex; gap:10px; padding:12px 14px;}
-.card.twitter .av{width:38px; height:38px; border-radius:50%; background:#1d9bf0; flex:0 0 auto;}
-.card.twitter .twbody{flex:1; min-width:0;}
-.card.twitter .twhead{font-size:14px;}
-.card.twitter .twhead b{color:var(--text);}
-.card.twitter .twhead span{color:var(--text-faint); margin-left:4px;}
-.card.twitter .twtext{font-size:14.5px; line-height:1.45; margin:3px 0 8px; white-space:pre-wrap;}
-.card.twitter .imgs{border-radius:14px; border:1px solid var(--border2);}
-.card.twitter .twmeta{font-size:11px; color:var(--text-faint); margin-top:6px;}
+.block.twitter{display:flex; gap:10px; padding:12px 14px; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
+.block.twitter .av{width:38px; height:38px; border-radius:50%; background:#1d9bf0; flex:0 0 auto;}
+.block.twitter .twbody{flex:1; min-width:0;}
+.block.twitter .twhead{font-size:14px;}
+.block.twitter .twhead b{color:var(--text);}
+.block.twitter .twhead span{color:var(--text-faint); margin-left:4px;}
+.block.twitter .twtext{font-size:14.5px; line-height:1.45; margin:3px 0 8px; white-space:pre-wrap;}
+.block.twitter .imgs{border-radius:14px; border:1px solid var(--border2);}
+.block.twitter .twmeta{font-size:11px; color:var(--text-faint); margin-top:6px;}
 
-.card.kakao, .card.imessage{background:none; border:none; padding:2px 0;}
+.block.kakao, .block.imessage{background:none; border:none; padding:2px 0;}
 .bubblerow{display:flex; align-items:flex-end; gap:8px;}
 .bubblerow.right{flex-direction:row-reverse;}
 .bubblerow .b-av{width:32px; height:32px; border-radius:50%; background:var(--accent); flex:0 0 auto;}
@@ -161,10 +160,10 @@ button, input, textarea{font-family:inherit;}
 .bubblerow.right .bubblecol{align-items:flex-end;}
 .b-name{font-size:11px; color:var(--text-faint); margin-bottom:3px;}
 .bubble{padding:9px 13px; border-radius:16px; font-size:14px; line-height:1.45; white-space:pre-wrap; word-break:break-word;}
-.card.kakao .bubblerow:not(.right) .bubble{background:var(--bg3); color:var(--text); border:1px solid var(--border2); border-bottom-left-radius:4px;}
-.card.kakao .bubblerow.right .bubble{background:var(--kakao-bubble); color:var(--kakao-text); border-bottom-right-radius:4px;}
-.card.imessage .bubblerow:not(.right) .bubble{background:var(--im-gray); color:var(--im-gray-text); border-bottom-left-radius:4px;}
-.card.imessage .bubblerow.right .bubble{background:var(--im-blue); color:#fff; border-bottom-right-radius:4px;}
+.block.kakao .bubblerow:not(.right) .bubble{background:var(--bg3); color:var(--text); border:1px solid var(--border2); border-bottom-left-radius:4px;}
+.block.kakao .bubblerow.right .bubble{background:var(--kakao-bubble); color:var(--kakao-text); border-bottom-right-radius:4px;}
+.block.imessage .bubblerow:not(.right) .bubble{background:var(--im-gray); color:var(--im-gray-text); border-bottom-left-radius:4px;}
+.block.imessage .bubblerow.right .bubble{background:var(--im-blue); color:#fff; border-bottom-right-radius:4px;}
 .bubble .imgs{margin-top:4px; border-radius:12px;}
 .b-meta{display:flex; gap:8px; align-items:center; margin-top:4px; font-size:10.5px; color:var(--text-faint);}
 .bubblerow.right + .b-meta, .bubblecol .b-meta{justify-content:flex-end;}
@@ -177,7 +176,7 @@ button, input, textarea{font-family:inherit;}
   .chip:hover:not(.active), .fchip:hover:not(.active){background:var(--border2);}
   #postBtn:hover{opacity:.88;}
   #fab:hover{transform:scale(1.06);}
-  .imgs img, .card.instagram .igimgs img{cursor:zoom-in;}
+  .imgs img, .block.instagram .igimgs img{cursor:zoom-in;}
 }
 @media (min-width:860px){
   #topbar{padding:14px 24px 10px;}
@@ -220,14 +219,6 @@ button, input, textarea{font-family:inherit;}
     </div>
   </div>
   <div id="folderRow"><button class="chip add" id="newFolderBtn">+ 회차</button></div>
-  <div id="typeFilterRow">
-    <button class="fchip active" data-f="all">전체</button>
-    <button class="fchip" data-f="text">텍스트</button>
-    <button class="fchip" data-f="instagram">인스타</button>
-    <button class="fchip" data-f="twitter">트윗</button>
-    <button class="fchip" data-f="kakao">카카오톡</button>
-    <button class="fchip" data-f="imessage">아이메시지</button>
-  </div>
 </div>
 
 <div id="composer">
@@ -315,7 +306,6 @@ const charactersCol = collection(db, "characters");
 
 let currentFolder = null, currentType = "text", pendingFiles = [];
 let editingFolderId = null, editingCharId = null;
-let currentViewFilter = "all";
 let latestPosts = [];
 let charactersMap = {};
 let currentCharacterId = null;
@@ -342,15 +332,6 @@ function applyTheme(t){
 }
 applyTheme(localStorage.getItem("archive-theme") || "dark");
 themeBtn.onclick = () => applyTheme(document.body.classList.contains("light") ? "dark" : "light");
-
-// type filter
-document.querySelectorAll(".fchip").forEach(btn => {
-  btn.onclick = () => {
-    currentViewFilter = btn.dataset.f;
-    document.querySelectorAll(".fchip").forEach(b => b.classList.toggle("active", b === btn));
-    renderFeed();
-  };
-});
 
 // ---- 회차(chapters) ----
 onSnapshot(query(foldersCol, orderBy("num", "asc")), snap => {
@@ -584,30 +565,34 @@ document.getElementById("postBtn").onclick = async () => {
 let unsub = null;
 function loadPosts(folderId) {
   if (unsub) unsub();
-  unsub = onSnapshot(query(postsCol, where("folderId", "==", folderId), orderBy("createdAt", "asc")), snap => {
+  unsub = onSnapshot(query(postsCol, where("folderId", "==", folderId)), snap => {
     latestPosts = [];
     snap.forEach(d => latestPosts.push({ id: d.id, data: d.data() }));
+    latestPosts.sort((a, b) => (a.data.createdAt || 0) - (b.data.createdAt || 0));
     renderFeed();
+  }, err => {
+    console.error("글 불러오기 실패:", err);
+    document.getElementById("empty").textContent = "글을 불러오지 못했습니다 (콘솔 확인)";
+    document.getElementById("empty").style.display = "block";
   });
 }
 
 function renderFeed() {
   const feed = document.getElementById("feed");
   feed.innerHTML = "";
-  const filtered = currentViewFilter === "all" ? latestPosts : latestPosts.filter(p => p.data.type === currentViewFilter);
-  document.getElementById("empty").style.display = filtered.length ? "none" : "block";
-  filtered.forEach(p => feed.appendChild(renderCard(p.id, p.data)));
+  document.getElementById("empty").style.display = latestPosts.length ? "none" : "block";
+  latestPosts.forEach(p => feed.appendChild(renderCard(p.id, p.data)));
 }
 
 function renderCard(id, p, pending) {
   const card = document.createElement("div");
-  card.className = "card " + p.type + (pending ? " pending" : "");
+  card.className = "block " + p.type + (pending ? " pending" : "");
   const date = p.createdAt ? new Date(p.createdAt).toLocaleString("ko-KR") : (pending ? "업로드 중..." : "");
   const n = p.images?.length || 0;
   const cls = n === 1 ? "n1" : n === 2 ? "n2" : n === 3 ? "n3" : "n4plus";
   const imgsHtml = n ? `<div class="imgs ${cls}">${p.images.map(u => `<img src="${u}" onclick="window.__openLb('${u}')">`).join("")}</div>` : "";
   const textHtml = p.text ? formatText(p.text) : "";
-  const actions = pending ? "" : `<button class="delbtn" data-a="edit">수정</button><button class="delbtn" data-a="del">삭제</button>`;
+  const actions = pending ? "" : `<div class="blockctrl"><button class="delbtn" data-a="edit">수정</button><button class="delbtn" data-a="del">삭제</button></div>`;
   const character = p.characterId ? charactersMap[p.characterId] : null;
 
   if (p.type === "instagram") {
@@ -651,7 +636,6 @@ function renderCard(id, p, pending) {
     `;
   } else {
     card.innerHTML = `
-      <div class="top"><span class="tag mono">${TAG[p.type] || p.type}</span><span class="date mono">${date}</span></div>
       <div class="text">${textHtml}</div>
       ${imgsHtml}
       ${actions}
