@@ -48,68 +48,43 @@ button, input, textarea{font-family:inherit;}
 #charBtn, #themeToggle{background:none; border:1px solid var(--border); color:var(--text-dim); border-radius:16px; padding:5px 10px; font-size:12.5px;}
 #folderRow{display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;}
 #folderRow::-webkit-scrollbar{display:none;}
-#typeFilterRow{display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:6px;}
-#typeFilterRow::-webkit-scrollbar{display:none;}
 .chip{
   flex:0 0 auto; font-size:13px; padding:7px 13px; border-radius:16px; background:var(--bg4);
   color:var(--text-dim); white-space:nowrap; border:1px solid var(--border);
 }
 .chip.active{background:var(--accent); color:var(--accent-text); font-weight:700; border-color:var(--accent);}
 .chip.add{background:none; border:1px dashed var(--text-faint3); color:var(--accent);}
-.fchip{flex:0 0 auto; font-size:12px; padding:6px 12px; border-radius:14px; background:var(--bg4); color:var(--text-mut); border:1px solid var(--border);}
-.fchip.active{background:var(--danger); color:var(--danger-text); font-weight:700; border-color:var(--danger);}
+.chipwrap{display:flex; flex:0 0 auto;}
+.chipwrap .chip{border-radius:16px 0 0 16px;}
+.chipedit{flex:0 0 auto; font-size:11px; padding:7px 9px; border-radius:0 16px 16px 0; background:var(--bg4); color:var(--text-faint4); border:1px solid var(--border); border-left:1px solid var(--borderdark);}
+.chipwrap .chip.active + .chipedit{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
 
-#extraRow{margin-bottom:8px;}
-#typeRow{display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap;}
-#typeRow button{
-  flex:1 1 18%; font-size:11px; padding:7px 0; border-radius:8px; background:var(--bg4); color:var(--text-mut); border:none;
-}
-#typeRow button.active{background:var(--danger); color:var(--danger-text); font-weight:700;}
-#charRow, #posRow{display:none; gap:6px; overflow-x:auto; margin-bottom:8px; -webkit-overflow-scrolling:touch;}
-#charRow.show, #posRow.show{display:flex;}
-#textInput{
-  width:100%; min-height:44px; max-height:220px; background:none; color:var(--text); border:none;
-  padding:0; font-size:15.5px; line-height:1.8; resize:none; outline:none;
-}
-#preview{display:flex; gap:6px; overflow-x:auto; margin-top:8px;}
-#preview .thumb{position:relative; flex:0 0 auto;}
-#preview img{width:56px; height:56px; object-fit:cover; border-radius:8px;}
-#preview .rm{position:absolute; top:-5px; right:-5px; background:var(--danger); color:var(--danger-text); border-radius:50%; width:18px; height:18px; font-size:11px; border:none; line-height:18px;}
-.composer-row{display:flex; justify-content:space-between; align-items:center; margin-top:10px;}
-.composer-left{display:flex; gap:8px; align-items:center;}
-#plusBtn{width:30px; height:30px; border-radius:50%; border:1px solid var(--border); background:none; color:var(--accent); font-size:17px; line-height:1;}
-.typeSwitchRow{display:flex; gap:6px; margin:6px 0; flex-wrap:wrap;}
-.typeSwitchRow button{flex:1 1 18%; font-size:11px; padding:6px 0; border-radius:7px; background:var(--bg4); color:var(--text-mut); border:none;}
-.typeSwitchRow button.active{background:var(--danger); color:var(--danger-text); font-weight:700;}
-#attachBtn{background:none; border:1px solid var(--border); color:var(--text-dim); padding:6px 11px; border-radius:8px; font-size:12.5px;}
-#postBtn{background:var(--accent); color:var(--accent-text); border:none; padding:8px 18px; border-radius:10px; font-size:13px; font-weight:700;}
-#postBtn:disabled{opacity:.4;}
+#main{padding:16px 14px 120px; max-width:640px; margin:0 auto;}
+#editor{min-height:78vh; outline:none; font-size:16px; line-height:1.9; word-break:break-word;}
+#editor:empty:before{content:attr(data-ph); color:var(--text-faint3);}
+#editor img{max-width:100%; border-radius:10px; display:block; margin:12px 0;}
+#empty{text-align:center; color:var(--text-faint2); font-size:13px; margin-top:60px;}
 
-#main{padding:12px 10px 90px; max-width:600px; margin:0 auto;}
-#articleBox{background:var(--bg2); border-radius:14px; padding:22px 20px; border:1px solid var(--border2);}
-#inlineComposer{margin-top:18px; padding-top:16px; border-top:1px dashed var(--border2);}
-.block{position:relative; margin-bottom:18px;}
-.block:last-child{margin-bottom:0;}
-.block.text .text{white-space:pre-wrap; line-height:1.8; font-size:15.5px; word-break:break-word;}
+.embed{position:relative; margin:16px 0;}
+.embed .embed-del{position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%; background:var(--danger); color:var(--danger-text); border:none; font-size:12px; line-height:22px; opacity:0; transition:opacity .15s; z-index:2;}
+.embed:hover .embed-del{opacity:1;}
+
 .imgs{display:grid; gap:3px; border-radius:10px; overflow:hidden; margin:8px 0;}
-.imgs img{width:100%; object-fit:cover; display:block;}
+.imgs img{width:100%; object-fit:cover; display:block; margin:0;}
 .imgs.n1 img{max-height:460px;}
 .imgs.n2{grid-template-columns:1fr 1fr;} .imgs.n2 img{height:170px;}
 .imgs.n3{grid-template-columns:1fr 1fr;} .imgs.n3 img:first-child{grid-row:span 2; height:100%;} .imgs.n3 img{height:110px;}
 .imgs.n4plus{grid-template-columns:1fr 1fr;} .imgs.n4plus img{height:120px;}
-.blockctrl{display:flex; gap:8px; margin-top:4px; opacity:.5;}
-.delbtn{background:none; border:none; color:var(--text-faint3); font-size:11px; padding:2px;}
-.block.pending{opacity:.5;}
-#empty{text-align:center; color:var(--text-faint2); font-size:13px; margin-top:60px;}
 
-#overlay, #charOverlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:40; align-items:flex-end;}
-#overlay .sheet, #charOverlay .sheet{background:var(--bg2); width:100%; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); border-radius:16px 16px 0 0; max-height:85vh; overflow-y:auto;}
-#overlay input, #charOverlay input{width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:11px; border-radius:10px; font-size:15px; margin:10px 0;}
-#overlay .row, #charOverlay .row{display:flex; gap:8px;}
-#overlay button, #charOverlay button{padding:11px; border-radius:10px; border:none; font-size:14px;}
-#overlay .row button, #charOverlay .row button{flex:1;}
-#overlay .cancel, #charOverlay .cancel{background:var(--bg4); color:var(--text-dim2);}
-#overlay .ok, #charOverlay .ok{background:var(--accent); color:var(--accent-text); font-weight:700;}
+#overlay, #charOverlay, #blockSheet{display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:40; align-items:flex-end;}
+#overlay .sheet, #charOverlay .sheet, #blockSheet .sheet{background:var(--bg2); width:100%; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); border-radius:16px 16px 0 0; max-height:85vh; overflow-y:auto;}
+#overlay input, #charOverlay input, #blockSheet textarea{width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:11px; border-radius:10px; font-size:15px; margin:10px 0;}
+#blockSheet textarea{min-height:70px; resize:vertical; line-height:1.6;}
+#overlay .row, #charOverlay .row, #blockSheet .row{display:flex; gap:8px;}
+#overlay button, #charOverlay button, #blockSheet button{padding:11px; border-radius:10px; border:none; font-size:14px;}
+#overlay .row button, #charOverlay .row button, #blockSheet .row button{flex:1;}
+#overlay .cancel, #charOverlay .cancel, #blockSheet .cancel{background:var(--bg4); color:var(--text-dim2);}
+#overlay .ok, #charOverlay .ok, #blockSheet .ok{background:var(--accent); color:var(--accent-text); font-weight:700;}
 #charList{margin-top:12px; border-top:1px solid var(--border2); padding-top:10px; display:flex; flex-direction:column; gap:6px;}
 .charRowItem{display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--bg3); border-radius:10px;}
 .charRowItem .ci-av{width:28px; height:28px; border-radius:50%; background:var(--accent); flex:0 0 auto;}
@@ -117,26 +92,32 @@ button, input, textarea{font-family:inherit;}
 .charRowItem .ci-name{font-size:13.5px; font-weight:700;}
 .charRowItem .ci-handles{font-size:11px; color:var(--text-faint);}
 .charRowItem button{background:none; border:none; color:var(--text-faint3); font-size:12px; padding:4px 6px;}
+.pillrow{display:flex; gap:6px; flex-wrap:wrap; margin:6px 0;}
+.pillrow button{flex:1 1 18%; font-size:11px; padding:7px 0; border-radius:8px; background:var(--bg4); color:var(--text-mut); border:none;}
+.pillrow button.active{background:var(--danger); color:var(--danger-text); font-weight:700;}
+#blockPreview{display:flex; gap:6px; overflow-x:auto; margin:6px 0;}
+#blockPreview .thumb{position:relative; flex:0 0 auto;}
+#blockPreview img{width:52px; height:52px; object-fit:cover; border-radius:8px;}
+#blockPreview .rm{position:absolute; top:-5px; right:-5px; background:var(--danger); color:var(--danger-text); border-radius:50%; width:18px; height:18px; font-size:11px; border:none; line-height:18px;}
+#blockAttach{background:none; border:1px solid var(--border); color:var(--text-dim); padding:7px 12px; border-radius:8px; font-size:12.5px; display:inline-block; margin-top:2px;}
+
+#fab{position:fixed; right:18px; bottom:24px; display:none; flex-direction:column; gap:10px; z-index:15;}
+#fab button{width:48px; height:48px; border-radius:50%; background:var(--accent); color:var(--accent-text); border:none; font-size:19px; box-shadow:0 3px 10px rgba(0,0,0,.35);}
+#fab #fabBlock{background:var(--bg3); color:var(--text-dim); border:1px solid var(--border);}
 
 #lightbox{display:none; position:fixed; inset:0; background:rgba(0,0,0,.94); z-index:50; align-items:center; justify-content:center;}
 #lightbox img{max-width:94vw; max-height:94vh; object-fit:contain;}
-
-.chipwrap{display:flex; flex:0 0 auto;}
-.chipwrap .chip{border-radius:16px 0 0 16px;}
-.chipedit{flex:0 0 auto; font-size:11px; padding:7px 9px; border-radius:0 16px 16px 0; background:var(--bg4); color:var(--text-faint4); border:1px solid var(--border); border-left:1px solid var(--borderdark);}
-.chipwrap .chip.active + .chipedit{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
 
 .block.instagram{padding:0; overflow:hidden; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
 .block.instagram .ighead{display:flex; align-items:center; gap:8px; padding:10px 12px;}
 .block.instagram .av{width:30px; height:30px; border-radius:50%; background:linear-gradient(45deg,#feda75,#d62976,#4f5bd5); flex:0 0 auto;}
 .block.instagram .uname{font-weight:700; font-size:13px; color:var(--text);}
-.block.instagram .igimgs img{width:100%; display:block; max-height:480px; object-fit:cover;}
+.block.instagram .igimgs img{width:100%; display:block; max-height:480px; object-fit:cover; margin:0;}
 .block.instagram .igfoot{display:flex; gap:14px; padding:10px 12px 0;}
 .block.instagram .igfoot svg{width:23px; height:23px; stroke:var(--text); fill:none; stroke-width:1.8;}
-.block.instagram .igbody{padding:6px 12px 10px;}
+.block.instagram .igbody{padding:6px 12px 12px;}
 .block.instagram .igtext{font-size:13.5px; line-height:1.5; white-space:pre-wrap;}
 .block.instagram .igtext b{margin-right:6px;}
-.block.instagram .igmeta{display:flex; justify-content:space-between; align-items:center; padding:0 12px 10px; font-size:10.5px; color:var(--text-faint);}
 
 .block.twitter{display:flex; gap:10px; padding:12px 14px; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
 .block.twitter .av{width:38px; height:38px; border-radius:50%; background:#1d9bf0; flex:0 0 auto;}
@@ -144,11 +125,9 @@ button, input, textarea{font-family:inherit;}
 .block.twitter .twhead{font-size:14px;}
 .block.twitter .twhead b{color:var(--text);}
 .block.twitter .twhead span{color:var(--text-faint); margin-left:4px;}
-.block.twitter .twtext{font-size:14.5px; line-height:1.45; margin:3px 0 8px; white-space:pre-wrap;}
+.block.twitter .twtext{font-size:14.5px; line-height:1.45; margin:3px 0 4px; white-space:pre-wrap;}
 .block.twitter .imgs{border-radius:14px; border:1px solid var(--border2);}
-.block.twitter .twmeta{font-size:11px; color:var(--text-faint); margin-top:6px;}
 
-.block.kakao, .block.imessage{background:none; border:none; padding:2px 0;}
 .bubblerow{display:flex; align-items:flex-end; gap:8px;}
 .bubblerow.right{flex-direction:row-reverse;}
 .bubblerow .b-av{width:32px; height:32px; border-radius:50%; background:var(--accent); flex:0 0 auto;}
@@ -161,41 +140,24 @@ button, input, textarea{font-family:inherit;}
 .block.imessage .bubblerow:not(.right) .bubble{background:var(--im-gray); color:var(--im-gray-text); border-bottom-left-radius:4px;}
 .block.imessage .bubblerow.right .bubble{background:var(--im-blue); color:#fff; border-bottom-right-radius:4px;}
 .bubble .imgs{margin-top:4px; border-radius:12px;}
-.b-meta{display:flex; gap:8px; align-items:center; margin-top:4px; font-size:10.5px; color:var(--text-faint);}
-.bubblerow.right + .b-meta, .bubblecol .b-meta{justify-content:flex-end;}
 
-.editta{width:100%; background:var(--bg3); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:8px; font-size:14px; margin:4px 0;}
-
-/* ---- PC 최적화 (마우스 환경) ---- */
 @media (hover:hover) and (pointer:fine){
-  .chip, .fchip, #typeRow button, #themeToggle, #charBtn, #attachBtn, #postBtn, #plusBtn, .delbtn, .chipedit{cursor:pointer; transition:background .15s,opacity .15s,transform .1s;}
-  .chip:hover:not(.active), .fchip:hover:not(.active){background:var(--border2);}
-  #postBtn:hover{opacity:.88;}
-  .imgs img, .block.instagram .igimgs img{cursor:zoom-in;}
+  .chip, #themeToggle, #charBtn, .chipedit, #fab button, .embed-del{cursor:pointer; transition:background .15s,opacity .15s;}
+  .chip:hover:not(.active){background:var(--border2);}
+  #editor img{cursor:zoom-in;}
 }
 @media (min-width:860px){
   #topbar{padding:14px 24px 10px;}
-  #main{max-width:720px; padding:20px 24px 90px;}
-  #articleBox{padding:32px 40px;}
-  .imgs.n1 img{max-height:520px;}
+  #main{max-width:720px; padding:22px 24px 120px;}
 }
-@media (min-width:1200px){
-  #main{max-width:760px;}
-}
-
-/* ---- 모바일 최적화 (작은 화면) ---- */
 @media (max-width:400px){
   #topbar h1{font-size:13px;}
   #themeToggle, #charBtn{font-size:12px; padding:4px 8px;}
-  .chip, .fchip{font-size:12px; padding:6px 11px;}
-  #textInput{font-size:14px; min-height:46px;}
-  #postBtn, #attachBtn{padding:8px 14px; font-size:12.5px;}
-  .card{padding:10px 12px;}
-  .card .text, .twtext, .igtext{font-size:13.5px;}
-  .imgs.n1 img{max-height:340px;}
+  .chip{font-size:12px; padding:6px 11px;}
+  #editor{font-size:15px;}
 }
 @supports (-webkit-touch-callout:none){
-  #textInput, #overlay input, #charOverlay input{font-size:16px;} /* iOS 자동 확대 방지 */
+  #editor, #overlay input, #charOverlay input, #blockSheet textarea{font-size:16px;} /* iOS 자동 확대 방지 */
 }
 </style>
 </head>
@@ -212,36 +174,15 @@ button, input, textarea{font-family:inherit;}
 </div>
 
 <div id="main">
-  <div id="articleBox">
-    <div id="feed"></div>
-    <div id="inlineComposer" style="display:none">
-      <div id="extraRow" style="display:none">
-        <div id="typeRow">
-          <button data-type="text" class="active">텍스트</button>
-          <button data-type="instagram">인스타</button>
-          <button data-type="twitter">트윗</button>
-          <button data-type="kakao">카카오톡</button>
-          <button data-type="imessage">아이메시지</button>
-        </div>
-        <div id="charRow"></div>
-        <div id="posRow">
-          <button class="chip active" data-p="left">왼쪽(상대)</button>
-          <button class="chip" data-p="right">오른쪽(나)</button>
-        </div>
-      </div>
-      <textarea id="textInput" placeholder="이어서 써내려가세요... (#해시태그 가능)"></textarea>
-      <div id="preview"></div>
-      <div class="composer-row">
-        <div class="composer-left">
-          <button id="plusBtn" title="블록 종류 선택">+</button>
-          <label id="attachBtn">📎<input type="file" id="fileInput" accept="image/*" multiple style="display:none"></label>
-        </div>
-        <button id="postBtn">추가</button>
-      </div>
-    </div>
-  </div>
+  <div id="editor" contenteditable="true" spellcheck="false" data-ph="이어서 써내려가세요..." style="display:none"></div>
   <div id="empty">회차를 선택하거나 새로 만들어보세요</div>
 </div>
+
+<div id="fab">
+  <button id="fabBlock" title="대화/SNS 삽입">💬</button>
+  <button id="fabImg" title="이미지 삽입">📷</button>
+</div>
+<input type="file" id="imgFileInput" accept="image/*" multiple style="display:none">
 
 <div id="overlay">
   <div class="sheet">
@@ -271,13 +212,37 @@ button, input, textarea{font-family:inherit;}
   </div>
 </div>
 
+<div id="blockSheet">
+  <div class="sheet">
+    <div class="mono" style="font-size:13px;color:var(--accent)">삽입하기</div>
+    <div class="pillrow" id="blockTypeRow">
+      <button data-t="instagram" class="active">인스타</button>
+      <button data-t="twitter">트윗</button>
+      <button data-t="kakao">카카오톡</button>
+      <button data-t="imessage">아이메시지</button>
+    </div>
+    <div class="pillrow" id="blockCharRow"></div>
+    <div class="pillrow" id="blockPosRow" style="display:none">
+      <button data-p="left" class="active">왼쪽(상대)</button>
+      <button data-p="right">오른쪽(나)</button>
+    </div>
+    <textarea id="blockText" placeholder="내용 입력 (#해시태그 가능)"></textarea>
+    <label id="blockAttach">📎 이미지 추가<input type="file" id="blockFileInput" accept="image/*" multiple style="display:none"></label>
+    <div id="blockPreview"></div>
+    <div class="row">
+      <button class="cancel" id="blockCancel">취소</button>
+      <button class="ok" id="blockInsertBtn">삽입</button>
+    </div>
+  </div>
+</div>
+
 <div id="lightbox"><img id="lightboxImg"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore, collection, addDoc, deleteDoc, updateDoc, doc,
-  query, where, orderBy, onSnapshot, getDocs, serverTimestamp
+  query, orderBy, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const CLOUDINARY_CLOUD = 'dbljkloal';
@@ -294,19 +259,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const foldersCol = collection(db, "chapters");
-const postsCol = collection(db, "posts");
 const charactersCol = collection(db, "characters");
 
-let currentFolder = null, currentType = "text", pendingFiles = [];
-let editingFolderId = null, editingCharId = null;
-let latestPosts = [];
+let currentFolder = null, editingFolderId = null, editingCharId = null;
 let charactersMap = {};
-let currentCharacterId = null;
-let currentPosition = "left";
+let chapterUnsub = null;
+let savedRange = null;
+let saveTimer = null;
+let blockType = "instagram", blockCharId = null, blockPosition = "left", blockPending = [];
 
-const TAG = { text: "텍스트", instagram: "인스타", twitter: "트윗", kakao: "카카오톡", imessage: "아이메시지" };
 const NEEDS_CHAR = new Set(["instagram", "twitter", "kakao", "imessage"]);
 const NEEDS_POS = new Set(["kakao", "imessage"]);
+
+const editor = document.getElementById("editor");
+const emptyEl = document.getElementById("empty");
+const fab = document.getElementById("fab");
 
 // site title
 const siteTitle = document.getElementById("siteTitle");
@@ -342,14 +309,14 @@ onSnapshot(query(foldersCol, orderBy("num", "asc")), snap => {
     chip.className = "chip" + (currentFolder === f.id ? " active" : "");
     chip.textContent = (f.num ? f.num + "화" : "") + (f.name ? " " + f.name : "");
     chip.dataset.fid = f.id;
-    chip.onclick = () => selectFolder(f.id, chip.textContent);
+    chip.onclick = () => selectFolder(f.id);
     const edit = document.createElement("button");
     edit.className = "chipedit"; edit.textContent = "⋯";
     edit.onclick = () => openFolderSheet(f.id, f.name, f.num);
     wrap.append(chip, edit);
     row.appendChild(wrap);
   });
-  if (!currentFolder && arr.length) selectFolder(arr[0].id, "");
+  if (!currentFolder && arr.length) selectFolder(arr[0].id);
 });
 
 function openFolderSheet(id, name, num){
@@ -372,52 +339,45 @@ document.getElementById("folderOk").onclick = async () => {
   if (editingFolderId) {
     await updateDoc(doc(db, "chapters", editingFolderId), { name, num });
   } else {
-    await addDoc(foldersCol, { name, num, createdAt: Date.now() });
+    await addDoc(foldersCol, { name, num, content: "", createdAt: Date.now() });
   }
 };
 document.getElementById("folderDelete").onclick = async () => {
   if (!editingFolderId) return;
-  if (!confirm("이 회차를 삭제할까요? 안의 글도 모두 삭제됩니다.")) return;
+  if (!confirm("이 회차를 삭제할까요?")) return;
   document.getElementById("overlay").style.display = "none";
   const fid = editingFolderId;
-  const snap = await getDocs(query(postsCol, where("folderId", "==", fid)));
-  await Promise.all(snap.docs.map(d => deleteDoc(doc(db, "posts", d.id))));
   await deleteDoc(doc(db, "chapters", fid));
-  if (currentFolder === fid) { currentFolder = null; document.getElementById("inlineComposer").style.display = "none"; document.getElementById("feed").innerHTML = ""; document.getElementById("empty").style.display = "block"; }
+  if (currentFolder === fid) {
+    currentFolder = null;
+    if (chapterUnsub) chapterUnsub();
+    editor.innerHTML = ""; editor.style.display = "none";
+    fab.style.display = "none";
+    emptyEl.style.display = "block";
+  }
 };
 
-function selectFolder(id, label) {
+function selectFolder(id) {
   currentFolder = id;
   document.querySelectorAll("#folderRow .chip:not(.add)").forEach(el => el.classList.toggle("active", el.dataset.fid === id));
-  document.getElementById("inlineComposer").style.display = "block";
-  loadPosts(id);
+  emptyEl.style.display = "none";
+  editor.style.display = "block";
+  fab.style.display = "flex";
+  if (chapterUnsub) chapterUnsub();
+  chapterUnsub = onSnapshot(doc(db, "chapters", id), snap => {
+    if (document.activeElement === editor) return;
+    const data = snap.data();
+    editor.innerHTML = (data && data.content) || "";
+  });
 }
 
 // ---- 등장인물 ----
 onSnapshot(query(charactersCol, orderBy("createdAt", "desc")), snap => {
   charactersMap = {};
   snap.forEach(d => charactersMap[d.id] = { id: d.id, ...d.data() });
-  renderCharChips();
   renderCharList();
-  renderFeed();
+  buildBlockCharRow();
 });
-
-function renderCharChips(){
-  const row = document.getElementById("charRow");
-  const prevSel = currentCharacterId;
-  row.innerHTML = "";
-  Object.values(charactersMap).forEach(c => {
-    const chip = document.createElement("button");
-    chip.className = "chip" + (prevSel === c.id ? " active" : "");
-    chip.textContent = c.name;
-    chip.onclick = () => {
-      currentCharacterId = c.id;
-      row.querySelectorAll(".chip").forEach(b => b.classList.toggle("active", b === chip));
-    };
-    row.appendChild(chip);
-  });
-  if (!Object.values(charactersMap).some(c => c.id === currentCharacterId)) currentCharacterId = null;
-}
 
 function renderCharList(){
   const list = document.getElementById("charList");
@@ -466,13 +426,8 @@ document.getElementById("charOk").onclick = async () => {
   } else {
     await addDoc(charactersCol, { name, twitter, instagram, createdAt: Date.now() });
   }
-  document.getElementById("charNameInput").value = "";
-  document.getElementById("charTwInput").value = "";
-  document.getElementById("charIgInput").value = "";
+  document.getElementById("charOverlay").style.display = "none";
   editingCharId = null;
-  document.getElementById("charSheetTitle").textContent = "등장인물 등록";
-  document.getElementById("charOk").textContent = "추가";
-  document.getElementById("charDelete").style.display = "none";
 };
 document.getElementById("charDelete").onclick = async () => {
   if (!editingCharId) return;
@@ -481,45 +436,48 @@ document.getElementById("charDelete").onclick = async () => {
   document.getElementById("charOverlay").style.display = "none";
 };
 
-document.getElementById("plusBtn").onclick = () => {
-  const extraRow = document.getElementById("extraRow");
-  const show = extraRow.style.display !== "block";
-  extraRow.style.display = show ? "block" : "none";
-  document.getElementById("charRow").classList.toggle("show", show && NEEDS_CHAR.has(currentType));
-  document.getElementById("posRow").classList.toggle("show", show && NEEDS_POS.has(currentType));
-};
-
-// ---- composer type/position ----
-document.querySelectorAll("#typeRow button").forEach(btn => {
-  btn.onclick = () => {
-    currentType = btn.dataset.type;
-    document.querySelectorAll("#typeRow button").forEach(b => b.classList.toggle("active", b === btn));
-    document.getElementById("charRow").classList.toggle("show", NEEDS_CHAR.has(currentType));
-    document.getElementById("posRow").classList.toggle("show", NEEDS_POS.has(currentType));
-  };
-});
-document.querySelectorAll("#posRow [data-p]").forEach(btn => {
-  btn.onclick = () => {
-    currentPosition = btn.dataset.p;
-    document.querySelectorAll("#posRow [data-p]").forEach(b => b.classList.toggle("active", b === btn));
-  };
+// ---- 에디터: 커서 위치 기억 + 삽입 ----
+document.addEventListener("selectionchange", () => {
+  const sel = window.getSelection();
+  if (sel.rangeCount && editor.contains(sel.anchorNode)) {
+    savedRange = sel.getRangeAt(0).cloneRange();
+  }
 });
 
-document.getElementById("fileInput").onchange = e => {
-  pendingFiles = [...e.target.files];
-  renderPreview();
-};
-function renderPreview(){
-  const prev = document.getElementById("preview");
-  prev.innerHTML = "";
-  pendingFiles.forEach((f, i) => {
-    const t = document.createElement("div"); t.className = "thumb";
-    const img = document.createElement("img"); img.src = URL.createObjectURL(f);
-    const rm = document.createElement("button"); rm.className = "rm"; rm.textContent = "×";
-    rm.onclick = () => { pendingFiles.splice(i, 1); renderPreview(); };
-    t.append(img, rm); prev.appendChild(t);
-  });
+function insertAtCursor(html){
+  editor.focus();
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  if (savedRange && editor.contains(savedRange.startContainer)) {
+    sel.addRange(savedRange);
+  } else {
+    const r = document.createRange();
+    r.selectNodeContents(editor);
+    r.collapse(false);
+    sel.addRange(r);
+  }
+  document.execCommand("insertHTML", false, html);
+  saveContent();
 }
+
+editor.addEventListener("input", () => {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveContent, 500);
+});
+function saveContent(){
+  if (!currentFolder) return;
+  updateDoc(doc(db, "chapters", currentFolder), { content: editor.innerHTML });
+}
+
+editor.addEventListener("click", e => {
+  const del = e.target.closest(".embed-del");
+  if (del) { del.closest(".embed").remove(); saveContent(); return; }
+  if (e.target.tagName === "IMG") {
+    document.getElementById("lightboxImg").src = e.target.src;
+    document.getElementById("lightbox").style.display = "flex";
+  }
+});
+document.getElementById("lightbox").onclick = () => document.getElementById("lightbox").style.display = "none";
 
 async function uploadToCloudinary(file) {
   const fd = new FormData();
@@ -530,69 +488,100 @@ async function uploadToCloudinary(file) {
   return data.secure_url;
 }
 
-document.getElementById("postBtn").onclick = async () => {
-  if (!currentFolder) return;
-  const text = document.getElementById("textInput").value.trim();
-  const files = pendingFiles;
-  if (!text && files.length === 0) return;
-  const type = currentType;
-  const btn = document.getElementById("postBtn");
-  btn.disabled = true; btn.textContent = "추가중...";
-
-  try {
-    const urls = files.length ? await Promise.all(files.map(uploadToCloudinary)) : [];
-    const createdAt = Date.now();
-    const characterId = NEEDS_CHAR.has(type) ? currentCharacterId : null;
-    const position = NEEDS_POS.has(type) ? currentPosition : null;
-    await addDoc(postsCol, { folderId: currentFolder, type, text, images: urls, createdAt, characterId, position });
-    document.getElementById("textInput").value = "";
-    document.getElementById("preview").innerHTML = "";
-    document.getElementById("fileInput").value = "";
-    pendingFiles = [];
-    document.getElementById("textInput").focus();
-  } catch (err) {
-    alert("업로드 실패 - 다시 시도해주세요");
-  }
-  btn.disabled = false; btn.textContent = "추가";
+document.getElementById("fabImg").onclick = () => document.getElementById("imgFileInput").click();
+document.getElementById("imgFileInput").onchange = async e => {
+  const files = [...e.target.files]; e.target.value = "";
+  if (!files.length || !currentFolder) return;
+  const urls = await Promise.all(files.map(uploadToCloudinary));
+  insertAtCursor(urls.map(u => `<img src="${u}">`).join(""));
 };
 
-let unsub = null;
-function loadPosts(folderId) {
-  if (unsub) unsub();
-  unsub = onSnapshot(query(postsCol, where("folderId", "==", folderId)), snap => {
-    latestPosts = [];
-    snap.forEach(d => latestPosts.push({ id: d.id, data: d.data() }));
-    latestPosts.sort((a, b) => (a.data.createdAt || 0) - (b.data.createdAt || 0));
-    renderFeed();
-  }, err => {
-    console.error("글 불러오기 실패:", err);
-    document.getElementById("empty").textContent = "글을 불러오지 못했습니다 (콘솔 확인)";
-    document.getElementById("empty").style.display = "block";
+// ---- 대화/SNS 블록 삽입 시트 ----
+document.getElementById("fabBlock").onclick = () => {
+  if (!currentFolder) return;
+  document.getElementById("blockText").value = "";
+  blockPending = [];
+  renderBlockPreview();
+  blockType = "instagram"; blockPosition = "left";
+  document.querySelectorAll("#blockTypeRow button").forEach(b => b.classList.toggle("active", b.dataset.t === blockType));
+  updateBlockExtra();
+  document.getElementById("blockSheet").style.display = "flex";
+};
+document.getElementById("blockCancel").onclick = () => document.getElementById("blockSheet").style.display = "none";
+document.getElementById("blockSheet").onclick = e => { if (e.target.id === "blockSheet") e.currentTarget.style.display = "none"; };
+
+document.querySelectorAll("#blockTypeRow button").forEach(btn => {
+  btn.onclick = () => {
+    blockType = btn.dataset.t;
+    document.querySelectorAll("#blockTypeRow button").forEach(b => b.classList.toggle("active", b === btn));
+    updateBlockExtra();
+  };
+});
+function updateBlockExtra(){
+  document.getElementById("blockCharRow").style.display = NEEDS_CHAR.has(blockType) ? "flex" : "none";
+  document.getElementById("blockPosRow").style.display = NEEDS_POS.has(blockType) ? "flex" : "none";
+}
+function buildBlockCharRow(){
+  const row = document.getElementById("blockCharRow");
+  row.innerHTML = "";
+  Object.values(charactersMap).forEach(c => {
+    const b = document.createElement("button");
+    b.className = "chip" + (blockCharId === c.id ? " active" : "");
+    b.textContent = c.name;
+    b.onclick = () => { blockCharId = c.id; buildBlockCharRow(); };
+    row.appendChild(b);
+  });
+}
+document.querySelectorAll("#blockPosRow button").forEach(btn => {
+  btn.onclick = () => {
+    blockPosition = btn.dataset.p;
+    document.querySelectorAll("#blockPosRow button").forEach(b => b.classList.toggle("active", b === btn));
+  };
+});
+document.getElementById("blockFileInput").onchange = e => {
+  blockPending = [...e.target.files];
+  renderBlockPreview();
+};
+function renderBlockPreview(){
+  const prev = document.getElementById("blockPreview");
+  prev.innerHTML = "";
+  blockPending.forEach((f, i) => {
+    const t = document.createElement("div"); t.className = "thumb";
+    const img = document.createElement("img"); img.src = URL.createObjectURL(f);
+    const rm = document.createElement("button"); rm.className = "rm"; rm.textContent = "×";
+    rm.onclick = () => { blockPending.splice(i, 1); renderBlockPreview(); };
+    t.append(img, rm); prev.appendChild(t);
   });
 }
 
-function renderFeed() {
-  const feed = document.getElementById("feed");
-  feed.innerHTML = "";
-  document.getElementById("empty").style.display = latestPosts.length ? "none" : "block";
-  latestPosts.forEach(p => feed.appendChild(renderCard(p.id, p.data)));
-}
+document.getElementById("blockInsertBtn").onclick = async () => {
+  const text = document.getElementById("blockText").value.trim();
+  const files = blockPending;
+  if (!text && !files.length) return;
+  const btn = document.getElementById("blockInsertBtn");
+  btn.disabled = true; btn.textContent = "삽입중...";
+  try {
+    const urls = files.length ? await Promise.all(files.map(uploadToCloudinary)) : [];
+    const html = buildEmbedHTML(blockType, text, urls, blockCharId, blockPosition);
+    document.getElementById("blockSheet").style.display = "none";
+    insertAtCursor(html + "<p><br></p>");
+  } catch (err) {
+    alert("업로드 실패 - 다시 시도해주세요");
+  }
+  btn.disabled = false; btn.textContent = "삽입";
+};
 
-function renderCard(id, p, pending) {
-  const card = document.createElement("div");
-  card.className = "block " + p.type + (pending ? " pending" : "");
-  const date = p.createdAt ? new Date(p.createdAt).toLocaleString("ko-KR") : (pending ? "업로드 중..." : "");
-  const n = p.images?.length || 0;
+function buildEmbedHTML(type, text, images, charId, position){
+  const character = charId ? charactersMap[charId] : null;
+  const n = images.length;
   const cls = n === 1 ? "n1" : n === 2 ? "n2" : n === 3 ? "n3" : "n4plus";
-  const imgsHtml = n ? `<div class="imgs ${cls}">${p.images.map(u => `<img src="${u}" onclick="window.__openLb('${u}')">`).join("")}</div>` : "";
-  const textHtml = p.text ? formatText(p.text) : "";
-  const actions = pending ? "" : `<div class="blockctrl"><button class="delbtn" data-a="edit">수정</button><button class="delbtn" data-a="del">삭제</button></div>`;
-  const character = p.characterId ? charactersMap[p.characterId] : null;
+  const imgsHtml = n ? `<div class="imgs ${cls}">${images.map(u => `<img src="${u}">`).join("")}</div>` : "";
+  const textHtml = text ? formatText(text) : "";
 
-  if (p.type === "instagram") {
+  if (type === "instagram") {
     const uname = character?.instagram || character?.name || "user";
-    const igimgs = n ? `<div class="igimgs">${p.images.map(u => `<img src="${u}" onclick="window.__openLb('${u}')">`).join("")}</div>` : "";
-    card.innerHTML = `
+    const igimgs = n ? `<div class="igimgs">${images.map(u => `<img src="${u}">`).join("")}</div>` : "";
+    return `<div class="embed block instagram" contenteditable="false">
       <div class="ighead"><div class="av"></div><div class="uname">${escapeHtml(uname)}</div></div>
       ${igimgs}
       <div class="igfoot">
@@ -601,93 +590,43 @@ function renderCard(id, p, pending) {
         <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
       </div>
       <div class="igbody"><div class="igtext">${textHtml ? `<b>${escapeHtml(uname)}</b>${textHtml}` : ""}</div></div>
-      <div class="igmeta"><span class="mono">${date}</span><span>${actions}</span></div>
-    `;
-  } else if (p.type === "twitter") {
+      <button class="embed-del">×</button>
+    </div>`;
+  }
+  if (type === "twitter") {
     const dispName = character?.name || "user";
     const handle = character?.twitter || "@user";
-    card.innerHTML = `
+    return `<div class="embed block twitter" contenteditable="false">
       <div class="av"></div>
       <div class="twbody">
-        <div class="twhead"><b>${escapeHtml(dispName)}</b><span class="mono">${escapeHtml(handle)} · ${date}</span></div>
+        <div class="twhead"><b>${escapeHtml(dispName)}</b><span>${escapeHtml(handle)}</span></div>
         <div class="twtext">${textHtml}</div>
         ${imgsHtml}
-        <div class="twmeta">${actions}</div>
       </div>
-    `;
-  } else if (p.type === "kakao" || p.type === "imessage") {
-    const pos = p.position === "right" ? "right" : "left";
-    const name = character?.name || "";
-    card.innerHTML = `
-      <div class="bubblerow ${pos}">
-        <div class="b-av"></div>
-        <div class="bubblecol">
-          ${name && pos === "left" ? `<div class="b-name">${escapeHtml(name)}</div>` : ""}
-          <div class="bubble">${textHtml}${imgsHtml}</div>
-          <div class="b-meta"><span class="mono">${date}</span><span>${actions}</span></div>
-        </div>
+      <button class="embed-del">×</button>
+    </div>`;
+  }
+  const pos = position === "right" ? "right" : "left";
+  const name = character?.name || "";
+  return `<div class="embed block ${type}" contenteditable="false">
+    <div class="bubblerow ${pos}">
+      <div class="b-av"></div>
+      <div class="bubblecol">
+        ${name && pos === "left" ? `<div class="b-name">${escapeHtml(name)}</div>` : ""}
+        <div class="bubble">${textHtml}${imgsHtml}</div>
       </div>
-    `;
-  } else {
-    card.innerHTML = `
-      <div class="text">${textHtml}</div>
-      ${imgsHtml}
-      ${actions}
-    `;
-  }
-
-  if (!pending) {
-    card.querySelectorAll('[data-a="del"]').forEach(b => b.onclick = async () => {
-      if (confirm("삭제할까요?")) await deleteDoc(doc(db, "posts", id));
-    });
-    card.querySelectorAll('[data-a="edit"]').forEach(b => b.onclick = () => startEdit(card, id, p));
-  }
-  return card;
-}
-
-function startEdit(card, id, p) {
-  let newType = p.type;
-  const textEl = card.querySelector(".text, .igtext, .twtext, .bubble");
-  const ta = document.createElement("textarea");
-  ta.className = "editta";
-  ta.value = p.text || "";
-  textEl.replaceWith(ta);
-  ta.focus();
-
-  const typeRow = document.createElement("div");
-  typeRow.className = "typeSwitchRow";
-  typeRow.innerHTML = Object.entries(TAG).map(([k, v]) =>
-    `<button data-t="${k}" class="${k === p.type ? "active" : ""}">${v}</button>`).join("");
-  ta.insertAdjacentElement("beforebegin", typeRow);
-  typeRow.querySelectorAll("button").forEach(b => b.onclick = () => {
-    newType = b.dataset.t;
-    typeRow.querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
-  });
-
-  const btnRow = document.createElement("div");
-  btnRow.innerHTML = `<button class="delbtn" data-a="save">저장</button><button class="delbtn" data-a="cancel">취소</button>`;
-  ta.insertAdjacentElement("afterend", btnRow);
-  card.querySelectorAll('[data-a="edit"],[data-a="del"]').forEach(b => b.style.display = "none");
-  btnRow.querySelector('[data-a="save"]').onclick = async () => {
-    await updateDoc(doc(db, "posts", id), { text: ta.value.trim(), type: newType });
-  };
-  btnRow.querySelector('[data-a="cancel"]').onclick = () => renderFeed();
+    </div>
+    <button class="embed-del">×</button>
+  </div>`;
 }
 
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
-
 function formatText(s) {
-  const esc = escapeHtml(s);
+  const esc = escapeHtml(s).replace(/\n/g, "<br>");
   return esc.replace(/(^|\s)(#[^\s#<]+)/g, (m, p1, p2) => p1 + '<span class="hashtag">' + p2 + '</span>');
 }
-
-window.__openLb = url => {
-  document.getElementById("lightboxImg").src = url;
-  document.getElementById("lightbox").style.display = "flex";
-};
-document.getElementById("lightbox").onclick = () => document.getElementById("lightbox").style.display = "none";
 </script>
 </body>
 </html>
