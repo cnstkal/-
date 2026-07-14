@@ -106,6 +106,13 @@ button, input, textarea{font-family:inherit;}
 #blockPreview img{width:52px; height:52px; object-fit:cover; border-radius:8px;}
 #blockPreview .rm{position:absolute; top:-5px; right:-5px; background:var(--danger); color:var(--danger-text); border-radius:50%; width:18px; height:18px; font-size:11px; border:none; line-height:18px;}
 .attachbtn{background:none; border:1px solid var(--border); color:var(--text-dim); padding:7px 12px; border-radius:8px; font-size:12.5px; display:inline-block; margin-top:2px;}
+#communityCommentRow{display:flex; gap:6px; align-items:center; margin:8px 0 0;}
+#communityCommentRow input{flex:1; margin:0;}
+#communityCommentRow button{flex:0 0 auto; background:var(--bg4); color:var(--text-dim); padding:9px 13px;}
+#communityCommentList{display:flex; flex-direction:column; gap:5px; margin:8px 0 0;}
+#communityCommentList .ccItem{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-mut); background:var(--bg4); padding:6px 10px; border-radius:8px;}
+#communityCommentList .ccItem span{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+#communityCommentList .ccItem button{background:none; border:none; color:var(--danger); font-size:13px; padding:2px 4px;}
 
 #editBtns{display:none; gap:6px;}
 #editBtns button{background:none; border:1px solid var(--border); color:var(--text-dim); border-radius:16px; padding:5px 10px; font-size:13px;}
@@ -137,6 +144,25 @@ button, input, textarea{font-family:inherit;}
 .block.twitter .twhead span{color:var(--text-faint); margin-left:4px;}
 .block.twitter .twtext{font-size:16.5px; line-height:1.5; margin:3px 0 4px; white-space:pre-wrap;}
 .block.twitter .imgs{border-radius:14px; border:1px solid var(--border2); margin-top:4px;}
+
+.block.community{padding:14px 14px 12px; border:1px solid var(--border2); border-radius:10px; background:var(--bg3);}
+.block.community .cm-badge{display:inline-block; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:4px; margin-bottom:8px; color:#fff;}
+.block.community.site-instiz .cm-badge{background:#00b3a4;}
+.block.community.site-theqoo .cm-badge{background:#c0392b;}
+.block.community.site-jjookbbang .cm-badge{background:#ff5da2;}
+.block.community .cm-title{font-size:15.5px; font-weight:800; margin-bottom:6px; color:var(--text); line-height:1.4;}
+.block.community .cm-meta{font-size:11.5px; font-weight:700; margin-bottom:9px;}
+.block.community.site-instiz .cm-meta{color:#00998c;}
+.block.community.site-theqoo .cm-meta{color:#c0392b;}
+.block.community.site-jjookbbang .cm-meta{color:#ff5da2;}
+.block.community .cm-body{font-size:14px; line-height:1.65; white-space:pre-wrap; color:var(--text-dim); word-break:break-word;}
+.block.community .cm-body .imgs{margin-top:8px;}
+.block.community .cm-comments{margin-top:12px; padding-top:10px; border-top:1px solid var(--border2); display:flex; flex-direction:column; gap:8px;}
+.block.community .cm-comment{font-size:12.5px; line-height:1.55; color:var(--text-dim2); white-space:pre-wrap; word-break:break-word;}
+.block.community .cm-comment b{margin-right:6px; font-weight:800;}
+.block.community.site-instiz .cm-comment b{color:#00998c;}
+.block.community.site-theqoo .cm-comment b{color:#c0392b;}
+.block.community.site-jjookbbang .cm-comment b{color:#ff5da2;}
 
 .bubblerow{display:flex; align-items:flex-end; gap:8px;}
 .bubblerow.right{flex-direction:row-reverse;}
@@ -176,6 +202,7 @@ button, input, textarea{font-family:inherit;}
     <h1 id="siteTitle">📖 연재소설</h1>
     <div class="topbtns">
       <span id="editBtns">
+        <button id="fabUndo" title="방금 삭제 복구">↩︎</button>
         <button id="fabDivider" title="구분선 삽입">―</button>
         <button id="fabBlock" title="대화/SNS 삽입">💬</button>
         <button id="fabImg" title="이미지 삽입">📷</button>
@@ -234,7 +261,14 @@ button, input, textarea{font-family:inherit;}
       <button data-t="twitter">트윗</button>
       <button data-t="kakao">카카오톡</button>
       <button data-t="imessage">아이메시지</button>
+      <button data-t="community">커뮤니티</button>
     </div>
+    <div class="pillrow" id="blockCommunityRow" style="display:none">
+      <button data-s="instiz" class="active">인스티즈</button>
+      <button data-s="theqoo">더쿠</button>
+      <button data-s="jjookbbang">쭉빵</button>
+    </div>
+    <input id="communityTitleInput" placeholder="제목 (선택)" style="display:none">
     <div class="pillrow" id="blockCharRow"></div>
     <div class="pillrow" id="blockMentionRow" style="display:none"></div>
     <div id="blockThreadPreview"></div>
@@ -245,6 +279,11 @@ button, input, textarea{font-family:inherit;}
     <textarea id="blockText" placeholder="내용 입력 (#해시태그 가능)"></textarea>
     <label class="attachbtn">📎 이미지 추가<input type="file" id="blockFileInput" accept="image/*" multiple style="display:none"></label>
     <div id="blockPreview"></div>
+    <div id="communityCommentRow" style="display:none">
+      <input id="communityCommentInput" placeholder="댓글 입력 후 추가">
+      <button id="communityCommentAdd">댓글 추가</button>
+    </div>
+    <div id="communityCommentList"></div>
     <div class="row">
       <button class="cancel" id="blockCancel">닫기</button>
       <button class="ok" id="blockInsertBtn">삽입</button>
@@ -284,9 +323,16 @@ let savedRange = null;
 let saveTimer = null;
 let blockType = "instagram", blockCharId = null, blockPosition = "left", blockPending = [], blockThread = [];
 let charAvatarFile = null, charAvatarExisting = "";
+let communitySite = "instiz", communityComments = [];
+let undoStack = [];
 
 const NEEDS_CHAR = new Set(["instagram", "twitter", "kakao", "imessage"]);
 const NEEDS_POS = new Set(["kakao", "imessage"]);
+const COMMUNITY_META = {
+  instiz: { label: "인스티즈", nick: "익인" },
+  theqoo: { label: "더쿠", nick: "무명의 더쿠" },
+  jjookbbang: { label: "쭉빵", nick: "JB" }
+};
 
 const editor = document.getElementById("editor");
 const emptyEl = document.getElementById("empty");
@@ -376,6 +422,7 @@ document.getElementById("folderDelete").onclick = async () => {
 
 function selectFolder(id) {
   currentFolder = id;
+  undoStack = [];
   document.querySelectorAll("#folderRow .chip:not(.add)").forEach(el => el.classList.toggle("active", el.dataset.fid === id));
   emptyEl.style.display = "none";
   editor.style.display = "block";
@@ -518,13 +565,25 @@ function saveContent(){
 
 editor.addEventListener("click", e => {
   const del = e.target.closest(".embed-del");
-  if (del) { del.closest(".embed").remove(); saveContent(); return; }
+  if (del) {
+    undoStack.push(editor.innerHTML);
+    if (undoStack.length > 20) undoStack.shift();
+    del.closest(".embed").remove();
+    saveContent();
+    return;
+  }
   if (e.target.tagName === "IMG") {
     document.getElementById("lightboxImg").src = e.target.src;
     document.getElementById("lightbox").style.display = "flex";
   }
 });
 document.getElementById("lightbox").onclick = () => document.getElementById("lightbox").style.display = "none";
+
+document.getElementById("fabUndo").onclick = () => {
+  if (!currentFolder || !undoStack.length) return;
+  editor.innerHTML = undoStack.pop();
+  saveContent();
+};
 
 async function uploadToCloudinary(file) {
   const fd = new FormData();
@@ -554,10 +613,16 @@ document.getElementById("fabBlock").onclick = () => {
   document.getElementById("blockText").value = "";
   blockPending = [];
   blockThread = [];
+  communityComments = [];
+  communitySite = "instiz";
+  document.getElementById("communityTitleInput").value = "";
+  document.getElementById("communityCommentInput").value = "";
   renderBlockPreview();
   renderThreadPreview();
+  renderCommunityComments();
   blockType = "instagram"; blockPosition = "left";
   document.querySelectorAll("#blockTypeRow button").forEach(b => b.classList.toggle("active", b.dataset.t === blockType));
+  document.querySelectorAll("#blockCommunityRow button").forEach(b => b.classList.toggle("active", b.dataset.s === communitySite));
   updateBlockExtra();
   document.getElementById("blockSheet").style.display = "flex";
 };
@@ -568,18 +633,59 @@ document.querySelectorAll("#blockTypeRow button").forEach(btn => {
   btn.onclick = () => {
     blockType = btn.dataset.t;
     blockThread = [];
+    communityComments = [];
     document.getElementById("blockText").value = "";
+    document.getElementById("communityTitleInput").value = "";
+    document.getElementById("communityCommentInput").value = "";
     blockPending = [];
     renderBlockPreview();
     renderThreadPreview();
+    renderCommunityComments();
     document.querySelectorAll("#blockTypeRow button").forEach(b => b.classList.toggle("active", b === btn));
     updateBlockExtra();
   };
 });
+document.querySelectorAll("#blockCommunityRow button").forEach(btn => {
+  btn.onclick = () => {
+    communitySite = btn.dataset.s;
+    document.querySelectorAll("#blockCommunityRow button").forEach(b => b.classList.toggle("active", b === btn));
+  };
+});
+document.getElementById("communityCommentAdd").onclick = () => {
+  const inp = document.getElementById("communityCommentInput");
+  const v = inp.value.trim();
+  if (!v) return;
+  communityComments.push(v);
+  inp.value = "";
+  renderCommunityComments();
+  inp.focus();
+};
+document.getElementById("communityCommentInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") { e.preventDefault(); document.getElementById("communityCommentAdd").click(); }
+});
+function renderCommunityComments(){
+  const list = document.getElementById("communityCommentList");
+  list.innerHTML = "";
+  communityComments.forEach((c, i) => {
+    const row = document.createElement("div");
+    row.className = "ccItem";
+    const span = document.createElement("span"); span.textContent = c;
+    const rm = document.createElement("button"); rm.textContent = "×";
+    rm.onclick = () => { communityComments.splice(i, 1); renderCommunityComments(); };
+    row.append(span, rm);
+    list.appendChild(row);
+  });
+}
 function updateBlockExtra(){
+  const isCommunity = blockType === "community";
   document.getElementById("blockCharRow").style.display = NEEDS_CHAR.has(blockType) ? "flex" : "none";
   document.getElementById("blockPosRow").style.display = NEEDS_POS.has(blockType) ? "flex" : "none";
   document.getElementById("blockMentionRow").style.display = blockType === "twitter" ? "flex" : "none";
+  document.getElementById("blockCommunityRow").style.display = isCommunity ? "flex" : "none";
+  document.getElementById("communityTitleInput").style.display = isCommunity ? "block" : "none";
+  document.getElementById("communityCommentRow").style.display = isCommunity ? "flex" : "none";
+  document.getElementById("communityCommentList").style.display = isCommunity ? "flex" : "none";
+  document.getElementById("blockText").placeholder = isCommunity ? "본문 입력 (#해시태그 가능)" : "내용 입력 (#해시태그 가능)";
 }
 function buildBlockMentionRow(){
   const row = document.getElementById("blockMentionRow");
@@ -654,7 +760,9 @@ function renderBlockPreview(){
 document.getElementById("blockInsertBtn").onclick = async () => {
   const text = document.getElementById("blockText").value.trim();
   const files = blockPending;
-  if (!text && !files.length && !blockThread.length) return;
+  const communityTitleVal = document.getElementById("communityTitleInput").value.trim();
+  const hasCommunityExtra = blockType === "community" && (communityComments.length > 0 || communityTitleVal);
+  if (!text && !files.length && !blockThread.length && !hasCommunityExtra) return;
   const btn = document.getElementById("blockInsertBtn");
   btn.disabled = true; btn.textContent = "삽입중...";
   try {
@@ -666,6 +774,11 @@ document.getElementById("blockInsertBtn").onclick = async () => {
       html = buildTwitterThreadHTML(thread);
       blockThread = [];
       renderThreadPreview();
+    } else if (blockType === "community") {
+      html = buildCommunityHTML(communitySite, communityTitleVal, text, urls, communityComments);
+      communityComments = [];
+      renderCommunityComments();
+      document.getElementById("communityTitleInput").value = "";
     } else {
       html = buildEmbedHTML(blockType, text, urls, blockCharId, blockPosition);
     }
@@ -726,7 +839,7 @@ function buildEmbedHTML(type, text, images, charId, position){
       <div class="ighead"><div class="av"${avStyle}></div><div class="uname">${escapeHtml(uname)}</div></div>
       ${igimgs}
       <div class="igfoot">
-        <svg viewBox="0 0 24 24"><path d="M20.8 8.6c0-3-2.2-5.1-5-5.1-1.9 0-3.3 1-4.3 2.5C10.5 4.5 9.1 3.5 7.2 3.5c-2.8 0-5 2.1-5 5.1 0 4.6 5.4 8.6 9.3 11.7l.5.4.5-.4c3.9-3.1 9.3-7.1 9.3-11.7z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         <svg viewBox="0 0 24 24"><path d="M3 12c0-4.4 4-8 9-8s9 3.6 9 8-4 8-9 8c-1.1 0-2.2-.2-3.2-.5L4 21l1.4-4.4C4.1 15.3 3 13.7 3 12z"/></svg>
         <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
       </div>
@@ -743,6 +856,26 @@ function buildEmbedHTML(type, text, images, charId, position){
         <div class="bubble">${textHtml}${imgsHtml}</div>
       </div>
     </div>
+    <button class="embed-del">×</button>
+  </div>`;
+}
+
+function buildCommunityHTML(site, title, body, images, comments){
+  const meta = COMMUNITY_META[site] || COMMUNITY_META.instiz;
+  const n = images.length;
+  const cls = n === 1 ? "n1" : n === 2 ? "n2" : n === 3 ? "n3" : "n4plus";
+  const imgsHtml = n ? `<div class="imgs ${cls}">${images.map(u => `<img src="${u}">`).join("")}</div>` : "";
+  const bodyHtml = body ? formatText(body) : "";
+  const titleHtml = title ? `<div class="cm-title">${escapeHtml(title)}</div>` : "";
+  const commentsHtml = comments.length
+    ? `<div class="cm-comments">${comments.map(c => `<div class="cm-comment"><b>${escapeHtml(meta.nick)}</b>${formatText(c)}</div>`).join("")}</div>`
+    : "";
+  return `<div class="embed block community site-${site}" contenteditable="false">
+    <div class="cm-badge">${meta.label}</div>
+    ${titleHtml}
+    <div class="cm-meta">${escapeHtml(meta.nick)}</div>
+    <div class="cm-body">${bodyHtml}${imgsHtml}</div>
+    ${commentsHtml}
     <button class="embed-del">×</button>
   </div>`;
 }
