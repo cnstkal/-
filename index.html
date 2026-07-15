@@ -82,6 +82,8 @@ button, input, textarea{font-family:inherit;}
 #overlay .row button, #charOverlay .row button, #blockSheet .row button, #profileChapterOverlay .row button{flex:1;}
 #overlay .cancel, #charOverlay .cancel, #blockSheet .cancel, #profileChapterOverlay .cancel{background:var(--bg4); color:var(--text-dim2);}
 #overlay .ok, #charOverlay .ok, #blockSheet .ok, #profileChapterOverlay .ok{background:var(--accent); color:var(--accent-text); font-weight:700;}
+.cat-btn{flex:1; padding:9px 0; border-radius:10px; background:var(--bg4); color:var(--text-mut); border:1px solid var(--border); font-size:13px; font-weight:600;}
+.cat-btn.active{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
 #charList{margin-top:12px; border-top:1px solid var(--border2); padding-top:10px; display:flex; flex-direction:column; gap:6px;}
 .charRowItem{display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--bg3); border-radius:10px;}
 .charRowItem .ci-av{width:28px; height:28px; border-radius:50%; background:var(--accent); flex:0 0 auto;}
@@ -268,11 +270,17 @@ body.folder-locked #editBtns{display:none !important;}
 <div id="profileChapterOverlay">
   <div class="sheet">
     <div class="mono" style="font-size:13px;color:var(--accent)">인물소개 추가</div>
+    <div class="row" id="profileCatRow" style="gap:6px;margin:10px 0">
+      <button type="button" class="cat-btn" data-cat="idol">아이돌</button>
+      <button type="button" class="cat-btn" data-cat="fan">팬</button>
+      <button type="button" class="cat-btn" data-cat="other">그외</button>
+    </div>
     <div class="row" style="align-items:center;gap:8px">
       <img id="profilePhotoPreview" style="width:100px;max-width:40%;height:auto;border-radius:10px;object-fit:contain;background:var(--bg4);display:none;">
       <label class="attachbtn" style="margin:0;flex:1;text-align:center">📎 사진 첨부<input type="file" id="profilePhotoInput" accept="image/*" style="display:none"></label>
     </div>
     <input id="profileNameInput" placeholder="이름">
+    <input id="profilePositionInput" placeholder="포지션">
     <input id="profileBirthInput" placeholder="나이">
     <input id="profileJobInput" placeholder="소속/직업">
     <input id="profileMbtiInput" placeholder="MBTI">
@@ -419,6 +427,7 @@ let saveTimer = null;
 let blockType = "twitter", blockCharId = null, blockTwAccount = "public", blockPosition = "left", blockPending = [], blockThread = [], blockReplyTarget = null, blockIdSeq = 1;
 let profilePhotoFile = null;
 let editingProfileCard = null;
+let profileCategory = "fan";
 let charTwAvatarFile = null, charTwAvatarExisting = "";
 let charTwPrivAvatarFile = null, charTwPrivAvatarExisting = "";
 let charIgAvatarFile = null, charIgAvatarExisting = "";
@@ -447,12 +456,26 @@ siteTitle.onclick = () => {
   if (t) { siteTitle.textContent = t; localStorage.setItem("novel-title", t); }
 };
 
+function setProfileCategory(cat){
+  profileCategory = cat;
+  document.querySelectorAll("#profileCatRow .cat-btn").forEach(b => b.classList.toggle("active", b.dataset.cat === cat));
+  const isIdol = cat === "idol";
+  document.getElementById("profilePositionInput").style.display = isIdol ? "" : "none";
+  document.getElementById("profileIgInput").style.display = isIdol ? "none" : "";
+  document.getElementById("profileTwInput").style.display = isIdol ? "none" : "";
+  document.getElementById("profileTwPrivInput").style.display = isIdol ? "none" : "";
+  document.getElementById("profileFavInput").style.display = isIdol ? "none" : "";
+  document.getElementById("profileBirthInput").placeholder = isIdol ? "생년월일" : "나이";
+  document.getElementById("profileJobInput").placeholder = isIdol ? "소속" : "소속/직업";
+}
+document.querySelectorAll("#profileCatRow .cat-btn").forEach(b => b.onclick = () => setProfileCategory(b.dataset.cat));
 function openProfileChapterSheet(){
   editingProfileCard = null;
-  ["profileNameInput", "profileBirthInput", "profileJobInput", "profileMbtiInput", "profileIgInput", "profileTwInput", "profileTwPrivInput", "profileFavInput", "profileTraitInput"].forEach(id => document.getElementById(id).value = "");
+  ["profileNameInput", "profilePositionInput", "profileBirthInput", "profileJobInput", "profileMbtiInput", "profileIgInput", "profileTwInput", "profileTwPrivInput", "profileFavInput", "profileTraitInput"].forEach(id => document.getElementById(id).value = "");
   profilePhotoFile = null;
   const prev = document.getElementById("profilePhotoPreview");
   prev.style.display = "none"; prev.src = "";
+  setProfileCategory("fan");
   document.querySelector("#profileChapterOverlay .mono").textContent = "인물소개 추가";
   document.getElementById("profileChapterOk").textContent = "추가";
   document.getElementById("profileChapterOverlay").style.display = "flex";
@@ -461,6 +484,7 @@ function openProfileEditSheet(card){
   editingProfileCard = card;
   profilePhotoFile = null;
   document.getElementById("profileNameInput").value = card.dataset.name || "";
+  document.getElementById("profilePositionInput").value = card.dataset.position || "";
   document.getElementById("profileBirthInput").value = card.dataset.birth || "";
   document.getElementById("profileJobInput").value = card.dataset.job || "";
   document.getElementById("profileMbtiInput").value = card.dataset.mbti || "";
@@ -469,6 +493,7 @@ function openProfileEditSheet(card){
   document.getElementById("profileTwPrivInput").value = card.dataset.twpriv || "";
   document.getElementById("profileFavInput").value = card.dataset.fav || "";
   document.getElementById("profileTraitInput").value = card.dataset.trait || "";
+  setProfileCategory(card.dataset.category || "fan");
   const prev = document.getElementById("profilePhotoPreview");
   if (card.dataset.photo) { prev.src = card.dataset.photo; prev.style.display = "block"; }
   else { prev.style.display = "none"; prev.src = ""; }
@@ -502,7 +527,9 @@ document.getElementById("profileChapterOk").onclick = async () => {
       document.getElementById("profileTwInput").value.trim(),
       document.getElementById("profileTwPrivInput").value.trim(),
       document.getElementById("profileFavInput").value.trim(),
-      document.getElementById("profileTraitInput").value.trim());
+      document.getElementById("profileTraitInput").value.trim(),
+      profileCategory,
+      document.getElementById("profilePositionInput").value.trim());
     if (isEdit) {
       const temp = document.createElement("div");
       temp.innerHTML = cardHtml;
@@ -1402,19 +1429,21 @@ function buildArticleHTML(title, site, reporter, body, images){
 }
 
 function dispName(name, c){ return (name || "") + (c && c.private ? " 🔒" : ""); }
-function buildProfileHTML(photo, name, birth, job, mbti, ig, tw, twPriv, fav, trait){
+function buildProfileHTML(photo, name, birth, job, mbti, ig, tw, twPriv, fav, trait, category, position){
+  category = category || "fan";
   const photoHtml = photo
     ? `<div class="prof-photo"><img src="${photo}"></div>`
     : `<div class="prof-photo-add">📎 사진 추가</div>`;
-  const rows = [
-    ["나이", "birth", birth], ["소속/직업", "job", job], ["MBTI", "mbti", mbti],
-    ["인스타그램", "ig", ig], ["트위터", "tw", tw], ["트위터(비공개)", "twpriv", twPriv],
-    ["최애", "fav", fav], ["특징", "trait", trait]
-  ].filter(([, , v]) => v).map(([k, field, v]) => `<div class="prof-row"><span class="prof-k">${escapeHtml(k)}</span><span class="prof-v" data-field="${field}">${formatText(v)}</span></div>`).join("");
+  const rowDefs = category === "idol"
+    ? [["포지션", "position", position], ["생년월일", "birth", birth], ["소속", "job", job], ["MBTI", "mbti", mbti], ["특징", "trait", trait]]
+    : [["나이", "birth", birth], ["소속/직업", "job", job], ["MBTI", "mbti", mbti],
+       ["인스타그램", "ig", ig], ["트위터", "tw", tw], ["트위터(비공개)", "twpriv", twPriv],
+       ["최애", "fav", fav], ["특징", "trait", trait]];
+  const rows = rowDefs.filter(([, , v]) => v).map(([k, field, v]) => `<div class="prof-row"><span class="prof-k">${escapeHtml(k)}</span><span class="prof-v" data-field="${field}">${formatText(v)}</span></div>`).join("");
   const dataAttrs = [
     ["data-photo", photo], ["data-name", name], ["data-birth", birth], ["data-job", job],
     ["data-mbti", mbti], ["data-ig", ig], ["data-tw", tw], ["data-twpriv", twPriv],
-    ["data-fav", fav], ["data-trait", trait]
+    ["data-fav", fav], ["data-trait", trait], ["data-category", category], ["data-position", position]
   ].map(([k, v]) => `${k}="${escapeHtml(v || "")}"`).join(" ");
   return `<div class="embed block profile" ${dataAttrs} contenteditable="false">
     <button class="prof-edit-btn" title="사진 변경">📎</button>
