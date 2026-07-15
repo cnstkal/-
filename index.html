@@ -228,7 +228,6 @@ body.folder-locked #editBtns{display:none !important;}
         <button id="fabRedo" title="앞으로가기">↪︎</button>
         <button id="fabDivider" title="구분선 삽입">―</button>
         <button id="fabBlock" title="대화/SNS 삽입">💬</button>
-        <button id="fabImg" title="이미지 삽입">📷</button>
       </span>
       <button id="fabLock" title="회차 잠금" style="display:none">🔓</button>
       <button id="charBtn">👤 인물</button>
@@ -241,8 +240,6 @@ body.folder-locked #editBtns{display:none !important;}
   <div id="editor" contenteditable="true" spellcheck="false" data-ph="이어서 써내려가세요..." style="display:none"></div>
   <div id="empty">회차를 선택하거나 새로 만들어보세요</div>
 </div>
-
-<input type="file" id="imgFileInput" accept="image/*" multiple style="display:none">
 
 <div id="overlay">
   <div class="sheet">
@@ -683,13 +680,16 @@ function insertAtCursor(html, opts){
     }
   } else {
     editor.focus({ preventScroll: true });
+    if (savedRange && editor.contains(savedRange.startContainer)) {
+      range = savedRange.cloneRange();
+    } else {
+      range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+    }
     const sel = window.getSelection();
     sel.removeAllRanges();
-    const r = document.createRange();
-    r.selectNodeContents(editor);
-    r.collapse(false);
-    sel.addRange(r);
-    range = sel.getRangeAt(0);
+    sel.addRange(range);
   }
   const tpl = document.createElement("template");
   tpl.innerHTML = html;
@@ -866,15 +866,6 @@ document.getElementById("fabDivider").onclick = () => {
   insertAtCursor('<hr class="divider" contenteditable="false">' + "<p><br></p>", { silent: true });
 };
 
-document.getElementById("fabImg").onclick = () => document.getElementById("imgFileInput").click();
-document.getElementById("imgFileInput").onchange = async e => {
-  const files = [...e.target.files]; e.target.value = "";
-  if (!files.length || !currentFolder) return;
-  try {
-    const urls = await Promise.all(files.map(uploadToCloudinary));
-    insertAtCursor(urls.map(u => `<img src="${u}">`).join(""));
-  } catch (err) { alert("이미지 업로드 실패 - 다시 시도해주세요"); }
-};
 
 // ---- 대화/SNS 블록 삽입 시트 ----
 document.getElementById("fabBlock").onclick = () => {
@@ -1048,7 +1039,7 @@ function buildBlockCharRow(){
     const b = document.createElement("button");
     b.className = "chip" + (blockCharId === c.id ? " active" : "");
     b.textContent = dispName(c.name, c);
-    b.onclick = () => { blockCharId = c.id; blockTwAccount = "public"; buildBlockCharRow(); };
+    b.onclick = () => { blockCharId = c.id; blockTwAccount = c.twitterPriv ? "private" : "public"; buildBlockCharRow(); };
     row.appendChild(b);
   });
   buildBlockTwAccountRow();
@@ -1060,19 +1051,20 @@ function buildBlockTwAccountRow(){
   if (blockType !== "twitter" || !c || (!c.twitter && !c.twitterPriv)) { row.style.display = "none"; return; }
   if (c.twitter && !c.twitterPriv) blockTwAccount = "public";
   if (!c.twitter && c.twitterPriv) blockTwAccount = "private";
+  if (c.twitter && c.twitterPriv && blockTwAccount !== "public" && blockTwAccount !== "private") blockTwAccount = "private";
   row.style.display = "flex";
-  if (c.twitter) {
-    const b = document.createElement("button");
-    b.className = blockTwAccount === "public" ? "active" : "";
-    b.textContent = "공개 " + c.twitter;
-    b.onclick = () => { blockTwAccount = "public"; buildBlockTwAccountRow(); };
-    row.appendChild(b);
-  }
   if (c.twitterPriv) {
     const b = document.createElement("button");
     b.className = blockTwAccount === "private" ? "active" : "";
-    b.textContent = "🔒 " + c.twitterPriv;
+    b.textContent = "🔒 " + (c.twitterPrivName || c.name || "");
     b.onclick = () => { blockTwAccount = "private"; buildBlockTwAccountRow(); };
+    row.appendChild(b);
+  }
+  if (c.twitter) {
+    const b = document.createElement("button");
+    b.className = blockTwAccount === "public" ? "active" : "";
+    b.textContent = "공개 " + (c.twitterName || c.name || "");
+    b.onclick = () => { blockTwAccount = "public"; buildBlockTwAccountRow(); };
     row.appendChild(b);
   }
 }
