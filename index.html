@@ -28,7 +28,7 @@ body{
 h1{font-weight:700;}
 .mono{font-family:'Pretendard',sans-serif; font-weight:600;}
 button, input, textarea{font-family:inherit;}
-.hashtag{color:var(--hashtag); font-weight:600;}
+.hashtag{color:var(--hashtag);}
 
 #topbar{position:sticky; top:0; z-index:20; background:var(--bg2); border-bottom:1px solid var(--border); padding:10px 12px 8px;}
 #topbar .titlerow{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:8px;}
@@ -63,7 +63,7 @@ button, input, textarea{font-family:inherit;}
 #editor hr.divider{border:none; border-top:1px solid var(--border); margin:26px auto; width:35%; min-width:80px; max-width:220px;}
 .imgs{display:grid; gap:3px; border-radius:10px; overflow:hidden; margin:8px 0;}
 .imgs img{width:100%; object-fit:cover; display:block; margin:0; cursor:zoom-in;}
-.imgs.n1 img{height:auto; max-height:520px; object-fit:contain; background:var(--bg0);}
+.imgs.n1 img{height:auto; object-fit:initial;}
 .imgs.n2{grid-template-columns:1fr 1fr;} .imgs.n2 img{aspect-ratio:1/1; height:auto;}
 .imgs.n3{grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;}
 .imgs.n3 img:nth-child(1){grid-column:1; grid-row:1; aspect-ratio:1/1; height:auto;}
@@ -117,6 +117,10 @@ button, input, textarea{font-family:inherit;}
 #lightbox{display:none; position:fixed; inset:0; background:rgba(0,0,0,.94); z-index:50; align-items:center; justify-content:center;}
 #lightbox img{max-width:94vw; max-height:94vh; object-fit:contain;}
 .inline-editing{outline:2px dashed var(--accent) !important; outline-offset:3px; border-radius:6px;}
+.spin-box{position:relative; border:2px solid #e0233c; border-radius:4px; padding:18px 14px 14px; margin:10px 0 4px; background:#fff;}
+.spin-label{position:absolute; top:-11px; right:10px; background:#fff; padding:0 6px; color:#e0233c; font-weight:800; font-style:italic; font-size:13px;}
+.spin-text{font-size:15px; line-height:1.6; text-align:center; font-weight:600; color:#222;}
+.spin-source{font-size:11px; color:var(--text-faint); margin:3px 0 4px;}
 #imgEditMenu{display:none; position:fixed; z-index:60; background:var(--bg2); border:1px solid var(--border); border-radius:10px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,.4);}
 #imgEditMenu button{display:block; width:100%; padding:10px 18px; background:none; border:none; color:var(--text); font-size:13px; white-space:nowrap; text-align:left;}
 #imgEditMenu button.danger{color:var(--danger);}
@@ -327,6 +331,7 @@ body.folder-locked #editBtns{display:none !important;}
       <button data-p="left" class="active">왼쪽(상대)</button>
       <button data-p="right">오른쪽(나)</button>
     </div>
+    <input id="blockSpinInput" placeholder="🌀 스핀 익명 질문 (선택, 게시글에만 첨부 가능)" style="display:none">
     <textarea id="blockText" placeholder="내용 입력 (#해시태그 가능)"></textarea>
     <label class="attachbtn">📎 이미지 추가<input type="file" id="blockFileInput" accept="image/*" multiple style="display:none"></label>
     <div id="blockPreview"></div>
@@ -763,7 +768,7 @@ editor.addEventListener("click", e => {
 });
 editor.addEventListener("click", e => {
   if (folderLocked) return;
-  const textEl = e.target.closest(".twtext, .igtext, .bubble, .cm-body, .cm-comment, .cm-title, .art-body, .art-title, .art-site, .art-reporter");
+  const textEl = e.target.closest(".twtext, .igtext, .bubble, .cm-body, .cm-comment, .cm-title, .cm-meta, .art-body, .art-title, .art-site, .art-reporter");
   if (!textEl || e.target.tagName === "IMG") return;
   if (textEl.isContentEditable) return;
   textEl.contentEditable = "true";
@@ -875,6 +880,7 @@ document.getElementById("imgFileInput").onchange = async e => {
 document.getElementById("fabBlock").onclick = () => {
   if (!currentFolder) return;
   document.getElementById("blockText").value = "";
+  document.getElementById("blockSpinInput").value = "";
   blockPending = [];
   blockThread = []; blockReplyTarget = null;
   communityComments = []; communityReplyTarget = null;
@@ -905,6 +911,7 @@ document.querySelectorAll("#blockTypeRow button").forEach(btn => {
     blockThread = []; blockReplyTarget = null;
     communityComments = []; communityReplyTarget = null;
     document.getElementById("blockText").value = "";
+    document.getElementById("blockSpinInput").value = "";
     document.getElementById("communityTitleInput").value = "";
     document.getElementById("communityViewsInput").value = "";
     document.getElementById("communityTimeInput").value = "";
@@ -978,6 +985,7 @@ function updateBlockExtra(){
   buildBlockTwAccountRow();
   document.getElementById("blockPosRow").style.display = NEEDS_POS.has(blockType) ? "flex" : "none";
   document.getElementById("blockThreadAddBtn").style.display = blockType === "twitter" ? "block" : "none";
+  document.getElementById("blockSpinInput").style.display = (blockType === "twitter" && !blockThread.length) ? "block" : "none";
   document.getElementById("blockCommunityRow").style.display = isCommunity ? "flex" : "none";
   document.getElementById("communityTitleInput").style.display = isCommunity ? "block" : "none";
   document.getElementById("communityMetaRow").style.display = isCommunity ? "flex" : "none";
@@ -1004,6 +1012,7 @@ document.getElementById("blockThreadAddBtn").onclick = async () => {
   ta.focus();
 };
 function renderThreadPreview(){
+  document.getElementById("blockSpinInput").style.display = (blockType === "twitter" && !blockThread.length) ? "block" : "none";
   const el = document.getElementById("blockThreadPreview");
   el.innerHTML = "";
   function renderNode(node, depth){
@@ -1011,8 +1020,22 @@ function renderThreadPreview(){
     const row = document.createElement("div");
     row.className = "tpItem" + (blockReplyTarget === node.id ? " sel" : "");
     row.style.cssText = `font-size:11.5px;color:var(--text-faint);padding:5px 8px;margin:2px 0 2px ${depth * 14}px;border-radius:6px`;
-    row.textContent = (depth ? "ㄴ " : "") + (dispName(c?.twitterName || c?.name, c) || "user") + " " + node.text.slice(0, 24);
+    row.style.display = "flex"; row.style.alignItems = "center"; row.style.gap = "6px";
+    const span = document.createElement("span");
+    span.style.cssText = "flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap";
+    span.textContent = (depth ? "ㄴ " : "") + (dispName(c?.twitterName || c?.name, c) || "user") + " " + node.text.slice(0, 24);
+    const rm = document.createElement("button"); rm.textContent = "×"; rm.style.cssText = "background:none;border:none;color:var(--danger);font-size:13px;padding:2px 4px";
+    rm.onclick = e2 => {
+      e2.stopPropagation();
+      const ids = new Set([node.id]);
+      let changed = true;
+      while (changed) { changed = false; blockThread.forEach(n => { if (n.parent !== null && ids.has(n.parent) && !ids.has(n.id)) { ids.add(n.id); changed = true; } }); }
+      blockThread = blockThread.filter(n => !ids.has(n.id));
+      if (ids.has(blockReplyTarget)) blockReplyTarget = null;
+      renderThreadPreview();
+    };
     row.onclick = () => { blockReplyTarget = blockReplyTarget === node.id ? null : node.id; renderThreadPreview(); };
+    row.append(span, rm);
     el.appendChild(row);
     blockThread.filter(n => n.parent === node.id).forEach(child => renderNode(child, depth + 1));
   }
@@ -1099,9 +1122,11 @@ document.getElementById("blockInsertBtn").onclick = async () => {
     let html;
     if (blockType === "twitter") {
       const thread = [...blockThread];
-      if (text || urls.length || !thread.length) thread.push({ id: blockIdSeq++, charId: blockCharId, twAccount: blockTwAccount, text, images: urls, parent: thread.length ? blockReplyTarget : null });
+      const spinVal = thread.length ? "" : document.getElementById("blockSpinInput").value.trim();
+      if (text || urls.length || spinVal || !thread.length) thread.push({ id: blockIdSeq++, charId: blockCharId, twAccount: blockTwAccount, text, images: urls, spin: spinVal, parent: thread.length ? blockReplyTarget : null });
       html = buildTwitterThreadHTML(thread);
       blockThread = []; blockReplyTarget = null;
+      document.getElementById("blockSpinInput").value = "";
       renderThreadPreview();
     } else if (blockType === "community") {
       html = buildCommunityHTML(communitySite, communityTitleVal, communityViewsVal, communityTimeVal, text, urls, communityComments);
@@ -1120,6 +1145,7 @@ document.getElementById("blockInsertBtn").onclick = async () => {
     }
     insertAtCursor(html + "<p><br></p>");
     document.getElementById("blockText").value = "";
+    document.getElementById("blockSpinInput").value = "";
     blockPending = [];
     renderBlockPreview();
     document.getElementById("blockText").focus();
@@ -1144,12 +1170,14 @@ function twEntryHTML(entry){
   const cls = n === 1 ? "n1" : n === 2 ? "n2" : n === 3 ? "n3" : "n4plus";
   const imgsHtml = n ? `<div class="imgs ${cls}">${entry.images.map(u => `<img src="${u}">`).join("")}</div>` : "";
   const textHtml = entry.text ? formatText(entry.text) : "";
+  const spinHtml = entry.spin ? `<div class="spin-box"><div class="spin-label">Spin spin</div><div class="spin-text">${escapeHtml(entry.spin)}</div></div><div class="spin-source">출처: spin-spin.com</div>` : "";
   return `<div class="tw-entry">
     <div class="av"${avStyle}></div>
     <div class="twbody">
       <div class="twhead"><b>${escapeHtml(dispNameStr)}</b>${badge}<span>${escapeHtml(handle)}</span></div>
       <div class="twtext">${textHtml}</div>
       ${imgsHtml}
+      ${spinHtml}
     </div>
   </div>`;
 }
