@@ -266,8 +266,7 @@ body.folder-locked #editBtns{display:none !important;}
 
 <div id="profileChapterOverlay">
   <div class="sheet">
-    <div class="mono" style="font-size:13px;color:var(--accent)">인물소개 회차 만들기</div>
-    <input id="profileNumInput" type="number" placeholder="회차 번호 (예: 0, 1화 앞에 오려면 1보다 작게)">
+    <div class="mono" style="font-size:13px;color:var(--accent)">인물소개 추가</div>
     <div class="row" style="align-items:center;gap:8px">
       <img id="profilePhotoPreview" style="width:44px;height:44px;border-radius:10px;object-fit:cover;background:var(--bg4);display:none;">
       <label class="attachbtn" style="margin:0;flex:1;text-align:center">📎 사진 첨부<input type="file" id="profilePhotoInput" accept="image/*" style="display:none"></label>
@@ -276,12 +275,14 @@ body.folder-locked #editBtns{display:none !important;}
     <input id="profileBirthInput" placeholder="생년월일 (예: 2000.03.14)">
     <input id="profileJobInput" placeholder="소속/직업">
     <input id="profileMbtiInput" placeholder="MBTI">
-    <input id="profileSnsInput" placeholder="SNS 계정 (예: @handle)">
+    <input id="profileIgInput" placeholder="인스타그램 계정 (예: @handle)">
+    <input id="profileTwInput" placeholder="트위터 공개 계정 (예: @handle)">
+    <input id="profileTwPrivInput" placeholder="트위터 비공개 계정 (예: @handle)">
     <input id="profileFavInput" placeholder="최애">
     <textarea id="profileTraitInput" placeholder="특징" style="min-height:60px"></textarea>
     <div class="row">
       <button class="cancel" id="profileChapterCancel">취소</button>
-      <button class="ok" id="profileChapterOk">만들기</button>
+      <button class="ok" id="profileChapterOk">추가</button>
     </div>
   </div>
 </div>
@@ -411,6 +412,7 @@ const charactersCol = collection(db, "characters");
 let currentFolder = null, editingFolderId = null, editingCharId = null;
 let charactersMap = {};
 let chapterUnsub = null;
+let chaptersArr = [];
 let savedRange = null;
 let saveTimer = null;
 let blockType = "twitter", blockCharId = null, blockTwAccount = "public", blockPosition = "left", blockPending = [], blockThread = [], blockReplyTarget = null, blockIdSeq = 1;
@@ -444,8 +446,7 @@ siteTitle.onclick = () => {
 };
 
 function openProfileChapterSheet(){
-  document.getElementById("profileNumInput").value = "0";
-  ["profileNameInput", "profileBirthInput", "profileJobInput", "profileMbtiInput", "profileSnsInput", "profileFavInput", "profileTraitInput"].forEach(id => document.getElementById(id).value = "");
+  ["profileNameInput", "profileBirthInput", "profileJobInput", "profileMbtiInput", "profileIgInput", "profileTwInput", "profileTwPrivInput", "profileFavInput", "profileTraitInput"].forEach(id => document.getElementById(id).value = "");
   profilePhotoFile = null;
   document.getElementById("profilePhotoPreview").style.display = "none";
   document.getElementById("profileChapterOverlay").style.display = "flex";
@@ -463,22 +464,30 @@ document.getElementById("profilePhotoInput").onchange = e => {
 document.getElementById("profileChapterOk").onclick = async () => {
   const name = document.getElementById("profileNameInput").value.trim();
   if (!name) { alert("이름을 입력해주세요"); return; }
-  const num = Number(document.getElementById("profileNumInput").value) || 0;
   const btn = document.getElementById("profileChapterOk");
-  btn.disabled = true; btn.textContent = "만드는 중...";
+  btn.disabled = true; btn.textContent = "추가 중...";
   try {
     const photoUrl = profilePhotoFile ? await uploadToCloudinary(profilePhotoFile) : "";
-    const content = buildProfileHTML(photoUrl, name,
+    const cardHtml = buildProfileHTML(photoUrl, name,
       document.getElementById("profileBirthInput").value.trim(),
       document.getElementById("profileJobInput").value.trim(),
       document.getElementById("profileMbtiInput").value.trim(),
-      document.getElementById("profileSnsInput").value.trim(),
+      document.getElementById("profileIgInput").value.trim(),
+      document.getElementById("profileTwInput").value.trim(),
+      document.getElementById("profileTwPrivInput").value.trim(),
       document.getElementById("profileFavInput").value.trim(),
       document.getElementById("profileTraitInput").value.trim());
-    await addDoc(foldersCol, { name, num, content, createdAt: Date.now() });
+    let profChapter = chaptersArr.find(f => f.profile);
+    if (!profChapter) {
+      const minNum = chaptersArr.reduce((m, f) => Math.min(m, f.num || 0), 0);
+      const newRef = await addDoc(foldersCol, { name: "인물소개", num: minNum - 1, profile: true, content: "", createdAt: Date.now() });
+      profChapter = { id: newRef.id, content: "" };
+    }
+    await updateDoc(doc(db, "chapters", profChapter.id), { content: (profChapter.content || "") + cardHtml + "<p><br></p>" });
     document.getElementById("profileChapterOverlay").style.display = "none";
+    selectFolder(profChapter.id);
   } catch (e) { alert("저장 실패 - 네트워크를 확인해주세요"); }
-  btn.disabled = false; btn.textContent = "만들기";
+  btn.disabled = false; btn.textContent = "추가";
 };
 
 // ---- 회차(chapters) ----
@@ -495,6 +504,7 @@ onSnapshot(query(foldersCol, orderBy("num", "asc")), snap => {
   row.appendChild(profBtn);
   const arr = [];
   snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+  chaptersArr = arr;
   arr.forEach(f => {
     const wrap = document.createElement("div"); wrap.className = "chipwrap";
     const chip = document.createElement("button");
@@ -1344,11 +1354,11 @@ function buildArticleHTML(title, site, reporter, body, images){
 }
 
 function dispName(name, c){ return (name || "") + (c && c.private ? " 🔒" : ""); }
-function buildProfileHTML(photo, name, birth, job, mbti, sns, fav, trait){
+function buildProfileHTML(photo, name, birth, job, mbti, ig, tw, twPriv, fav, trait){
   const photoHtml = photo ? `<div class="prof-photo"><img src="${photo}"></div>` : "";
   const rows = [
     ["생년월일", birth], ["소속/직업", job], ["MBTI", mbti],
-    ["SNS", sns], ["최애", fav]
+    ["인스타그램", ig], ["트위터", tw], ["트위터(비공개)", twPriv], ["최애", fav]
   ].filter(([, v]) => v).map(([k, v]) => `<div class="prof-row"><span class="prof-k">${escapeHtml(k)}</span><span class="prof-v">${escapeHtml(v)}</span></div>`).join("");
   const traitHtml = trait ? `<div class="prof-trait">${formatText(trait)}</div>` : "";
   return `<div class="embed block profile" contenteditable="false">
