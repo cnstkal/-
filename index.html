@@ -187,7 +187,7 @@ body.folder-locked #editBtns{display:none !important;}
 .block.article .art-reporter{font-size:13px; color:var(--text-faint); margin-bottom:10px;}
 .block.article .art-body{font-size:16px; line-height:1.65; color:var(--text-dim); white-space:pre-wrap; word-break:break-word;}
 .block.article .art-body .imgs{margin-top:8px;}
-.block.profile{padding:0 0 16px;}
+.block.profile{padding:0 0 16px; cursor:pointer;}
 .block.profile .prof-photo{width:100%; border-radius:12px 12px 0 0; overflow:hidden; background:var(--bg4);}
 .block.profile .prof-photo img{width:100%; height:auto; display:block;}
 .block.profile .prof-head{padding:16px 16px 0;}
@@ -417,6 +417,7 @@ let savedRange = null;
 let saveTimer = null;
 let blockType = "twitter", blockCharId = null, blockTwAccount = "public", blockPosition = "left", blockPending = [], blockThread = [], blockReplyTarget = null, blockIdSeq = 1;
 let profilePhotoFile = null;
+let editingProfileCard = null;
 let charTwAvatarFile = null, charTwAvatarExisting = "";
 let charTwPrivAvatarFile = null, charTwPrivAvatarExisting = "";
 let charIgAvatarFile = null, charIgAvatarExisting = "";
@@ -446,13 +447,36 @@ siteTitle.onclick = () => {
 };
 
 function openProfileChapterSheet(){
+  editingProfileCard = null;
   ["profileNameInput", "profileBirthInput", "profileJobInput", "profileMbtiInput", "profileIgInput", "profileTwInput", "profileTwPrivInput", "profileFavInput", "profileTraitInput"].forEach(id => document.getElementById(id).value = "");
   profilePhotoFile = null;
-  document.getElementById("profilePhotoPreview").style.display = "none";
+  const prev = document.getElementById("profilePhotoPreview");
+  prev.style.display = "none"; prev.src = "";
+  document.querySelector("#profileChapterOverlay .mono").textContent = "인물소개 추가";
+  document.getElementById("profileChapterOk").textContent = "추가";
   document.getElementById("profileChapterOverlay").style.display = "flex";
 }
-document.getElementById("profileChapterCancel").onclick = () => document.getElementById("profileChapterOverlay").style.display = "none";
-document.getElementById("profileChapterOverlay").onclick = e => { if (e.target.id === "profileChapterOverlay") e.currentTarget.style.display = "none"; };
+function openProfileEditSheet(card){
+  editingProfileCard = card;
+  profilePhotoFile = null;
+  document.getElementById("profileNameInput").value = card.dataset.name || "";
+  document.getElementById("profileBirthInput").value = card.dataset.birth || "";
+  document.getElementById("profileJobInput").value = card.dataset.job || "";
+  document.getElementById("profileMbtiInput").value = card.dataset.mbti || "";
+  document.getElementById("profileIgInput").value = card.dataset.ig || "";
+  document.getElementById("profileTwInput").value = card.dataset.tw || "";
+  document.getElementById("profileTwPrivInput").value = card.dataset.twpriv || "";
+  document.getElementById("profileFavInput").value = card.dataset.fav || "";
+  document.getElementById("profileTraitInput").value = card.dataset.trait || "";
+  const prev = document.getElementById("profilePhotoPreview");
+  if (card.dataset.photo) { prev.src = card.dataset.photo; prev.style.display = "block"; }
+  else { prev.style.display = "none"; prev.src = ""; }
+  document.querySelector("#profileChapterOverlay .mono").textContent = "인물소개 수정";
+  document.getElementById("profileChapterOk").textContent = "저장";
+  document.getElementById("profileChapterOverlay").style.display = "flex";
+}
+document.getElementById("profileChapterCancel").onclick = () => { editingProfileCard = null; document.getElementById("profileChapterOverlay").style.display = "none"; };
+document.getElementById("profileChapterOverlay").onclick = e => { if (e.target.id === "profileChapterOverlay") { editingProfileCard = null; e.currentTarget.style.display = "none"; } };
 document.getElementById("profilePhotoInput").onchange = e => {
   const f = e.target.files[0];
   if (!f) return;
@@ -465,9 +489,10 @@ document.getElementById("profileChapterOk").onclick = async () => {
   const name = document.getElementById("profileNameInput").value.trim();
   if (!name) { alert("이름을 입력해주세요"); return; }
   const btn = document.getElementById("profileChapterOk");
-  btn.disabled = true; btn.textContent = "추가 중...";
+  const isEdit = !!editingProfileCard;
+  btn.disabled = true; btn.textContent = isEdit ? "저장 중..." : "추가 중...";
   try {
-    const photoUrl = profilePhotoFile ? await uploadToCloudinary(profilePhotoFile) : "";
+    const photoUrl = profilePhotoFile ? await uploadToCloudinary(profilePhotoFile) : (isEdit ? (editingProfileCard.dataset.photo || "") : "");
     const cardHtml = buildProfileHTML(photoUrl, name,
       document.getElementById("profileBirthInput").value.trim(),
       document.getElementById("profileJobInput").value.trim(),
@@ -477,17 +502,26 @@ document.getElementById("profileChapterOk").onclick = async () => {
       document.getElementById("profileTwPrivInput").value.trim(),
       document.getElementById("profileFavInput").value.trim(),
       document.getElementById("profileTraitInput").value.trim());
-    let profChapter = chaptersArr.find(f => f.profile);
-    if (!profChapter) {
-      const minNum = chaptersArr.reduce((m, f) => Math.min(m, f.num || 0), 0);
-      const newRef = await addDoc(foldersCol, { name: "인물소개", num: minNum - 1, profile: true, content: "", createdAt: Date.now() });
-      profChapter = { id: newRef.id, content: "" };
+    if (isEdit) {
+      const temp = document.createElement("div");
+      temp.innerHTML = cardHtml;
+      editingProfileCard.replaceWith(temp.firstElementChild);
+      editingProfileCard = null;
+      commitChange();
+      document.getElementById("profileChapterOverlay").style.display = "none";
+    } else {
+      let profChapter = chaptersArr.find(f => f.profile);
+      if (!profChapter) {
+        const minNum = chaptersArr.reduce((m, f) => Math.min(m, f.num || 0), 0);
+        const newRef = await addDoc(foldersCol, { name: "인물소개", num: minNum - 1, profile: true, content: "", createdAt: Date.now() });
+        profChapter = { id: newRef.id, content: "" };
+      }
+      await updateDoc(doc(db, "chapters", profChapter.id), { content: (profChapter.content || "") + cardHtml + "<p><br></p>" });
+      document.getElementById("profileChapterOverlay").style.display = "none";
+      selectFolder(profChapter.id);
     }
-    await updateDoc(doc(db, "chapters", profChapter.id), { content: (profChapter.content || "") + cardHtml + "<p><br></p>" });
-    document.getElementById("profileChapterOverlay").style.display = "none";
-    selectFolder(profChapter.id);
   } catch (e) { alert("저장 실패 - 네트워크를 확인해주세요"); }
-  btn.disabled = false; btn.textContent = "추가";
+  btn.disabled = false; btn.textContent = isEdit ? "저장" : "추가";
 };
 
 // ---- 회차(chapters) ----
@@ -855,6 +889,13 @@ editor.addEventListener("click", e => {
     commitChange();
     return;
   }
+});
+editor.addEventListener("click", e => {
+  if (folderLocked) return;
+  if (e.target.closest(".embed-del")) return;
+  if (e.target.tagName === "IMG") return;
+  const card = e.target.closest(".block.profile");
+  if (card) openProfileEditSheet(card);
 });
 editor.addEventListener("click", e => {
   if (folderLocked) return;
@@ -1361,7 +1402,12 @@ function buildProfileHTML(photo, name, birth, job, mbti, ig, tw, twPriv, fav, tr
     ["인스타그램", ig], ["트위터", tw], ["트위터(비공개)", twPriv], ["최애", fav]
   ].filter(([, v]) => v).map(([k, v]) => `<div class="prof-row"><span class="prof-k">${escapeHtml(k)}</span><span class="prof-v">${escapeHtml(v)}</span></div>`).join("");
   const traitHtml = trait ? `<div class="prof-trait">${formatText(trait)}</div>` : "";
-  return `<div class="embed block profile" contenteditable="false">
+  const dataAttrs = [
+    ["data-photo", photo], ["data-name", name], ["data-birth", birth], ["data-job", job],
+    ["data-mbti", mbti], ["data-ig", ig], ["data-tw", tw], ["data-twpriv", twPriv],
+    ["data-fav", fav], ["data-trait", trait]
+  ].map(([k, v]) => `${k}="${escapeHtml(v || "")}"`).join(" ");
+  return `<div class="embed block profile" ${dataAttrs} contenteditable="false">
     ${photoHtml}
     <div class="prof-head">
       <div class="prof-name">${escapeHtml(name || "이름 없음")}</div>
