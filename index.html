@@ -148,10 +148,10 @@ body.folder-locked #editBtns{display:none !important;}
 .block.instagram .igtext b{margin-right:6px;}
 
 .block.twitter{display:flex; flex-direction:column; padding:12px 14px; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
-.block.twitter .tw-entry{display:flex; gap:10px;}
-.block.twitter .tw-reply{margin:10px 0 0; padding-left:0; border-left:none; padding-top:10px; border-top:1px solid var(--border2);}
+.block.twitter .tw-entry{display:flex; gap:10px; position:relative;}
+.block.twitter .tw-reply{margin:14px 0 0; padding:0;}
+.block.twitter .tw-entry:has(+ .tw-reply)::after{content:""; position:absolute; left:19px; top:38px; bottom:-14px; width:2px; background:var(--border2);}
 .block.twitter .av{width:38px; height:38px; border-radius:50%; background:#1d9bf0; background-size:cover; background-position:center; flex:0 0 auto;}
-.block.twitter .tw-reply .av{width:30px; height:30px;}
 .block.twitter .twbody{flex:1; min-width:0;}
 .block.twitter .twhead{font-size:16px;}
 .block.twitter .twhead b{color:var(--text);}
