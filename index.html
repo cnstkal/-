@@ -444,6 +444,9 @@ let charTwPrivAvatarFile = null, charTwPrivAvatarExisting = "";
 let charIgAvatarFile = null, charIgAvatarExisting = "";
 let communitySite = "instiz", communityComments = [], communityReplyTarget = null, communityIdSeq = 1;
 let folderLocked = false;
+let currentProfCat = "idol"; // 인물소개 폴더 안에서 보고 있는 카테고리(파일)
+let currentIsProf = false;
+let profDataCache = null; // 현재 인물소개 회차의 firestore 데이터 캐시
 let history = [], historyIndex = -1, historySuppress = false;
 let pressTimer = null, pressImg = null;
 
@@ -542,11 +545,23 @@ document.getElementById("profileChapterOk").onclick = async () => {
       profileCategory,
       document.getElementById("profilePositionInput").value.trim());
     if (isEdit) {
+      const oldCat = editingProfileCard.dataset.category || currentProfCat;
       const temp = document.createElement("div");
       temp.innerHTML = cardHtml;
-      editingProfileCard.replaceWith(temp.firstElementChild);
-      editingProfileCard = null;
-      commitChange();
+      const newCardEl = temp.firstElementChild;
+      if (oldCat === profileCategory) {
+        // 같은 카테고리(같은 파일) 안에서 수정
+        editingProfileCard.replaceWith(newCardEl);
+        editingProfileCard = null;
+        commitChange();
+      } else {
+        // 다른 카테고리(다른 파일)로 이동: 현재 파일에서 제거하고 대상 파일에 추가
+        editingProfileCard.remove();
+        editingProfileCard = null;
+        commitChange();
+        const target = (profDataCache && profDataCache["content_" + profileCategory]) || "";
+        await updateDoc(doc(db, "chapters", currentFolder), { ["content_" + profileCategory]: target + newCardEl.outerHTML + "<p><br></p>" });
+      }
       document.getElementById("profileChapterOverlay").style.display = "none";
     } else {
       let profChapter = chaptersArr.find(f => f.profile);
@@ -557,12 +572,14 @@ document.getElementById("profileChapterOk").onclick = async () => {
           profChapter = { id: d.id, ...d.data() };
         } else {
           const minNum = chaptersArr.reduce((m, f) => Math.min(m, f.num || 0), 0);
-          const newRef = await addDoc(foldersCol, { name: "인물소개", num: minNum - 1, profile: true, content: "", createdAt: Date.now() });
-          profChapter = { id: newRef.id, content: "" };
+          const newRef = await addDoc(foldersCol, { name: "인물소개", num: minNum - 1, profile: true, content_idol: "", content_fan: "", content_other: "", createdAt: Date.now() });
+          profChapter = { id: newRef.id };
         }
       }
-      await updateDoc(doc(db, "chapters", profChapter.id), { content: (profChapter.content || "") + cardHtml + "<p><br></p>" });
+      const field = "content_" + profileCategory;
+      await updateDoc(doc(db, "chapters", profChapter.id), { [field]: (profChapter[field] || "") + cardHtml + "<p><br></p>" });
       document.getElementById("profileChapterOverlay").style.display = "none";
+      currentProfCat = profileCategory; // 추가한 카테고리(파일)로 자동 전환해서 보여줌
       selectFolder(profChapter.id);
     }
   } catch (e) { alert("저장 실패 - 네트워크를 확인해주세요"); }
@@ -650,20 +667,31 @@ function selectFolder(id) {
   fab.style.display = "inline-flex";
   document.getElementById("fabLock").style.display = "inline-block";
   const isProf = !!chaptersArr.find(f => f.id === id && f.profile);
+  currentIsProf = isProf;
   document.getElementById("profCatFilter").classList.toggle("show", isProf);
-  editor.dataset.pf = isProf ? (editor.dataset.pf || "idol") : "";
+  if (isProf) {
+    document.querySelectorAll("#profCatFilter .cat-btn").forEach(x => x.classList.toggle("active", x.dataset.pf === currentProfCat));
+  }
   if (chapterUnsub) chapterUnsub();
   chapterUnsub = onSnapshot(doc(db, "chapters", id), snap => {
     const data = snap.data();
     applyLockUI(!!(data && data.locked));
+    if (isProf) profDataCache = data;
     if (document.activeElement === editor) return;
+    if (isProf) { renderProfEditor(); return; }
     editor.innerHTML = (data && data.content) || "";
     history = [editor.innerHTML]; historyIndex = 0;
   });
 }
+// 인물소개 폴더 안에서, 현재 선택된 카테고리(파일)의 내용만 에디터에 표시
+function renderProfEditor(){
+  editor.innerHTML = (profDataCache && profDataCache["content_" + currentProfCat]) || "";
+  history = [editor.innerHTML]; historyIndex = 0;
+}
 document.querySelectorAll("#profCatFilter .cat-btn").forEach(b => b.onclick = () => {
-  editor.dataset.pf = b.dataset.pf;
+  currentProfCat = b.dataset.pf;
   document.querySelectorAll("#profCatFilter .cat-btn").forEach(x => x.classList.toggle("active", x === b));
+  renderProfEditor(); // 폴더 안 다른 파일로 전환
 });
 function applyLockUI(locked){
   folderLocked = locked;
@@ -896,7 +924,8 @@ editor.addEventListener("input", () => {
 });
 function saveContent(){
   if (!currentFolder) return;
-  updateDoc(doc(db, "chapters", currentFolder), { content: editor.innerHTML }).catch(() => {
+  const field = currentIsProf ? ("content_" + currentProfCat) : "content";
+  updateDoc(doc(db, "chapters", currentFolder), { [field]: editor.innerHTML }).catch(() => {
     console.error("저장 실패, 재시도합니다");
     setTimeout(() => { if (currentFolder) saveContent(); }, 2000);
   });
