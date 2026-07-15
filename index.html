@@ -187,16 +187,16 @@ body.folder-locked #editBtns{display:none !important;}
 .block.article .art-reporter{font-size:13px; color:var(--text-faint); margin-bottom:10px;}
 .block.article .art-body{font-size:16px; line-height:1.65; color:var(--text-dim); white-space:pre-wrap; word-break:break-word;}
 .block.article .art-body .imgs{margin-top:8px;}
-.block.profile{padding:16px;}
-.block.profile .prof-head{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
-.block.profile .prof-photo{width:56px; height:56px; border-radius:12px; overflow:hidden; flex-shrink:0; background:var(--bg4);}
-.block.profile .prof-photo img{width:100%; height:100%; object-fit:cover;}
-.block.profile .prof-name{font-size:18px; font-weight:800; color:var(--text);}
-.block.profile .prof-rows{display:flex; flex-direction:column; gap:5px; border-top:1px solid var(--border); padding-top:10px;}
+.block.profile{padding:0 0 16px;}
+.block.profile .prof-photo{width:100%; border-radius:12px 12px 0 0; overflow:hidden; background:var(--bg4);}
+.block.profile .prof-photo img{width:100%; height:auto; display:block;}
+.block.profile .prof-head{padding:16px 16px 0;}
+.block.profile .prof-name{font-size:19px; font-weight:800; color:var(--text); margin-bottom:2px;}
+.block.profile .prof-rows{display:flex; flex-direction:column; gap:5px; border-top:1px solid var(--border); padding:10px 16px 0; margin:0 16px;}
 .block.profile .prof-row{display:flex; gap:8px; font-size:13.5px;}
 .block.profile .prof-k{color:var(--text-faint); flex-shrink:0; min-width:64px;}
 .block.profile .prof-v{color:var(--text-dim);}
-.block.profile .prof-trait{margin-top:10px; padding-top:10px; border-top:1px solid var(--border); font-size:14px; line-height:1.6; color:var(--text-dim); white-space:pre-wrap; word-break:break-word;}
+.block.profile .prof-trait{margin:10px 16px 0; padding-top:10px; border-top:1px solid var(--border); font-size:14px; line-height:1.6; color:var(--text-dim); white-space:pre-wrap; word-break:break-word;}
 
 .bubblerow{display:flex; align-items:flex-end; gap:6px;}
 .bubblerow.right{flex-direction:row-reverse;}
@@ -268,11 +268,11 @@ body.folder-locked #editBtns{display:none !important;}
   <div class="sheet">
     <div class="mono" style="font-size:13px;color:var(--accent)">인물소개 추가</div>
     <div class="row" style="align-items:center;gap:8px">
-      <img id="profilePhotoPreview" style="width:44px;height:44px;border-radius:10px;object-fit:cover;background:var(--bg4);display:none;">
+      <img id="profilePhotoPreview" style="width:100px;max-width:40%;height:auto;border-radius:10px;object-fit:contain;background:var(--bg4);display:none;">
       <label class="attachbtn" style="margin:0;flex:1;text-align:center">📎 사진 첨부<input type="file" id="profilePhotoInput" accept="image/*" style="display:none"></label>
     </div>
     <input id="profileNameInput" placeholder="이름">
-    <input id="profileBirthInput" placeholder="생년월일 (예: 2000.03.14)">
+    <input id="profileBirthInput" placeholder="나이">
     <input id="profileJobInput" placeholder="소속/직업">
     <input id="profileMbtiInput" placeholder="MBTI">
     <input id="profileIgInput" placeholder="인스타그램 계정 (예: @handle)">
@@ -1357,13 +1357,13 @@ function dispName(name, c){ return (name || "") + (c && c.private ? " 🔒" : ""
 function buildProfileHTML(photo, name, birth, job, mbti, ig, tw, twPriv, fav, trait){
   const photoHtml = photo ? `<div class="prof-photo"><img src="${photo}"></div>` : "";
   const rows = [
-    ["생년월일", birth], ["소속/직업", job], ["MBTI", mbti],
+    ["나이", birth], ["소속/직업", job], ["MBTI", mbti],
     ["인스타그램", ig], ["트위터", tw], ["트위터(비공개)", twPriv], ["최애", fav]
   ].filter(([, v]) => v).map(([k, v]) => `<div class="prof-row"><span class="prof-k">${escapeHtml(k)}</span><span class="prof-v">${escapeHtml(v)}</span></div>`).join("");
   const traitHtml = trait ? `<div class="prof-trait">${formatText(trait)}</div>` : "";
   return `<div class="embed block profile" contenteditable="false">
+    ${photoHtml}
     <div class="prof-head">
-      ${photoHtml}
       <div class="prof-name">${escapeHtml(name || "이름 없음")}</div>
     </div>
     ${rows ? `<div class="prof-rows">${rows}</div>` : ""}
