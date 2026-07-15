@@ -1353,14 +1353,12 @@ document.getElementById("blockInsertBtn").onclick = async () => {
     } else {
       html = buildEmbedHTML(blockType, text, urls, blockCharId, blockPosition);
     }
-    insertAtCursor(html + "<p><br></p>", { appendEnd: blockType === "twitter" });
+    insertAtCursor(html + "<p><br></p>", { appendEnd: true });
     document.getElementById("blockText").value = "";
     document.getElementById("blockSpinInput").value = "";
     blockPending = [];
     renderBlockPreview();
     document.getElementById("blockText").focus();
-    if (blockPosition === "left") { blockPosition = "right"; } else { blockPosition = "left"; }
-    document.querySelectorAll("#blockPosRow button").forEach(b => b.classList.toggle("active", b.dataset.p === blockPosition));
   } catch (err) {
     alert("업로드 실패 - 다시 시도해주세요");
   }
