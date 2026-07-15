@@ -187,16 +187,17 @@ body.folder-locked #editBtns{display:none !important;}
 .block.article .art-reporter{font-size:13px; color:var(--text-faint); margin-bottom:10px;}
 .block.article .art-body{font-size:16px; line-height:1.65; color:var(--text-dim); white-space:pre-wrap; word-break:break-word;}
 .block.article .art-body .imgs{margin-top:8px;}
-.block.profile{padding:0 0 16px; cursor:pointer;}
-.block.profile .prof-photo{width:100%; border-radius:12px 12px 0 0; overflow:hidden; background:var(--bg4);}
+.block.profile{padding:0 0 16px; position:relative;}
+.block.profile .prof-photo{width:100%; border-radius:12px 12px 0 0; overflow:hidden; background:var(--bg4); cursor:pointer;}
 .block.profile .prof-photo img{width:100%; height:auto; display:block;}
+.block.profile .prof-photo-add{width:100%; padding:26px 0; text-align:center; font-size:13px; color:var(--text-faint3); background:var(--bg3); border-radius:12px 12px 0 0; cursor:pointer;}
+.block.profile .prof-edit-btn{position:absolute; top:8px; right:8px; width:24px; height:24px; border-radius:50%; background:rgba(0,0,0,.45); color:#fff; border:none; font-size:12px; line-height:24px; z-index:2;}
 .block.profile .prof-head{padding:16px 16px 0;}
-.block.profile .prof-name{font-size:19px; font-weight:800; color:var(--text); margin-bottom:2px;}
-.block.profile .prof-rows{display:flex; flex-direction:column; gap:5px; border-top:1px solid var(--border); padding:10px 16px 0; margin:0 16px;}
+.block.profile .prof-name{font-size:19px; font-weight:800; color:var(--text); margin-bottom:2px; cursor:text;}
+.block.profile .prof-rows{display:flex; flex-direction:column; gap:6px; border-top:1px solid var(--border); padding:10px 16px 0; margin:0 16px;}
 .block.profile .prof-row{display:flex; gap:8px; font-size:13.5px;}
-.block.profile .prof-k{color:var(--text-faint); flex-shrink:0; min-width:64px;}
-.block.profile .prof-v{color:var(--text-dim);}
-.block.profile .prof-trait{margin:10px 16px 0; padding-top:10px; border-top:1px solid var(--border); font-size:14px; line-height:1.6; color:var(--text-dim); white-space:pre-wrap; word-break:break-word;}
+.block.profile .prof-k{color:var(--text-faint); flex-shrink:0; width:90px; white-space:nowrap;}
+.block.profile .prof-v{color:var(--text-dim); flex:1; min-width:0; word-break:break-word; white-space:pre-wrap; cursor:text;}
 
 .bubblerow{display:flex; align-items:flex-end; gap:6px;}
 .bubblerow.right{flex-direction:row-reverse;}
@@ -893,13 +894,14 @@ editor.addEventListener("click", e => {
 editor.addEventListener("click", e => {
   if (folderLocked) return;
   if (e.target.closest(".embed-del")) return;
-  if (e.target.tagName === "IMG") return;
+  if (e.target.tagName === "IMG" && !e.target.closest(".prof-photo")) return;
   const card = e.target.closest(".block.profile");
-  if (card) openProfileEditSheet(card);
+  if (!card) return;
+  if (e.target.closest(".prof-photo, .prof-photo-add, .prof-edit-btn")) openProfileEditSheet(card);
 });
 editor.addEventListener("click", e => {
   if (folderLocked) return;
-  const textEl = e.target.closest(".twtext, .igtext, .bubble, .cm-body, .cm-comment, .cm-title, .cm-meta, .art-body, .art-title, .art-site, .art-reporter");
+  const textEl = e.target.closest(".twtext, .igtext, .bubble, .cm-body, .cm-comment, .cm-title, .cm-meta, .art-body, .art-title, .art-site, .art-reporter, .prof-name, .prof-v");
   if (!textEl || e.target.tagName === "IMG") return;
   if (textEl.isContentEditable) return;
   textEl.contentEditable = "true";
@@ -909,6 +911,11 @@ editor.addEventListener("click", e => {
     textEl.contentEditable = "false";
     textEl.classList.remove("inline-editing");
     textEl.removeEventListener("blur", onBlur);
+    const field = textEl.dataset.field;
+    if (field) {
+      const card = textEl.closest(".block.profile");
+      if (card) card.dataset[field] = textEl.textContent.trim();
+    }
     commitChange();
   };
   textEl.addEventListener("blur", onBlur);
@@ -1396,24 +1403,26 @@ function buildArticleHTML(title, site, reporter, body, images){
 
 function dispName(name, c){ return (name || "") + (c && c.private ? " 🔒" : ""); }
 function buildProfileHTML(photo, name, birth, job, mbti, ig, tw, twPriv, fav, trait){
-  const photoHtml = photo ? `<div class="prof-photo"><img src="${photo}"></div>` : "";
+  const photoHtml = photo
+    ? `<div class="prof-photo"><img src="${photo}"></div>`
+    : `<div class="prof-photo-add">📎 사진 추가</div>`;
   const rows = [
-    ["나이", birth], ["소속/직업", job], ["MBTI", mbti],
-    ["인스타그램", ig], ["트위터", tw], ["트위터(비공개)", twPriv], ["최애", fav]
-  ].filter(([, v]) => v).map(([k, v]) => `<div class="prof-row"><span class="prof-k">${escapeHtml(k)}</span><span class="prof-v">${escapeHtml(v)}</span></div>`).join("");
-  const traitHtml = trait ? `<div class="prof-trait">${formatText(trait)}</div>` : "";
+    ["나이", "birth", birth], ["소속/직업", "job", job], ["MBTI", "mbti", mbti],
+    ["인스타그램", "ig", ig], ["트위터", "tw", tw], ["트위터(비공개)", "twpriv", twPriv],
+    ["최애", "fav", fav], ["특징", "trait", trait]
+  ].filter(([, , v]) => v).map(([k, field, v]) => `<div class="prof-row"><span class="prof-k">${escapeHtml(k)}</span><span class="prof-v" data-field="${field}">${formatText(v)}</span></div>`).join("");
   const dataAttrs = [
     ["data-photo", photo], ["data-name", name], ["data-birth", birth], ["data-job", job],
     ["data-mbti", mbti], ["data-ig", ig], ["data-tw", tw], ["data-twpriv", twPriv],
     ["data-fav", fav], ["data-trait", trait]
   ].map(([k, v]) => `${k}="${escapeHtml(v || "")}"`).join(" ");
   return `<div class="embed block profile" ${dataAttrs} contenteditable="false">
+    <button class="prof-edit-btn" title="사진 변경">📎</button>
     ${photoHtml}
     <div class="prof-head">
-      <div class="prof-name">${escapeHtml(name || "이름 없음")}</div>
+      <div class="prof-name" data-field="name">${escapeHtml(name || "이름 없음")}</div>
     </div>
     ${rows ? `<div class="prof-rows">${rows}</div>` : ""}
-    ${traitHtml}
     <button class="embed-del">×</button>
   </div>`;
 }
