@@ -55,8 +55,9 @@ button, input, textarea{font-family:inherit;}
 #editor .imgs img, #editor .igimgs img{margin:0;}
 #empty{text-align:center; color:var(--text-faint2); font-size:13px; margin-top:60px;}
 
-.embed{position:relative; margin:9px 0; width:100%;}
-.embed.block.imessage{margin:2px 0;}
+.embed{position:relative; margin:14px 0; width:100%;}
+.embed.block.imessage{margin:14px 0;}
+.embed.block.imessage + .embed.block.imessage{margin-top:3px;}
 .embed .embed-del{position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%; background:var(--danger); color:var(--danger-text); border:none; font-size:12px; line-height:22px; opacity:0; transition:opacity .15s; z-index:2;}
 .embed:hover .embed-del{opacity:1;}
 
@@ -127,6 +128,7 @@ button, input, textarea{font-family:inherit;}
 .chip.locked{opacity:.6;}
 .chip.locked::after{content:" 🔒";}
 body.folder-locked #editor{pointer-events:none;}
+body.folder-locked #editor img{pointer-events:auto; cursor:zoom-in;}
 body.folder-locked #editBtns{display:none !important;}
 
 .block.instagram{padding:0; overflow:hidden; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
@@ -147,7 +149,7 @@ body.folder-locked #editBtns{display:none !important;}
 
 .block.twitter{display:flex; flex-direction:column; padding:12px 14px; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
 .block.twitter .tw-entry{display:flex; gap:10px;}
-.block.twitter .tw-reply{margin:10px 0 0 19px; padding-left:12px; border-left:2px solid var(--border2);}
+.block.twitter .tw-reply{margin:10px 0 0; padding-left:0; border-left:none; padding-top:10px; border-top:1px solid var(--border2);}
 .block.twitter .av{width:38px; height:38px; border-radius:50%; background:#1d9bf0; background-size:cover; background-position:center; flex:0 0 auto;}
 .block.twitter .tw-reply .av{width:30px; height:30px;}
 .block.twitter .twbody{flex:1; min-width:0;}
@@ -390,6 +392,27 @@ let folderLocked = false;
 let history = [], historyIndex = -1, historySuppress = false;
 let pressTimer = null, pressImg = null;
 
+const MODAL_IDS = ["overlay", "charOverlay", "blockSheet", "lightbox"];
+function openModal(id){
+  const el = document.getElementById(id);
+  el.style.display = "flex";
+  history.pushState({ modal: id }, "");
+}
+function closeModal(id){
+  const el = document.getElementById(id);
+  if (!el || el.style.display === "none") return;
+  el.style.display = "none";
+  if (history.state && history.state.modal === id) {
+    history.back();
+  }
+}
+window.addEventListener("popstate", () => {
+  MODAL_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.style.display !== "none") el.style.display = "none";
+  });
+});
+
 const NEEDS_CHAR = new Set(["instagram", "twitter", "imessage"]);
 const NEEDS_POS = new Set(["imessage"]);
 const COMMUNITY_META = {
@@ -444,16 +467,16 @@ function openFolderSheet(id, name, num){
   document.getElementById("folderNameInput").value = name || "";
   document.getElementById("folderOk").textContent = id ? "저장" : "만들기";
   document.getElementById("folderDelete").style.display = id ? "block" : "none";
-  document.getElementById("overlay").style.display = "flex";
+  openModal("overlay");
   document.getElementById("folderNumInput").focus();
 }
-document.getElementById("folderCancel").onclick = () => document.getElementById("overlay").style.display = "none";
-document.getElementById("overlay").onclick = e => { if (e.target.id === "overlay") e.currentTarget.style.display = "none"; };
+document.getElementById("folderCancel").onclick = () => closeModal("overlay");
+document.getElementById("overlay").onclick = e => { if (e.target.id === "overlay") closeModal("overlay"); };
 document.getElementById("folderOk").onclick = async () => {
   const name = document.getElementById("folderNameInput").value.trim();
   const num = Number(document.getElementById("folderNumInput").value) || null;
   if (!name && !num) return;
-  document.getElementById("overlay").style.display = "none";
+  closeModal("overlay");
   try {
     if (editingFolderId) {
       await updateDoc(doc(db, "chapters", editingFolderId), { name, num });
@@ -465,7 +488,7 @@ document.getElementById("folderOk").onclick = async () => {
 document.getElementById("folderDelete").onclick = async () => {
   if (!editingFolderId) return;
   if (!confirm("이 회차를 삭제할까요?")) return;
-  document.getElementById("overlay").style.display = "none";
+  closeModal("overlay");
   const fid = editingFolderId;
   try { await deleteDoc(doc(db, "chapters", fid)); } catch (e) { alert("삭제 실패 - 네트워크를 확인해주세요"); return; }
   if (currentFolder === fid) {
@@ -573,7 +596,7 @@ function clearCharForm(){
 }
 function openCharSheet(c){
   clearCharForm();
-  if (!c) { document.getElementById("charOverlay").style.display = "flex"; document.getElementById("charRealNameInput").focus(); return; }
+  if (!c) { openModal("charOverlay"); document.getElementById("charRealNameInput").focus(); return; }
   editingCharId = c.id;
   document.getElementById("charSheetTitle").textContent = "인물 수정";
   document.getElementById("charRealNameInput").value = c.realName || "";
@@ -597,7 +620,7 @@ function openCharSheet(c){
   twPrivPrev.src = charTwPrivAvatarExisting; twPrivPrev.style.display = charTwPrivAvatarExisting ? "block" : "none";
   const igPrev = document.getElementById("charIgAvatarPreview");
   igPrev.src = charIgAvatarExisting; igPrev.style.display = charIgAvatarExisting ? "block" : "none";
-  document.getElementById("charOverlay").style.display = "flex";
+  openModal("charOverlay");
   document.getElementById("charRealNameInput").focus();
 }
 document.getElementById("charTwAvatarInput").onchange = e => {
@@ -618,8 +641,8 @@ document.getElementById("charIgAvatarInput").onchange = e => {
   const prevEl = document.getElementById("charIgAvatarPreview");
   prevEl.src = URL.createObjectURL(f); prevEl.style.display = "block";
 };
-document.getElementById("charCancel").onclick = () => document.getElementById("charOverlay").style.display = "none";
-document.getElementById("charOverlay").onclick = e => { if (e.target.id === "charOverlay") e.currentTarget.style.display = "none"; };
+document.getElementById("charCancel").onclick = () => closeModal("charOverlay");
+document.getElementById("charOverlay").onclick = e => { if (e.target.id === "charOverlay") closeModal("charOverlay"); };
 document.getElementById("charOk").onclick = async () => {
   const realName = document.getElementById("charRealNameInput").value.trim();
   const name = document.getElementById("charNameInput").value.trim();
@@ -643,7 +666,7 @@ document.getElementById("charOk").onclick = async () => {
   const payload = { realName, name, twitter, twitterName, twitterVerified: !!twitterVerified, twitterPriv, twitterPrivName, twitterPrivAvatar, instagram, instagramName, twitterAvatar, instagramAvatar, private: !!isPrivate };
   if (editingCharId) {
     await updateDoc(doc(db, "characters", editingCharId), payload);
-    document.getElementById("charOverlay").style.display = "none";
+    closeModal("charOverlay");
   } else {
     await addDoc(charactersCol, { ...payload, order: Date.now(), createdAt: Date.now() });
     clearCharForm();
@@ -655,7 +678,7 @@ document.getElementById("charDelete").onclick = async () => {
   if (!editingCharId) return;
   if (!confirm("이 인물을 삭제할까요? (이미 작성된 글의 내용은 남습니다)")) return;
   await deleteDoc(doc(db, "characters", editingCharId));
-  document.getElementById("charOverlay").style.display = "none";
+  closeModal("charOverlay");
 };
 
 // ---- 에디터: 커서 위치 기억 + 삽입 ----
@@ -773,7 +796,7 @@ editor.addEventListener("click", e => {
 });
 editor.addEventListener("click", e => {
   if (folderLocked) return;
-  const textEl = e.target.closest(".twtext, .igtext, .bubble, .cm-body, .cm-comment, .cm-title, .cm-meta, .art-body, .art-title, .art-site, .art-reporter");
+  const textEl = e.target.closest(".twtext, .igtext, .bubble, .cm-body, .cm-comment, .cm-title, .cm-meta, .art-body, .art-title, .art-site, .art-reporter, .spin-text");
   if (!textEl || e.target.tagName === "IMG") return;
   if (textEl.isContentEditable) return;
   textEl.contentEditable = "true";
@@ -815,10 +838,10 @@ editor.addEventListener("pointerdown", e => {
 editor.addEventListener("click", e => {
   if (e.target.tagName === "IMG" && document.getElementById("imgEditMenu").style.display !== "block") {
     document.getElementById("lightboxImg").src = e.target.src;
-    document.getElementById("lightbox").style.display = "flex";
+    openModal("lightbox");
   }
 });
-document.getElementById("lightbox").onclick = () => document.getElementById("lightbox").style.display = "none";
+document.getElementById("lightbox").onclick = () => closeModal("lightbox");
 document.getElementById("imgEditMenu").addEventListener("click", e => e.stopPropagation());
 document.addEventListener("click", e => {
   if (!e.target.closest("#imgEditMenu")) document.getElementById("imgEditMenu").style.display = "none";
@@ -895,10 +918,10 @@ document.getElementById("fabBlock").onclick = () => {
   document.querySelectorAll("#blockTypeRow button").forEach(b => b.classList.toggle("active", b.dataset.t === blockType));
   document.querySelectorAll("#blockCommunityRow button").forEach(b => b.classList.toggle("active", b.dataset.s === communitySite));
   updateBlockExtra();
-  document.getElementById("blockSheet").style.display = "flex";
+  openModal("blockSheet");
 };
-document.getElementById("blockCancel").onclick = () => document.getElementById("blockSheet").style.display = "none";
-document.getElementById("blockSheet").onclick = e => { if (e.target.id === "blockSheet") e.currentTarget.style.display = "none"; };
+document.getElementById("blockCancel").onclick = () => closeModal("blockSheet");
+document.getElementById("blockSheet").onclick = e => { if (e.target.id === "blockSheet") closeModal("blockSheet"); };
 
 document.querySelectorAll("#blockTypeRow button").forEach(btn => {
   btn.onclick = () => {
