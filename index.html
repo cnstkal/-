@@ -154,9 +154,10 @@ body.folder-locked #editBtns{display:none !important;}
 
 .block.twitter{display:flex; flex-direction:column; padding:12px 14px; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
 .block.twitter .tw-entry{display:flex; gap:10px;}
-.block.twitter .tw-reply{margin:10px 0 0 19px; padding-left:12px; border-left:2px solid var(--border2);}
-.block.twitter .av{width:38px; height:38px; border-radius:50%; background:#1d9bf0; background-size:cover; background-position:center; flex:0 0 auto;}
-.block.twitter .tw-reply .av{width:30px; height:30px;}
+.block.twitter .tw-reply{margin-top:10px; position:relative;}
+.block.twitter .tw-reply::before{content:"";position:absolute; left:19px; top:-10px; bottom:0; width:2px; background:var(--border2); z-index:0;}
+.block.twitter .av{width:38px; height:38px; border-radius:50%; background:#1d9bf0; background-size:cover; background-position:center; flex:0 0 auto; position:relative; z-index:1;}
+.block.twitter .tw-reply .av{width:38px; height:38px;}
 .block.twitter .twbody{flex:1; min-width:0;}
 .block.twitter .twhead{font-size:16px;}
 .block.twitter .twhead b{color:var(--text);}
