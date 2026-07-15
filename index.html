@@ -669,8 +669,14 @@ document.addEventListener("selectionchange", () => {
 function insertAtCursor(html, opts){
   if (folderLocked) return;
   const silent = opts && opts.silent;
+  const appendEnd = opts && opts.appendEnd;
+  if (!silent) editor.focus({ preventScroll: true });
   let range;
-  if (silent) {
+  if (appendEnd) {
+    range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(false);
+  } else if (silent) {
     if (savedRange && editor.contains(savedRange.startContainer)) {
       range = savedRange.cloneRange();
     } else {
@@ -679,7 +685,6 @@ function insertAtCursor(html, opts){
       range.collapse(false);
     }
   } else {
-    editor.focus({ preventScroll: true });
     if (savedRange && editor.contains(savedRange.startContainer)) {
       range = savedRange.cloneRange();
     } else {
@@ -1135,7 +1140,7 @@ document.getElementById("blockInsertBtn").onclick = async () => {
     } else {
       html = buildEmbedHTML(blockType, text, urls, blockCharId, blockPosition);
     }
-    insertAtCursor(html + "<p><br></p>");
+    insertAtCursor(html + "<p><br></p>", { appendEnd: blockType === "twitter" });
     document.getElementById("blockText").value = "";
     document.getElementById("blockSpinInput").value = "";
     blockPending = [];
