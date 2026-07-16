@@ -71,22 +71,17 @@ button, input, textarea{font-family:inherit;}
 .imgs.n3 img:nth-child(3){grid-column:2; grid-row:1/3; height:100%;}
 .imgs.n4plus{grid-template-columns:1fr 1fr;} .imgs.n4plus img{aspect-ratio:1/1; height:auto;}
 
-#overlay, #charOverlay, #blockSheet, #profileChapterOverlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:40; align-items:flex-end;}
-#overlay .sheet, #charOverlay .sheet, #blockSheet .sheet, #profileChapterOverlay .sheet{background:var(--bg2); width:100%; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); border-radius:16px 16px 0 0; max-height:85vh; overflow-y:auto;}
+#overlay, #charOverlay, #blockSheet{display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:40; align-items:flex-end;}
+#overlay .sheet, #charOverlay .sheet, #blockSheet .sheet .sheet{background:var(--bg2); width:100%; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); border-radius:16px 16px 0 0; max-height:85vh; overflow-y:auto;}
 #blockSheet{align-items:flex-start;}
 #blockSheet .sheet{border-radius:0 0 16px 16px; padding:18px 16px;}
-#overlay input, #charOverlay input, #blockSheet textarea, #profileChapterOverlay input, #profileChapterOverlay textarea{width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:11px; border-radius:10px; font-size:15px; margin:10px 0;}
+#overlay input, #charOverlay input, #blockSheet textarea input textarea{width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:11px; border-radius:10px; font-size:15px; margin:10px 0;}
 #blockSheet textarea{min-height:70px; resize:vertical; line-height:1.6;}
-#overlay .row, #charOverlay .row, #blockSheet .row, #profileChapterOverlay .row{display:flex; gap:8px;}
-#overlay button, #charOverlay button, #blockSheet button, #profileChapterOverlay button{padding:11px; border-radius:10px; border:none; font-size:14px;}
-#overlay .row button, #charOverlay .row button, #blockSheet .row button, #profileChapterOverlay .row button{flex:1;}
-#overlay .cancel, #charOverlay .cancel, #blockSheet .cancel, #profileChapterOverlay .cancel{background:var(--bg4); color:var(--text-dim2);}
-#overlay .ok, #charOverlay .ok, #blockSheet .ok, #profileChapterOverlay .ok{background:var(--accent); color:var(--accent-text); font-weight:700;}
-#profCatFilter{display:none;}
-#profCatFilter.show{display:flex;}
-#editor[data-pf="idol"] .block.profile:not([data-category="idol"]){display:none;}
-#editor[data-pf="fan"] .block.profile:not([data-category="fan"]){display:none;}
-#editor[data-pf="other"] .block.profile:not([data-category="other"]){display:none;}
+#overlay .row, #charOverlay .row, #blockSheet .row .row{display:flex; gap:8px;}
+#overlay button, #charOverlay button, #blockSheet button button{padding:11px; border-radius:10px; border:none; font-size:14px;}
+#overlay .row button, #charOverlay .row button, #blockSheet .row button .row button{flex:1;}
+#overlay .cancel, #charOverlay .cancel, #blockSheet .cancel .cancel{background:var(--bg4); color:var(--text-dim2);}
+#overlay .ok, #charOverlay .ok, #blockSheet .ok .ok{background:var(--accent); color:var(--accent-text); font-weight:700;}
 .cat-btn{flex:1; padding:9px 0; border-radius:10px; background:var(--bg4); color:var(--text-mut); border:1px solid var(--border); font-size:13px; font-weight:600;}
 .cat-btn.active{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
 #charList{margin-top:12px; border-top:1px solid var(--border2); padding-top:10px; display:flex; flex-direction:column; gap:6px;}
@@ -151,6 +146,13 @@ body.folder-locked #editBtns{display:none !important;}
 .block.instagram .igbody{padding:6px 12px 12px;}
 .block.instagram .igtext{font-size:16px; line-height:1.55; white-space:pre-wrap;}
 .block.instagram .igtext b{margin-right:6px;}
+.block.igstory{position:relative; width:100%; max-width:280px; aspect-ratio:9/16; border-radius:16px; overflow:hidden; background:#000; margin:8px auto;}
+.block.igstory .story-progress{position:absolute; top:6px; left:8px; right:8px; height:2px; background:rgba(255,255,255,.35); border-radius:2px; z-index:2;}
+.block.igstory .story-progress::after{content:""; position:absolute; left:0; top:0; bottom:0; width:60%; background:#fff; border-radius:2px;}
+.block.igstory .story-topbar{position:absolute; top:12px; left:10px; right:10px; display:flex; align-items:center; gap:8px; z-index:2;}
+.block.igstory .story-av{width:28px; height:28px; border-radius:50%; background:linear-gradient(45deg,#feda75,#d62976,#4f5bd5); background-size:cover; background-position:center; flex:0 0 auto;}
+.block.igstory .story-uname{color:#fff; font-weight:700; font-size:13px; cursor:text; text-shadow:0 1px 3px rgba(0,0,0,.5);}
+.block.igstory .story-img{width:100%; height:100%; object-fit:cover; display:block;}
 
 .block.twitter{display:flex; flex-direction:column; padding:12px 14px; border:1px solid var(--border2); border-radius:12px; background:var(--bg3);}
 .block.twitter .tw-entry{display:flex; gap:10px;}
@@ -195,17 +197,6 @@ body.folder-locked #editBtns{display:none !important;}
 .block.article .art-reporter{font-size:13px; color:var(--text-faint); margin-bottom:10px;}
 .block.article .art-body{font-size:16px; line-height:1.65; color:var(--text-dim); white-space:pre-wrap; word-break:break-word;}
 .block.article .art-body .imgs{margin-top:8px;}
-.block.profile{padding:0 0 16px; position:relative;}
-.block.profile .prof-photo{width:100%; border-radius:12px 12px 0 0; overflow:hidden; background:var(--bg4); cursor:pointer;}
-.block.profile .prof-photo img{width:100%; height:auto; display:block;}
-.block.profile .prof-photo-add{width:100%; padding:26px 0; text-align:center; font-size:13px; color:var(--text-faint3); background:var(--bg3); border-radius:12px 12px 0 0; cursor:pointer;}
-.block.profile .prof-edit-btn{position:absolute; top:8px; right:8px; width:24px; height:24px; border-radius:50%; background:rgba(0,0,0,.45); color:#fff; border:none; font-size:12px; line-height:24px; z-index:2;}
-.block.profile .prof-head{padding:16px 16px 0;}
-.block.profile .prof-name{font-size:19px; font-weight:800; color:var(--text); margin-bottom:2px; cursor:text;}
-.block.profile .prof-rows{display:flex; flex-direction:column; gap:6px; border-top:1px solid var(--border); padding:10px 16px 0; margin:0 16px;}
-.block.profile .prof-row{display:flex; gap:8px; font-size:13.5px;}
-.block.profile .prof-k{color:var(--text-faint); flex-shrink:0; width:90px; white-space:nowrap;}
-.block.profile .prof-v{color:var(--text-dim); flex:1; min-width:0; word-break:break-word; white-space:pre-wrap; cursor:text;}
 
 .bubblerow{display:flex; align-items:flex-end; gap:6px;}
 .bubblerow.right{flex-direction:row-reverse;}
@@ -233,7 +224,7 @@ body.folder-locked #editBtns{display:none !important;}
   #editor{font-size:15px;}
 }
 @supports (-webkit-touch-callout:none){
-  #editor, #overlay input, #charOverlay input, #blockSheet textarea, #profileChapterOverlay input, #profileChapterOverlay textarea{font-size:16px;} /* iOS 자동 확대 방지 */
+  #editor, #overlay input, #charOverlay input, #blockSheet textarea input textarea{font-size:16px;} /* iOS 자동 확대 방지 */
 }
 </style>
 </head>
@@ -256,11 +247,6 @@ body.folder-locked #editBtns{display:none !important;}
 </div>
 
 <div id="main">
-  <div id="profCatFilter" style="display:none;gap:6px;margin-bottom:10px">
-    <button type="button" class="cat-btn active" data-pf="idol">아이돌</button>
-    <button type="button" class="cat-btn" data-pf="fan">팬</button>
-    <button type="button" class="cat-btn" data-pf="other">그외</button>
-  </div>
   <div id="editor" contenteditable="true" spellcheck="false" data-ph="이어서 써내려가세요..." style="display:none"></div>
   <div id="empty">회차를 선택하거나 새로 만들어보세요</div>
 </div>
@@ -274,35 +260,6 @@ body.folder-locked #editBtns{display:none !important;}
       <button class="cancel" id="folderCancel">취소</button>
       <button class="cancel" id="folderDelete" style="display:none;background:var(--danger);color:var(--danger-text)">삭제</button>
       <button class="ok" id="folderOk">만들기</button>
-    </div>
-  </div>
-</div>
-
-<div id="profileChapterOverlay">
-  <div class="sheet">
-    <div class="mono" style="font-size:13px;color:var(--accent)">인물소개 추가</div>
-    <div class="row" id="profileCatRow" style="gap:6px;margin:10px 0">
-      <button type="button" class="cat-btn" data-cat="idol">아이돌</button>
-      <button type="button" class="cat-btn" data-cat="fan">팬</button>
-      <button type="button" class="cat-btn" data-cat="other">그외</button>
-    </div>
-    <div class="row" style="align-items:center;gap:8px">
-      <img id="profilePhotoPreview" style="width:100px;max-width:40%;height:auto;border-radius:10px;object-fit:contain;background:var(--bg4);display:none;">
-      <label class="attachbtn" style="margin:0;flex:1;text-align:center">📎 사진 첨부<input type="file" id="profilePhotoInput" accept="image/*" style="display:none"></label>
-    </div>
-    <input id="profileNameInput" placeholder="이름">
-    <input id="profilePositionInput" placeholder="포지션">
-    <input id="profileBirthInput" placeholder="나이">
-    <input id="profileJobInput" placeholder="소속/직업">
-    <input id="profileMbtiInput" placeholder="MBTI">
-    <input id="profileIgInput" placeholder="인스타그램 계정 (예: @handle)">
-    <input id="profileTwInput" placeholder="트위터 공개 계정 (예: @handle)">
-    <input id="profileTwPrivInput" placeholder="트위터 비공개 계정 (예: @handle)">
-    <input id="profileFavInput" placeholder="최애">
-    <textarea id="profileTraitInput" placeholder="특징" style="min-height:60px"></textarea>
-    <div class="row">
-      <button class="cancel" id="profileChapterCancel">취소</button>
-      <button class="ok" id="profileChapterOk">추가</button>
     </div>
   </div>
 </div>
@@ -354,6 +311,7 @@ body.folder-locked #editBtns{display:none !important;}
     <div class="pillrow" id="blockTypeRow">
       <button data-t="twitter" class="active">트윗</button>
       <button data-t="instagram">인스타</button>
+      <button data-t="igstory">인스타 스토리</button>
       <button data-t="imessage">아이메시지</button>
       <button data-t="community">커뮤니티</button>
       <button data-t="article">기사</button>
@@ -436,21 +394,15 @@ let chaptersArr = [];
 let savedRange = null;
 let saveTimer = null;
 let blockType = "twitter", blockCharId = null, blockTwAccount = "public", blockPosition = "left", blockPending = [], blockThread = [], blockReplyTarget = null, blockIdSeq = 1;
-let profilePhotoFile = null;
-let editingProfileCard = null;
-let profileCategory = "fan";
 let charTwAvatarFile = null, charTwAvatarExisting = "";
 let charTwPrivAvatarFile = null, charTwPrivAvatarExisting = "";
 let charIgAvatarFile = null, charIgAvatarExisting = "";
 let communitySite = "instiz", communityComments = [], communityReplyTarget = null, communityIdSeq = 1;
 let folderLocked = false;
-let currentProfCat = "idol"; // 인물소개 폴더 안에서 보고 있는 카테고리(파일)
-let currentIsProf = false;
-let profDataCache = null; // 현재 인물소개 회차의 firestore 데이터 캐시
 let history = [], historyIndex = -1, historySuppress = false;
 let pressTimer = null, pressImg = null;
 
-const NEEDS_CHAR = new Set(["instagram", "twitter", "imessage"]);
+const NEEDS_CHAR = new Set(["instagram", "igstory", "twitter", "imessage"]);
 const NEEDS_POS = new Set(["imessage"]);
 const COMMUNITY_META = {
   instiz: { label: "인스티즈", nick: "익인" },
@@ -470,122 +422,6 @@ siteTitle.onclick = () => {
   if (t) { siteTitle.textContent = t; localStorage.setItem("novel-title", t); }
 };
 
-function setProfileCategory(cat){
-  profileCategory = cat;
-  document.querySelectorAll("#profileCatRow .cat-btn").forEach(b => b.classList.toggle("active", b.dataset.cat === cat));
-  const isIdol = cat === "idol";
-  document.getElementById("profilePositionInput").style.display = isIdol ? "" : "none";
-  document.getElementById("profileIgInput").style.display = isIdol ? "none" : "";
-  document.getElementById("profileTwInput").style.display = isIdol ? "none" : "";
-  document.getElementById("profileTwPrivInput").style.display = isIdol ? "none" : "";
-  document.getElementById("profileFavInput").style.display = isIdol ? "none" : "";
-  document.getElementById("profileBirthInput").placeholder = isIdol ? "생년월일" : "나이";
-  document.getElementById("profileJobInput").placeholder = isIdol ? "소속" : "소속/직업";
-}
-document.querySelectorAll("#profileCatRow .cat-btn").forEach(b => b.onclick = () => setProfileCategory(b.dataset.cat));
-function openProfileChapterSheet(){
-  editingProfileCard = null;
-  ["profileNameInput", "profilePositionInput", "profileBirthInput", "profileJobInput", "profileMbtiInput", "profileIgInput", "profileTwInput", "profileTwPrivInput", "profileFavInput", "profileTraitInput"].forEach(id => document.getElementById(id).value = "");
-  profilePhotoFile = null;
-  const prev = document.getElementById("profilePhotoPreview");
-  prev.style.display = "none"; prev.src = "";
-  setProfileCategory("fan");
-  document.querySelector("#profileChapterOverlay .mono").textContent = "인물소개 추가";
-  document.getElementById("profileChapterOk").textContent = "추가";
-  document.getElementById("profileChapterOverlay").style.display = "flex";
-}
-function openProfileEditSheet(card){
-  editingProfileCard = card;
-  profilePhotoFile = null;
-  document.getElementById("profileNameInput").value = card.dataset.name || "";
-  document.getElementById("profilePositionInput").value = card.dataset.position || "";
-  document.getElementById("profileBirthInput").value = card.dataset.birth || "";
-  document.getElementById("profileJobInput").value = card.dataset.job || "";
-  document.getElementById("profileMbtiInput").value = card.dataset.mbti || "";
-  document.getElementById("profileIgInput").value = card.dataset.ig || "";
-  document.getElementById("profileTwInput").value = card.dataset.tw || "";
-  document.getElementById("profileTwPrivInput").value = card.dataset.twpriv || "";
-  document.getElementById("profileFavInput").value = card.dataset.fav || "";
-  document.getElementById("profileTraitInput").value = card.dataset.trait || "";
-  setProfileCategory(card.dataset.category || "fan");
-  const prev = document.getElementById("profilePhotoPreview");
-  if (card.dataset.photo) { prev.src = card.dataset.photo; prev.style.display = "block"; }
-  else { prev.style.display = "none"; prev.src = ""; }
-  document.querySelector("#profileChapterOverlay .mono").textContent = "인물소개 수정";
-  document.getElementById("profileChapterOk").textContent = "저장";
-  document.getElementById("profileChapterOverlay").style.display = "flex";
-}
-document.getElementById("profileChapterCancel").onclick = () => { editingProfileCard = null; document.getElementById("profileChapterOverlay").style.display = "none"; };
-document.getElementById("profileChapterOverlay").onclick = e => { if (e.target.id === "profileChapterOverlay") { editingProfileCard = null; e.currentTarget.style.display = "none"; } };
-document.getElementById("profilePhotoInput").onchange = e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  profilePhotoFile = f;
-  const prev = document.getElementById("profilePhotoPreview");
-  prev.src = URL.createObjectURL(f);
-  prev.style.display = "block";
-};
-document.getElementById("profileChapterOk").onclick = async () => {
-  const name = document.getElementById("profileNameInput").value.trim();
-  if (!name) { alert("이름을 입력해주세요"); return; }
-  const btn = document.getElementById("profileChapterOk");
-  const isEdit = !!editingProfileCard;
-  btn.disabled = true; btn.textContent = isEdit ? "저장 중..." : "추가 중...";
-  try {
-    const photoUrl = profilePhotoFile ? await uploadToCloudinary(profilePhotoFile) : (isEdit ? (editingProfileCard.dataset.photo || "") : "");
-    const cardHtml = buildProfileHTML(photoUrl, name,
-      document.getElementById("profileBirthInput").value.trim(),
-      document.getElementById("profileJobInput").value.trim(),
-      document.getElementById("profileMbtiInput").value.trim(),
-      document.getElementById("profileIgInput").value.trim(),
-      document.getElementById("profileTwInput").value.trim(),
-      document.getElementById("profileTwPrivInput").value.trim(),
-      document.getElementById("profileFavInput").value.trim(),
-      document.getElementById("profileTraitInput").value.trim(),
-      profileCategory,
-      document.getElementById("profilePositionInput").value.trim());
-    if (isEdit) {
-      const oldCat = editingProfileCard.dataset.category || currentProfCat;
-      const temp = document.createElement("div");
-      temp.innerHTML = cardHtml;
-      const newCardEl = temp.firstElementChild;
-      if (oldCat === profileCategory) {
-        // 같은 카테고리(같은 파일) 안에서 수정
-        editingProfileCard.replaceWith(newCardEl);
-        editingProfileCard = null;
-        commitChange();
-      } else {
-        // 다른 카테고리(다른 파일)로 이동: 현재 파일에서 제거하고 대상 파일에 추가
-        editingProfileCard.remove();
-        editingProfileCard = null;
-        commitChange();
-        const target = (profDataCache && profDataCache["content_" + profileCategory]) || "";
-        await updateDoc(doc(db, "chapters", currentFolder), { ["content_" + profileCategory]: target + newCardEl.outerHTML + "<p><br></p>" });
-      }
-      document.getElementById("profileChapterOverlay").style.display = "none";
-    } else {
-      let profChapter = chaptersArr.find(f => f.profile);
-      if (!profChapter) {
-        const existing = await getDocs(query(foldersCol, where("profile", "==", true)));
-        if (!existing.empty) {
-          const d = existing.docs[0];
-          profChapter = { id: d.id, ...d.data() };
-        } else {
-          const minNum = chaptersArr.reduce((m, f) => Math.min(m, f.num || 0), 0);
-          const newRef = await addDoc(foldersCol, { name: "인물소개", num: minNum - 1, profile: true, content_idol: "", content_fan: "", content_other: "", createdAt: Date.now() });
-          profChapter = { id: newRef.id };
-        }
-      }
-      const field = "content_" + profileCategory;
-      await updateDoc(doc(db, "chapters", profChapter.id), { [field]: (profChapter[field] || "") + cardHtml + "<p><br></p>" });
-      document.getElementById("profileChapterOverlay").style.display = "none";
-      currentProfCat = profileCategory; // 추가한 카테고리(파일)로 자동 전환해서 보여줌
-      selectFolder(profChapter.id);
-    }
-  } catch (e) { alert("저장 실패 - 네트워크를 확인해주세요"); }
-  btn.disabled = false; btn.textContent = isEdit ? "저장" : "추가";
-};
-
 // ---- 회차(chapters) ----
 onSnapshot(query(foldersCol, orderBy("num", "asc")), snap => {
   const row = document.getElementById("folderRow");
@@ -594,10 +430,6 @@ onSnapshot(query(foldersCol, orderBy("num", "asc")), snap => {
   addBtn.className = "chip add"; addBtn.id = "newFolderBtn"; addBtn.textContent = "+ 회차";
   addBtn.onclick = () => openFolderSheet();
   row.appendChild(addBtn);
-  const profBtn = document.createElement("button");
-  profBtn.className = "chip add"; profBtn.id = "newProfileBtn"; profBtn.textContent = "+ 인물소개";
-  profBtn.onclick = () => openProfileChapterSheet();
-  row.appendChild(profBtn);
   const arr = [];
   snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
   chaptersArr = arr;
@@ -666,33 +498,15 @@ function selectFolder(id) {
   editor.style.display = "block";
   fab.style.display = "inline-flex";
   document.getElementById("fabLock").style.display = "inline-block";
-  const isProf = !!chaptersArr.find(f => f.id === id && f.profile);
-  currentIsProf = isProf;
-  document.getElementById("profCatFilter").classList.toggle("show", isProf);
-  if (isProf) {
-    document.querySelectorAll("#profCatFilter .cat-btn").forEach(x => x.classList.toggle("active", x.dataset.pf === currentProfCat));
-  }
   if (chapterUnsub) chapterUnsub();
   chapterUnsub = onSnapshot(doc(db, "chapters", id), snap => {
     const data = snap.data();
     applyLockUI(!!(data && data.locked));
-    if (isProf) profDataCache = data;
     if (document.activeElement === editor) return;
-    if (isProf) { renderProfEditor(); return; }
     editor.innerHTML = (data && data.content) || "";
     history = [editor.innerHTML]; historyIndex = 0;
   });
 }
-// 인물소개 폴더 안에서, 현재 선택된 카테고리(파일)의 내용만 에디터에 표시
-function renderProfEditor(){
-  editor.innerHTML = (profDataCache && profDataCache["content_" + currentProfCat]) || "";
-  history = [editor.innerHTML]; historyIndex = 0;
-}
-document.querySelectorAll("#profCatFilter .cat-btn").forEach(b => b.onclick = () => {
-  currentProfCat = b.dataset.pf;
-  document.querySelectorAll("#profCatFilter .cat-btn").forEach(x => x.classList.toggle("active", x === b));
-  renderProfEditor(); // 폴더 안 다른 파일로 전환
-});
 function applyLockUI(locked){
   folderLocked = locked;
   document.body.classList.toggle("folder-locked", locked);
@@ -722,7 +536,7 @@ function renderCharList(){
     item.className = "charRowItem";
     item.innerHTML = `
       <input type="number" class="ci-ordnum" value="${i + 1}" min="1" style="width:34px;text-align:center;padding:4px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);font-size:12px;">
-      <div class="ci-av"></div>
+      <div class="ci-av" style="${(c.twitterAvatar || c.twitterPrivAvatar || c.instagramAvatar) ? `background-image:url('${(c.twitterAvatar || c.twitterPrivAvatar || c.instagramAvatar).replace(/'/g, "%27")}');background-size:cover;background-position:center;` : ""}"></div>
       <div class="ci-info">
         <div class="ci-name">${escapeHtml(dispName(c.name, c))}${c.realName ? ` <span style="font-weight:400;color:var(--text-faint3)">(${escapeHtml(c.realName)})</span>` : ""}</div>
         <div class="ci-handles">${escapeHtml(c.twitter || "")}${c.twitter && c.twitterPriv ? " / " : ""}${c.twitterPriv ? "🔒" + escapeHtml(c.twitterPriv) : ""}${(c.twitter || c.twitterPriv) && c.instagram ? " · " : ""}${escapeHtml(c.instagram || "")}</div>
@@ -917,15 +731,60 @@ function insertAtCursor(html, opts){
   commitChange();
 }
 
+function refreshHashtags(){
+  const sel = window.getSelection();
+  let caretOffset = null;
+  if (sel.rangeCount && editor.contains(sel.getRangeAt(0).startContainer)) {
+    const r = sel.getRangeAt(0);
+    const pre = document.createRange();
+    pre.selectNodeContents(editor);
+    pre.setEnd(r.startContainer, r.startOffset);
+    caretOffset = pre.toString().length;
+  }
+  editor.querySelectorAll(".hashtag").forEach(sp => {
+    if (sp.closest('[contenteditable="false"]')) return;
+    sp.replaceWith(document.createTextNode(sp.textContent));
+  });
+  editor.normalize();
+  const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT, {
+    acceptNode(n){ return n.parentElement.closest('[contenteditable="false"]') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; }
+  });
+  const nodes = [];
+  let n;
+  while (n = walker.nextNode()) nodes.push(n);
+  nodes.forEach(node => {
+    if (!/#[^\s#]+/.test(node.nodeValue)) return;
+    const span = document.createElement("span");
+    span.innerHTML = escapeHtml(node.nodeValue).replace(/#[^\s#]+/g, m => `<span class="hashtag">${m}</span>`);
+    node.replaceWith(...span.childNodes);
+  });
+  editor.normalize();
+  if (caretOffset !== null) {
+    let remaining = caretOffset, node2, found = null, foundOffset = 0;
+    const walker2 = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
+    while (node2 = walker2.nextNode()) {
+      const len = node2.nodeValue.length;
+      if (remaining <= len) { found = node2; foundOffset = remaining; break; }
+      remaining -= len;
+    }
+    if (found) {
+      const r = document.createRange();
+      r.setStart(found, foundOffset);
+      r.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(r);
+    }
+  }
+}
 editor.addEventListener("input", () => {
   if (folderLocked) return;
+  refreshHashtags();
   clearTimeout(saveTimer);
   saveTimer = setTimeout(commitChange, 500);
 });
 function saveContent(){
   if (!currentFolder) return;
-  const field = currentIsProf ? ("content_" + currentProfCat) : "content";
-  updateDoc(doc(db, "chapters", currentFolder), { [field]: editor.innerHTML }).catch(() => {
+  updateDoc(doc(db, "chapters", currentFolder), { content: editor.innerHTML }).catch(() => {
     console.error("저장 실패, 재시도합니다");
     setTimeout(() => { if (currentFolder) saveContent(); }, 2000);
   });
@@ -974,14 +833,11 @@ editor.addEventListener("click", e => {
 editor.addEventListener("click", e => {
   if (folderLocked) return;
   if (e.target.closest(".embed-del")) return;
-  if (e.target.tagName === "IMG" && !e.target.closest(".prof-photo")) return;
-  const card = e.target.closest(".block.profile");
-  if (!card) return;
-  if (e.target.closest(".prof-photo, .prof-photo-add, .prof-edit-btn")) openProfileEditSheet(card);
+  if (e.target.tagName === "IMG") return;
 });
 editor.addEventListener("click", e => {
   if (folderLocked) return;
-  const textEl = e.target.closest(".twtext, .igtext, .bubble, .cm-body, .cm-comment, .cm-title, .cm-meta, .art-body, .art-title, .art-site, .art-reporter, .prof-name, .prof-v");
+  const textEl = e.target.closest(".twtext, .igtext, .bubble, .cm-body, .cm-comment, .cm-title, .cm-meta, .art-body, .art-title, .art-site, .art-reporter, .uname, .story-uname");
   if (!textEl || e.target.tagName === "IMG") return;
   if (textEl.isContentEditable) return;
   textEl.contentEditable = "true";
@@ -991,11 +847,6 @@ editor.addEventListener("click", e => {
     textEl.contentEditable = "false";
     textEl.classList.remove("inline-editing");
     textEl.removeEventListener("blur", onBlur);
-    const field = textEl.dataset.field;
-    if (field) {
-      const card = textEl.closest(".block.profile");
-      if (card) card.dataset[field] = textEl.textContent.trim();
-    }
     commitChange();
   };
   textEl.addEventListener("blur", onBlur);
@@ -1190,7 +1041,7 @@ function renderCommunityComments(){
 function updateBlockExtra(){
   const isCommunity = blockType === "community";
   const isArticle = blockType === "article";
-  document.getElementById("blockCharRow").style.display = (blockType === "twitter" || blockType === "instagram") ? "flex" : "none";
+  document.getElementById("blockCharRow").style.display = (blockType === "twitter" || blockType === "instagram" || blockType === "igstory") ? "flex" : "none";
   buildBlockTwAccountRow();
   document.getElementById("blockPosRow").style.display = NEEDS_POS.has(blockType) ? "flex" : "none";
   document.getElementById("blockThreadAddBtn").style.display = blockType === "twitter" ? "block" : "none";
@@ -1425,6 +1276,18 @@ function buildEmbedHTML(type, text, images, charId, position){
       <button class="embed-del">×</button>
     </div>`;
   }
+  if (type === "igstory") {
+    const avatarUrl = character?.instagramAvatar || "";
+    const avStyle = avatarUrl ? ` style="background-image:url('${avatarUrl.replace(/'/g, "%27")}')"` : "";
+    const uname = character?.instagram || dispName(character?.instagramName || character?.name, character) || "user";
+    const storyImg = images[0] || "";
+    return `<div class="embed block igstory" contenteditable="false">
+      <div class="story-progress"></div>
+      <div class="story-topbar"><div class="story-av"${avStyle}></div><div class="story-uname">${escapeHtml(uname)}</div></div>
+      ${storyImg ? `<img class="story-img" src="${storyImg}">` : ""}
+      <button class="embed-del">×</button>
+    </div>`;
+  }
   const pos = position === "right" ? "right" : "left";
   return `<div class="embed block ${type}" contenteditable="false">
     <div class="bubblerow ${pos}">
@@ -1480,32 +1343,6 @@ function buildArticleHTML(title, site, reporter, body, images){
 }
 
 function dispName(name, c){ return (name || "") + (c && c.private ? " 🔒" : ""); }
-function buildProfileHTML(photo, name, birth, job, mbti, ig, tw, twPriv, fav, trait, category, position){
-  category = category || "fan";
-  const photoHtml = photo
-    ? `<div class="prof-photo"><img src="${photo}"></div>`
-    : `<div class="prof-photo-add">📎 사진 추가</div>`;
-  const rowDefs = category === "idol"
-    ? [["포지션", "position", position], ["생년월일", "birth", birth], ["소속", "job", job], ["MBTI", "mbti", mbti], ["특징", "trait", trait]]
-    : [["나이", "birth", birth], ["소속/직업", "job", job], ["MBTI", "mbti", mbti],
-       ["인스타그램", "ig", ig], ["트위터", "tw", tw], ["트위터(비공개)", "twpriv", twPriv],
-       ["최애", "fav", fav], ["특징", "trait", trait]];
-  const rows = rowDefs.filter(([, , v]) => v).map(([k, field, v]) => `<div class="prof-row"><span class="prof-k">${escapeHtml(k)}</span><span class="prof-v" data-field="${field}">${formatText(v)}</span></div>`).join("");
-  const dataAttrs = [
-    ["data-photo", photo], ["data-name", name], ["data-birth", birth], ["data-job", job],
-    ["data-mbti", mbti], ["data-ig", ig], ["data-tw", tw], ["data-twpriv", twPriv],
-    ["data-fav", fav], ["data-trait", trait], ["data-category", category], ["data-position", position]
-  ].map(([k, v]) => `${k}="${escapeHtml(v || "")}"`).join(" ");
-  return `<div class="embed block profile" ${dataAttrs} contenteditable="false">
-    <button class="prof-edit-btn" title="사진 변경">📎</button>
-    ${photoHtml}
-    <div class="prof-head">
-      <div class="prof-name" data-field="name">${escapeHtml(name || "이름 없음")}</div>
-    </div>
-    ${rows ? `<div class="prof-rows">${rows}</div>` : ""}
-    <button class="embed-del">×</button>
-  </div>`;
-}
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
