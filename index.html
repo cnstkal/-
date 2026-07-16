@@ -72,16 +72,16 @@ button, input, textarea{font-family:inherit;}
 .imgs.n4plus{grid-template-columns:1fr 1fr;} .imgs.n4plus img{aspect-ratio:1/1; height:auto;}
 
 #overlay, #charOverlay, #blockSheet{display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:40; align-items:flex-end;}
-#overlay .sheet, #charOverlay .sheet, #blockSheet .sheet .sheet{background:var(--bg2); width:100%; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); border-radius:16px 16px 0 0; max-height:85vh; overflow-y:auto;}
+#overlay .sheet, #charOverlay .sheet, #blockSheet .sheet{background:var(--bg2); width:100%; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); border-radius:16px 16px 0 0; max-height:85vh; overflow-y:auto;}
 #blockSheet{align-items:flex-start;}
 #blockSheet .sheet{border-radius:0 0 16px 16px; padding:18px 16px;}
-#overlay input, #charOverlay input, #blockSheet textarea input textarea{width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:11px; border-radius:10px; font-size:15px; margin:10px 0;}
+#overlay input, #charOverlay input, #blockSheet textarea, #blockSheet input{width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:11px; border-radius:10px; font-size:15px; margin:10px 0;}
 #blockSheet textarea{min-height:70px; resize:vertical; line-height:1.6;}
-#overlay .row, #charOverlay .row, #blockSheet .row .row{display:flex; gap:8px;}
-#overlay button, #charOverlay button, #blockSheet button button{padding:11px; border-radius:10px; border:none; font-size:14px;}
-#overlay .row button, #charOverlay .row button, #blockSheet .row button .row button{flex:1;}
-#overlay .cancel, #charOverlay .cancel, #blockSheet .cancel .cancel{background:var(--bg4); color:var(--text-dim2);}
-#overlay .ok, #charOverlay .ok, #blockSheet .ok .ok{background:var(--accent); color:var(--accent-text); font-weight:700;}
+#overlay .row, #charOverlay .row, #blockSheet .row{display:flex; gap:8px;}
+#overlay button, #charOverlay button, #blockSheet button{padding:11px; border-radius:10px; border:none; font-size:14px;}
+#overlay .row button, #charOverlay .row button, #blockSheet .row button{flex:1;}
+#overlay .cancel, #charOverlay .cancel, #blockSheet .cancel{background:var(--bg4); color:var(--text-dim2);}
+#overlay .ok, #charOverlay .ok, #blockSheet .ok{background:var(--accent); color:var(--accent-text); font-weight:700;}
 .cat-btn{flex:1; padding:9px 0; border-radius:10px; background:var(--bg4); color:var(--text-mut); border:1px solid var(--border); font-size:13px; font-weight:600;}
 .cat-btn.active{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
 #charList{margin-top:12px; border-top:1px solid var(--border2); padding-top:10px; display:flex; flex-direction:column; gap:6px;}
@@ -224,7 +224,7 @@ body.folder-locked #editBtns{display:none !important;}
   #editor{font-size:15px;}
 }
 @supports (-webkit-touch-callout:none){
-  #editor, #overlay input, #charOverlay input, #blockSheet textarea input textarea{font-size:16px;} /* iOS 자동 확대 방지 */
+  #editor, #overlay input, #charOverlay input, #blockSheet textarea, #blockSheet input{font-size:16px;} /* iOS 자동 확대 방지 */
 }
 </style>
 </head>
