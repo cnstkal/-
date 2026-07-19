@@ -51,6 +51,7 @@ button, input, textarea{font-family:inherit;}
 #main{padding:18px 22px 80px; max-width:640px; margin:0 auto;}
 #editor{min-height:78vh; outline:none; font-size:18.5px; line-height:1.95; word-break:break-word;}
 #editor:empty:before{content:attr(data-ph); color:var(--text-faint3);}
+#editor hr.divider{border:none; border-top:1px solid var(--border); margin:26px auto; width:35%; min-width:80px; max-width:220px;}
 #editor img{max-width:100%; border-radius:10px; display:block; margin:12px 0;}
 #editor .imgs img, #editor .igimgs img{margin:0;}
 #empty{text-align:center; color:var(--text-faint2); font-size:13px; margin-top:60px;}
@@ -236,6 +237,7 @@ body.folder-locked #editBtns{display:none !important;}
       <span id="editBtns">
         <button id="fabUndo" title="뒤로가기">↩︎</button>
         <button id="fabRedo" title="앞으로가기">↪︎</button>
+        <button id="fabDivider" title="구분선 삽입">―</button>
         <button id="fabBlock" title="대화/SNS 삽입">💬</button>
       </span>
       <button id="fabLock" title="회차 잠금" style="display:none">🔓</button>
@@ -503,7 +505,6 @@ function selectFolder(id) {
     applyLockUI(!!(data && data.locked));
     if (document.activeElement === editor) return;
     editor.innerHTML = (data && data.content) || "";
-    editor.querySelectorAll("hr.divider").forEach(el => el.remove());
     history = [editor.innerHTML]; historyIndex = 0;
   });
 }
@@ -811,6 +812,9 @@ document.getElementById("fabRedo").onclick = () => {
   historySuppress = false;
 };
 
+editor.addEventListener("mousedown", e => {
+  if (e.target.closest("hr.divider")) e.preventDefault();
+});
 editor.addEventListener("click", e => {
   const nav = e.target.closest(".ignav");
   if (nav) {
@@ -926,6 +930,20 @@ async function uploadToCloudinary(file) {
   const data = await res.json();
   return data.secure_url;
 }
+
+document.getElementById("fabDivider").onclick = () => {
+  if (!currentFolder) return;
+  let range = (savedRange && editor.contains(savedRange.startContainer)) ? savedRange.cloneRange() : null;
+  const insideEmbed = range && range.startContainer.parentElement && range.startContainer.parentElement.closest(".embed, [contenteditable=\"false\"]");
+  if (!range || insideEmbed) {
+    // 트윗/대화 블록 등 삽입형 요소 내부이거나 위치가 없으면, 그 블록 바로 뒤(에디터 끝)에 삽입
+    range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(false);
+    savedRange = range.cloneRange();
+  }
+  insertAtCursor('<hr class="divider" contenteditable="false">' + "<p><br></p>", { silent: true });
+};
 
 // ---- 대화/SNS 블록 삽입 시트 ----
 document.getElementById("fabBlock").onclick = () => {
