@@ -60,7 +60,6 @@ button, input, textarea{font-family:inherit;}
 .embed .embed-del{position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%; background:var(--danger); color:var(--danger-text); border:none; font-size:12px; line-height:22px; opacity:0; transition:opacity .15s; z-index:2;}
 .embed:hover .embed-del{opacity:1;}
 
-#editor hr.divider{border:none; border-top:1px solid var(--border); margin:26px auto; width:35%; min-width:80px; max-width:220px;}
 .imgs{display:grid; gap:3px; border-radius:10px; overflow:hidden; margin:8px 0;}
 .imgs img{width:100%; object-fit:cover; display:block; margin:0; cursor:zoom-in;}
 .imgs.n1 img{height:auto; object-fit:initial;}
@@ -237,7 +236,6 @@ body.folder-locked #editBtns{display:none !important;}
       <span id="editBtns">
         <button id="fabUndo" title="뒤로가기">↩︎</button>
         <button id="fabRedo" title="앞으로가기">↪︎</button>
-        <button id="fabDivider" title="구분선 삽입">―</button>
         <button id="fabBlock" title="대화/SNS 삽입">💬</button>
       </span>
       <button id="fabLock" title="회차 잠금" style="display:none">🔓</button>
@@ -505,6 +503,7 @@ function selectFolder(id) {
     applyLockUI(!!(data && data.locked));
     if (document.activeElement === editor) return;
     editor.innerHTML = (data && data.content) || "";
+    editor.querySelectorAll("hr.divider").forEach(el => el.remove());
     history = [editor.innerHTML]; historyIndex = 0;
   });
 }
@@ -812,9 +811,6 @@ document.getElementById("fabRedo").onclick = () => {
   historySuppress = false;
 };
 
-editor.addEventListener("mousedown", e => {
-  if (e.target.closest("hr.divider")) e.preventDefault();
-});
 editor.addEventListener("click", e => {
   const nav = e.target.closest(".ignav");
   if (nav) {
@@ -930,12 +926,6 @@ async function uploadToCloudinary(file) {
   const data = await res.json();
   return data.secure_url;
 }
-
-document.getElementById("fabDivider").onclick = () => {
-  if (!currentFolder) return;
-  insertAtCursor('<hr class="divider" contenteditable="false">' + "<p><br></p>", { silent: true });
-};
-
 
 // ---- 대화/SNS 블록 삽입 시트 ----
 document.getElementById("fabBlock").onclick = () => {
@@ -1205,7 +1195,7 @@ document.getElementById("blockInsertBtn").onclick = async () => {
     } else {
       html = buildEmbedHTML(blockType, text, urls, blockCharId, blockPosition);
     }
-    insertAtCursor(html + "<p><br></p>", { appendEnd: true });
+    insertAtCursor(html + "<p><br></p>", { silent: true });
     document.getElementById("blockText").value = "";
     document.getElementById("blockSpinInput").value = "";
     blockPending = [];
