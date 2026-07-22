@@ -683,29 +683,12 @@ document.addEventListener("selectionchange", () => {
 function insertAtCursor(html, opts){
   if (folderLocked) return;
   const silent = opts && opts.silent;
-  const appendEnd = opts && opts.appendEnd;
   if (!silent) editor.focus({ preventScroll: true });
-  let range;
-  if (appendEnd) {
-    range = document.createRange();
-    range.selectNodeContents(editor);
-    range.collapse(false);
-  } else if (silent) {
-    if (savedRange && editor.contains(savedRange.startContainer)) {
-      range = savedRange.cloneRange();
-    } else {
-      range = document.createRange();
-      range.selectNodeContents(editor);
-      range.collapse(false);
-    }
-  } else {
-    if (savedRange && editor.contains(savedRange.startContainer)) {
-      range = savedRange.cloneRange();
-    } else {
-      range = document.createRange();
-      range.selectNodeContents(editor);
-      range.collapse(false);
-    }
+  // 항상 에디터 맨 하단에 삽입
+  let range = document.createRange();
+  range.selectNodeContents(editor);
+  range.collapse(false);
+  if (!silent) {
     const sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(range);
