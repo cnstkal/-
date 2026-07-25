@@ -15,6 +15,7 @@
   --accent:#a8823f; --accent-text:#ffffff;
   --danger:#c1453a; --danger-text:#fff;
   --hashtag:#1d6fc9;
+  --mention:#1d6fc9;
   --im-blue:#0b84ff; --im-gray:#e5e5ea; --im-gray-text:#1c1c1e;
 }
 
@@ -29,6 +30,7 @@ h1{font-weight:700;}
 .mono{font-family:'Pretendard',sans-serif; font-weight:600;}
 button, input, textarea{font-family:inherit;}
 .hashtag{color:var(--hashtag);}
+.mention{color:var(--mention);}
 
 #topbar{position:sticky; top:0; z-index:20; background:var(--bg2); border-bottom:1px solid var(--border); padding:10px 12px 8px;}
 #topbar .titlerow{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:8px;}
@@ -725,7 +727,7 @@ function refreshHashtags(){
     pre.setEnd(r.startContainer, r.startOffset);
     caretOffset = pre.toString().length;
   }
-  editor.querySelectorAll(".hashtag").forEach(sp => {
+  editor.querySelectorAll(".hashtag, .mention").forEach(sp => {
     if (sp.closest('[contenteditable="false"]')) return;
     sp.replaceWith(document.createTextNode(sp.textContent));
   });
@@ -739,7 +741,7 @@ function refreshHashtags(){
   nodes.forEach(node => {
     if (!/#[^\s#]+/.test(node.nodeValue)) return;
     const span = document.createElement("span");
-    span.innerHTML = escapeHtml(node.nodeValue).replace(/#[^\s#]+/g, m => `<span class="hashtag">${m}</span>`);
+    span.innerHTML = escapeHtml(node.nodeValue).replace(/#[^\s#]+/g, m => `<span class="hashtag">${m}</span>`).replace(/@[A-Za-z0-9_]+/g, m => `<span class="mention">${m}</span>`);
     node.replaceWith(...span.childNodes);
   });
   editor.normalize();
@@ -1339,8 +1341,9 @@ function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 function formatText(s) {
-  const esc = escapeHtml(s).replace(/\n/g, "<br>");
-  return esc.replace(/(^|\s|>)(#[^\s#<]+)/g, (m, p1, p2) => p1 + '<span class="hashtag">' + p2 + '</span>');
+  let esc = escapeHtml(s).replace(/\n/g, "<br>");
+  esc = esc.replace(/(^|\s|>)(#[^\s#<]+)/g, (m, p1, p2) => p1 + '<span class="hashtag">' + p2 + '</span>');
+  return esc.replace(/(^|\s|>)(@[A-Za-z0-9_]+)/g, (m, p1, p2) => p1 + '<span class="mention">' + p2 + '</span>');
 }
 </script>
 </body>
